@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokémon Tracker</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+  input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
+  select option { background: #12121a; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useCallback } = React;
+
+// ── Config ───────────────────────────────────────────────────────────────────
+
+const EBAY_APP_ID = "thomasgr-pokemont-PRD-66c21b7a2-5816b693";
+const USD_TO_EUR = 0.92;
+
+// ── Design tokens ─────────────────────────────────────────────────────────────
+
+const T = {
+  bg: "#0a0a0f",
+  surface: "#12121a",
+  surfaceHover: "#1a1a26",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e8f0",
+  textSub: "#8888a8",
+  textMuted: "#555570",
+  accent: "#7c6cfc",
+  accentGlow: "rgba(124,108,252,0.25)",
+};
+
+const css = {
+  pill: (color, bg, border) => ({
+    display: "inline-flex", alignItems: "center", padding: "2px 9px",
+    borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
+    color, background: bg, border: `1px solid ${border}`,
+  }),
+  card: {
+    background: T.surface,
+    border: `1px solid ${T.border}`,
+    borderRadius: 12,
+    padding: "12px 14px",
+    marginBottom: 6,
+    transition: "border-color 0.15s, background 0.15s",
+  },
+  input: {
+    padding: "7px 11px",
+    borderRadius: 8,
+    border: `1px solid ${T.border}`,
+    background: "rgba(255,255,255,0.04)",
+    color: T.text,
+    fontSize: 13,
+    width: "100%",
+    outline: "none",
+    fontFamily: "inherit",
+    transition: "border-color 0.15s",
+  },
+  label: {
+    fontSize: 10, color: T.textMuted, marginBottom: 4, display: "block",
+    letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600,
+  },
+  btn: (variant = "ghost") => ({
+    padding: variant === "primary" ? "8px 16px" : "6px 12px",
+    borderRadius: 8,
+    border: variant === "primary" ? `1px solid ${T.accent}` : `1px solid ${T.border}`,
+    background: variant === "primary" ? T.accentGlow : "transparent",
+    color: variant === "primary" ? T.accent : T.textSub,
+    fontSize: 12, fontWeight: 500, cursor: "pointer",
+    fontFamily: "inherit", transition: "all 0.15s",
+  }),
+  link: {
+    fontSize: 12, color: T.accent, textDecoration: "none", fontWeight: 500,
+    letterSpacing: "0.01em",
+  },
+};
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const PRIORITY_CONFIG = {
+  1: { label: "P1", color: "#ef4444", bg: "rgba(239,68,68,0.1)",   border: "rgba(239,68,68,0.3)" },
+  2: { label: "P2", color: "#f97316", bg: "rgba(249,115,22,0.1)",  border: "rgba(249,115,22,0.3)" },
+  3: { label: "P3", color: "#eab308", bg: "rgba(234,179,8,0.1)",   border: "rgba(234,179,8,0.3)" },
+  4: { label: "P4", color: "#22c55e", bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)" },
+  5: { label: "Coll", color: "#a855f7", bg: "rgba(168,85,247,0.1)", border: "rgba(168,85,247,0.3)" },
+};
+
+const TYPE_CONFIG = {
+  vintage:   { label: "Vintage",    color: "#f59e0b" },
+  modern:    { label: "Modern",     color: "#60a5fa" },
+  collector: { label: "Collection", color: "#f472b6" },
+};
+
+const STATUS_CONFIG = {
+  grading:    { label: "En grading PSA",      color: "#f97316", bg: "rgba(249,115,22,0.1)",  border: "rgba(249,115,22,0.3)" },
+  "à grader": { label: "À envoyer grading",   color: "#c084fc", bg: "rgba(192,132,252,0.1)", border: "rgba(192,132,252,0.3)" },
+  transit:    { label: "En transit",           color: "#facc15", bg: "rgba(250,204,21,0.1)",  border: "rgba(250,204,21,0.3)" },
+  collection: { label: "Collection",           color: "#38bdf8", bg: "rgba(56,189,248,0.1)",  border: "rgba(56,189,248,0.3)" },
+  sealed:     { label: "Scellé",               color: "#a78bfa", bg: "rgba(167,139,250,0.1)", border: "rgba(167,139,250,0.3)" },
+  "enchère":  { label: "Enchère active",       color: "#f87171", bg: "rgba(248,113,113,0.1)", border: "rgba(248,113,113,0.3)" },
+};
+
+const LANG_FLAG = { EN: "🇬🇧", JP: "🇯🇵", FR: "🇫🇷" };
+
+const DEFAULT_WATCH = [
+  { id: 1,  name: "Charizard",               ebayQuery: "Charizard 4/102 Base Set Unlimited Near Mint",                           set: "Base Expansion Pack",    number: "4/102",   maxPrice: 600,  priority: 1, lang: "EN", type: "vintage" },
+  { id: 2,  name: "Dark Charizard 1st Ed",    ebayQuery: "Dark Charizard 4/82 Team Rocket 1st Edition Near Mint",                 set: "Team Rocket",            number: "4/82",    maxPrice: 500,  priority: 2, lang: "EN", type: "vintage" },
+  { id: 3,  name: "Dracaufeu ex Alt Art",     ebayQuery: "Charizard ex 199/165 Pokemon 151 Near Mint",                            set: "Pokémon Card 151",       number: "MEW 199", maxPrice: 450,  priority: 2, lang: "EN", type: "modern" },
+  { id: 4,  name: "Charizard VMAX Rainbow",   ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint",           set: "Champion's Path",        number: "74/73",   maxPrice: 300,  priority: 2, lang: "EN", type: "modern" },
+  { id: 5,  name: "Lugia Holo Unlimited",     ebayQuery: "Lugia 9/111 Neo Genesis Unlimited Near Mint",                           set: "Neo Genesis",            number: "9/111",   maxPrice: 400,  priority: 3, lang: "EN", type: "vintage" },
+  { id: 6,  name: "Mew ex SAR JP",            ebayQuery: "Mew ex 205/165 SV2a Japanese Special Art Rare Near Mint",               set: "Pokémon Card 151 SV2a",  number: "205/165", maxPrice: 250,  priority: 3, lang: "JP", type: "modern" },
+  { id: 7,  name: "Gengar VMAX Alt Art",      ebayQuery: "Gengar VMAX 271/264 Fusion Strike Alt Art Near Mint",                   set: "Fusion Strike",          number: "271/264", maxPrice: 550,  priority: 3, lang: "EN", type: "modern" },
+  { id: 8,  name: "Umbreon VMAX Alt Art",     ebayQuery: "Umbreon VMAX Evolving Skies Alt Art Near Mint",                         set: "Evolving Skies",         number: "215/203", maxPrice: 400,  priority: 3, lang: "EN", type: "modern" },
+  { id: 9,  name: "Sylveon ex SIR",           ebayQuery: "Sylveon ex SIR 156 Prismatic Evolutions Near Mint",                     set: "Évolutions Prismatiques",number: "PRE 156", maxPrice: 300,  priority: 3, lang: "EN", type: "modern" },
+  { id: 10, name: "Mewtwo 10/102",            ebayQuery: "Mewtwo 10/102 Base Set Unlimited Near Mint",                            set: "Base Expansion Pack",    number: "10/102",  maxPrice: 100,  priority: 3, lang: "EN", type: "vintage" },
+  { id: 11, name: "Rayquaza Gold Star",       ebayQuery: "Rayquaza Gold Star 107/97 EX Deoxys Near Mint",                         set: "EX Deoxys",              number: "107/97",  maxPrice: 1000, priority: 4, lang: "EN", type: "vintage" },
+  { id: 14, name: "Flareon ex SIR",           ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Special Illustration Rare Near Mint", set: "Prismatic Evolutions", number: "146/131", maxPrice: 200, priority: 3, lang: "EN", type: "modern" },
+  { id: 12, name: "Mega Lopunny + Jigglypuff GX", ebayQuery: "Mega Lopunny Jigglypuff GX 226/236 Cosmic Eclipse Alt Art Near Mint", set: "Cosmic Eclipse",      number: "226/236", maxPrice: 120,  priority: 5, lang: "EN", type: "collector" },
+  { id: 13, name: "Jigglypuff Shiny Rare JP", ebayQuery: "Jigglypuff 306/190 SV4a Shiny Treasure ex Japanese Near Mint",          set: "Shiny Treasure ex",      number: "306/190", maxPrice: 35,   priority: 5, lang: "JP", type: "collector" },
+];
+
+const DEFAULT_OWNED = [
+  { id: "o1", name: "Dracaufeu VMAX Rainbow 074/073", price: 220,    status: "grading",    set: "Champion's Path",       lang: "FR", note: "Valeur déclarée 220€",                        ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint" },
+  { id: "o2", name: "Rosa's Encouragement 123/088",   price: 72,     status: "grading",    set: "Mega Evolution",        lang: "FR", note: "Valeur déclarée 72€",                         ebayQuery: "Rosa 123/088 Mega Evolution Near Mint" },
+  { id: "o3", name: "Rosa's Encouragement 115/080",   price: 100,    status: "grading",    set: "M3: Nihil Zero",        lang: "JP", note: "Valeur déclarée 100€",                        ebayQuery: "Rosa 115/080 Nihil Zero Japanese Near Mint" },
+  { id: "o4", name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "Prochain envoi PokéLoutre 15 juin",           ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
+  { id: "o5", name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                     ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
+  { id: "o6", name: "Snorlax JU 11",                  price: 40,     status: "transit",    set: "Jungle",                lang: "EN", note: "",                                             ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
+  { id: "o7", name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "transit",    set: "151 SV2a",              lang: "JP", note: "Enchère gagnée 256€ · valeur réelle ~818€",   ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
+  { id: "o8", name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                  ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
+  { id: "o9", name: "ETB Chaos Ascendant",             price: 55,     status: "sealed",     set: "Méga-Évolution",        lang: "FR", note: "",                                             ebayQuery: "ETB Elite Trainer Box Mega Evolution French" },
+];
+
+// ── localStorage ──────────────────────────────────────────────────────────────
+
+function useStorage(key, fallback) {
+  const [val, setVal] = useState(() => {
+    try {
+      const ls = localStorage.getItem(key);
+      if (!ls) return fallback;
+      const stored = JSON.parse(ls);
+      const storedIds = new Set(stored.map(i => i.id));
+      const newDefaults = fallback.filter(i => !storedIds.has(i.id));
+      return [...stored, ...newDefaults];
+    } catch { return fallback; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  }, [key, val]);
+  return [val, setVal];
+}
+
+function useLs(key, fallback) {
+  const [val, setVal] = useState(() => {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+  });
+  useEffect(() => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }, [key, val]);
+  return [val, setVal];
+}
+
+// ── eBay API ──────────────────────────────────────────────────────────────────
+
+async function fetchEbayPrices(query) {
+  try {
+    const url = `https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findCompletedItems&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=${EBAY_APP_ID}&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords=${encodeURIComponent(query)}&itemFilter(0).name=SoldItemsOnly&itemFilter(0).value=true&itemFilter(1).name=Condition&itemFilter(1).value=3000&sortOrder=EndTimeSoonest&paginationInput.entriesPerPage=5`;
+    const res = await fetch(url);
+    if (!res.ok) return { corsBlocked: true };
+    const data = await res.json();
+    const items = data?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item;
+    if (!items?.length) return null;
+    const prices = items.map(i => parseFloat(i.sellingStatus?.[0]?.currentPrice?.[0]?.__value__)).filter(p => p > 0);
+    if (!prices.length) return null;
+    const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+    return {
+      avg: avg.toFixed(0),
+      avgEur: Math.round(avg * USD_TO_EUR),
+      min: Math.min(...prices).toFixed(0),
+      minEur: Math.round(Math.min(...prices) * USD_TO_EUR),
+      max: Math.max(...prices).toFixed(0),
+      maxEur: Math.round(Math.max(...prices) * USD_TO_EUR),
+      count: prices.length,
+      ts: Date.now(),
+    };
+  } catch (e) {
+    return { corsBlocked: true };
+  }
+}
+
+const toEur = usd => Math.round(parseFloat(usd) * USD_TO_EUR);
+const fmt   = (n, d = 0) => Number(n).toFixed(d);
+const relTime = ts => {
+  if (!ts) return "";
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return "à l'instant";
+  if (m < 60) return `il y a ${m}min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `il y a ${h}h`;
+  return `il y a ${Math.floor(h / 24)}j`;
+};
+
+// ── CardRow ───────────────────────────────────────────────────────────────────
+
+function CardRow({ card, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const [price, setPrice] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const tc = TYPE_CONFIG[card.type];
+  const pc = PRIORITY_CONFIG[card.priority];
+
+  const load = useCallback(async () => {
+    if (loaded) return;
+    setLoading(true);
+    setPrice(await fetchEbayPrices(card.ebayQuery));
+    setLoading(false);
+    setLoaded(true);
+  }, [card.ebayQuery, loaded]);
+
+  useEffect(() => { if (open && !loaded) load(); }, [open, loaded, load]);
+
+  const avgEur = price && !price.corsBlocked ? toEur(price.avg) : null;
+  const isGood = avgEur !== null && avgEur < card.maxPrice;
+
+  return (
+    <div
+      onClick={() => setOpen(v => !v)}
+      style={{ ...css.card, borderLeft: `3px solid ${tc.color}`, cursor: "pointer", ...(open ? { background: T.surfaceHover, borderColor: T.borderMid } : {}) }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span style={css.pill(pc.color, pc.bg, pc.border)}>{pc.label}</span>
+        <span style={{ fontSize: 10, color: tc.color, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>{tc.label}</span>
+        <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: T.text, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {LANG_FLAG[card.lang]} {card.name}
+        </span>
+        <span style={{ fontSize: 11, color: T.textMuted }}>max {card.maxPrice}€</span>
+        {price && !price.corsBlocked && (
+          <span style={{ fontSize: 13, fontWeight: 600, color: isGood ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>
+            ~{avgEur}€ {isGood ? "✓" : "↑"}
+          </span>
+        )}
+        <span style={{ fontSize: 10, color: T.textMuted }}>{open ? "▲" : "▼"}</span>
+      </div>
+
+      {open && (
+        <div onClick={e => e.stopPropagation()} style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+            <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
+              <div style={css.label}>Set</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.set}</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
+              <div style={css.label}>Numéro</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.number}</div>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 8, padding: 12, marginBottom: 10 }}>
+            <div style={{ ...css.label, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+              Prix eBay — ventes finalisées NM
+            </div>
+            {loading && <div style={{ fontSize: 12, color: T.textSub }}>Chargement…</div>}
+            {!loading && price?.corsBlocked && <div style={{ fontSize: 12, color: "#f97316" }}>Requête bloquée (CORS) — consulte les liens ci-dessous.</div>}
+            {!loading && !price && loaded && <div style={{ fontSize: 12, color: T.textSub }}>Aucun résultat</div>}
+            {!loaded && !loading && (
+              <button onClick={e => { e.stopPropagation(); load(); }} style={css.btn()}>Charger le prix live</button>
+            )}
+            {price && !price.corsBlocked && (
+              <>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                  <span style={{ fontSize: 24, fontWeight: 700, color: isGood ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>~{avgEur}€</span>
+                  <span style={{ fontSize: 12, color: T.textSub }}>(~{price.avg}$)</span>
+                </div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4 }}>
+                  Min {toEur(price.min)}€ · Max {toEur(price.max)}€ · {price.count} ventes
+                </div>
+                {isGood && (
+                  <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 6, fontSize: 12, color: "#4ade80" }}>
+                    Sous budget — opportunité d'achat
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <a href={`https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(card.ebayQuery)}&LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>eBay vendus</a>
+            <span style={{ color: T.textMuted }}>·</span>
+            <a href={`https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(card.ebayQuery)}&LH_ItemCondition=3000`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>eBay acheter</a>
+            <span style={{ color: T.textMuted }}>·</span>
+            <a href={`https://www.cardmarket.com/fr/Pokemon/Products/Search?searchString=${encodeURIComponent(card.name)}&minCondition=2`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>CardMarket</a>
+            <span style={{ flex: 1 }} />
+            <button onClick={() => onDelete(card.id)} style={{ fontSize: 11, color: "#f87171", background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>Supprimer</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── AddCardForm ────────────────────────────────────────────────────────────────
+
+function AddCardForm({ onAdd, onClose }) {
+  const [f, setF] = useState({ name: "", set: "", number: "", ebayQuery: "", maxPrice: "", priority: "3", lang: "EN", type: "modern" });
+  const upd = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const submit = () => {
+    if (!f.name || !f.maxPrice) return;
+    onAdd({ ...f, id: Date.now(), maxPrice: parseFloat(f.maxPrice), priority: parseInt(f.priority) });
+    onClose();
+  };
+  return (
+    <div style={{ ...css.card, border: `1px solid ${T.accent}`, marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>Nouvelle carte à surveiller</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Nom *</label>
+          <input style={css.input} value={f.name} onChange={e => upd("name", e.target.value)} placeholder="ex: Charizard ex SAR" />
+        </div>
+        <div><label style={css.label}>Set</label><input style={css.input} value={f.set} onChange={e => upd("set", e.target.value)} /></div>
+        <div><label style={css.label}>Numéro</label><input style={css.input} value={f.number} onChange={e => upd("number", e.target.value)} /></div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Requête eBay</label>
+          <input style={css.input} value={f.ebayQuery} onChange={e => upd("ebayQuery", e.target.value)} placeholder="Charizard 4/102 Base Set Near Mint" />
+        </div>
+        <div><label style={css.label}>Budget max (€) *</label><input style={css.input} type="number" value={f.maxPrice} onChange={e => upd("maxPrice", e.target.value)} /></div>
+        <div>
+          <label style={css.label}>Priorité</label>
+          <select style={css.input} value={f.priority} onChange={e => upd("priority", e.target.value)}>
+            <option value="1">P1 — Urgent</option><option value="2">P2 — Haute</option>
+            <option value="3">P3 — Normale</option><option value="4">P4 — Basse</option><option value="5">Collection</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Langue</label>
+          <select style={css.input} value={f.lang} onChange={e => upd("lang", e.target.value)}>
+            <option value="EN">EN</option><option value="JP">JP</option><option value="FR">FR</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Type</label>
+          <select style={css.input} value={f.type} onChange={e => upd("type", e.target.value)}>
+            <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button onClick={onClose} style={css.btn()}>Annuler</button>
+        <button onClick={submit} style={css.btn("primary")}>Ajouter</button>
+      </div>
+    </div>
+  );
+}
+
+// ── AddOwnedForm ───────────────────────────────────────────────────────────────
+
+function AddOwnedForm({ onAdd, onClose }) {
+  const [f, setF] = useState({ name: "", set: "", price: "", status: "collection", lang: "EN", note: "", ebayQuery: "" });
+  const upd = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const submit = () => {
+    if (!f.name) return;
+    onAdd({ ...f, id: "o" + Date.now(), price: parseFloat(f.price) || 0 });
+    onClose();
+  };
+  return (
+    <div style={{ ...css.card, border: `1px solid ${T.accent}`, marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>Ajouter à la collection</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Nom *</label>
+          <input style={css.input} value={f.name} onChange={e => upd("name", e.target.value)} placeholder="Évoli ex SIR 167/131" />
+        </div>
+        <div><label style={css.label}>Set</label><input style={css.input} value={f.set} onChange={e => upd("set", e.target.value)} /></div>
+        <div><label style={css.label}>Prix payé (€)</label><input style={css.input} type="number" value={f.price} onChange={e => upd("price", e.target.value)} /></div>
+        <div>
+          <label style={css.label}>Statut</label>
+          <select style={css.input} value={f.status} onChange={e => upd("status", e.target.value)}>
+            <option value="collection">Collection</option><option value="à grader">À envoyer grading</option>
+            <option value="grading">Grading PSA</option><option value="transit">En transit</option>
+            <option value="sealed">Scellé</option><option value="enchère">Enchère</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Langue</label>
+          <select style={css.input} value={f.lang} onChange={e => upd("lang", e.target.value)}>
+            <option value="EN">EN</option><option value="JP">JP</option><option value="FR">FR</option>
+          </select>
+        </div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Requête eBay (cours live)</label>
+          <input style={css.input} value={f.ebayQuery} onChange={e => upd("ebayQuery", e.target.value)} placeholder="ex: Charizard VMAX 74/73 Near Mint" />
+        </div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Note</label>
+          <input style={css.input} value={f.note} onChange={e => upd("note", e.target.value)} />
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button onClick={onClose} style={css.btn()}>Annuler</button>
+        <button onClick={submit} style={css.btn("primary")}>Ajouter</button>
+      </div>
+    </div>
+  );
+}
+
+// ── OwnedCard ─────────────────────────────────────────────────────────────────
+
+function OwnedCard({ card, onDelete }) {
+  const sc = STATUS_CONFIG[card.status] || STATUS_CONFIG.collection;
+  return (
+    <div style={{ ...css.card, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {LANG_FLAG[card.lang]} {card.name}
+        </div>
+        {card.set && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{card.set}</div>}
+        {card.note && <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, fontStyle: "italic" }}>{card.note}</div>}
+      </div>
+      <div style={{ textAlign: "right", flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
+        {card.price > 0 && <div style={{ fontSize: 14, fontWeight: 600, color: T.text, fontVariantNumeric: "tabular-nums" }}>{card.price}€</div>}
+        <span style={css.pill(sc.color, sc.bg, sc.border)}>{sc.label}</span>
+      </div>
+      <button onClick={() => onDelete(card.id)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px", flexShrink: 0 }}
+        onMouseEnter={e => e.target.style.color = "#f87171"}
+        onMouseLeave={e => e.target.style.color = T.textMuted}
+      >✕</button>
+    </div>
+  );
+}
+
+// ── SvgLineChart ──────────────────────────────────────────────────────────────
+
+function SvgLineChart({ data, lines }) {
+  const W = 320, H = 160, PAD = { top: 10, right: 10, bottom: 24, left: 44 };
+  const IW = W - PAD.left - PAD.right;
+  const IH = H - PAD.top - PAD.bottom;
+  const [hover, setHover] = useState(null);
+
+  const allVals = lines.flatMap(l => data.map(d => d[l.key]));
+  const minV = Math.min(...allVals);
+  const maxV = Math.max(...allVals);
+  const range = maxV - minV || 1;
+
+  const xPos = i => PAD.left + (i / (data.length - 1)) * IW;
+  const yPos = v => PAD.top + IH - ((v - minV) / range) * IH;
+
+  const pathD = (key) =>
+    data.map((d, i) => `${i === 0 ? "M" : "L"}${xPos(i).toFixed(1)},${yPos(d[key]).toFixed(1)}`).join(" ");
+
+  const yTicks = [minV, minV + range * 0.5, maxV].map(v => Math.round(v));
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 12, padding: "12px 0 8px", marginBottom: 24, position: "relative" }}>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}
+        onMouseLeave={() => setHover(null)}>
+        {/* Grid */}
+        {yTicks.map((v, i) => (
+          <g key={i}>
+            <line x1={PAD.left} x2={W - PAD.right} y1={yPos(v)} y2={yPos(v)} stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+            <text x={PAD.left - 6} y={yPos(v) + 4} textAnchor="end" fontSize={9} fill={T.textMuted}>{v}€</text>
+          </g>
+        ))}
+        {/* X labels */}
+        {data.map((d, i) => (
+          <text key={i} x={xPos(i)} y={H - 4} textAnchor="middle" fontSize={9} fill={T.textMuted}>{d.date}</text>
+        ))}
+        {/* Lines */}
+        {lines.map(l => (
+          <path key={l.key} d={pathD(l.key)} fill="none" stroke={l.color} strokeWidth={2} strokeLinejoin="round" />
+        ))}
+        {/* Dots + hover zones */}
+        {data.map((d, i) => (
+          <g key={i} onMouseEnter={() => setHover(i)} style={{ cursor: "crosshair" }}>
+            <rect x={xPos(i) - 16} y={PAD.top} width={32} height={IH} fill="transparent" />
+            {lines.map(l => (
+              <circle key={l.key} cx={xPos(i)} cy={yPos(d[l.key])} r={hover === i ? 5 : 3} fill={l.color} />
+            ))}
+          </g>
+        ))}
+        {/* Hover vertical line */}
+        {hover !== null && (
+          <line x1={xPos(hover)} x2={xPos(hover)} y1={PAD.top} y2={PAD.top + IH} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+        )}
+      </svg>
+      {/* Tooltip */}
+      {hover !== null && (
+        <div style={{ position: "absolute", top: 10, right: 14, background: T.surface, border: `1px solid ${T.borderMid}`, borderRadius: 8, padding: "6px 10px", fontSize: 11, pointerEvents: "none" }}>
+          <div style={{ color: T.text, fontWeight: 600, marginBottom: 4 }}>{data[hover].date}</div>
+          {lines.map(l => (
+            <div key={l.key} style={{ color: l.color, fontVariantNumeric: "tabular-nums" }}>{l.label} : {data[hover][l.key]}€</div>
+          ))}
+        </div>
+      )}
+      {/* Legend */}
+      {lines.length > 1 && (
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 4 }}>
+          {lines.map(l => (
+            <div key={l.key} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: l.color }}>
+              <div style={{ width: 16, height: 2, background: l.color, borderRadius: 1 }} />
+              {l.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CoursTab ──────────────────────────────────────────────────────────────────
+
+const PRICE_HISTORY = {
+  "Mew ex SAR JP": [
+    { date: "Jan", nm: 350, psa9: 650, psa10: 1400 },
+    { date: "Fév", nm: 370, psa9: 700, psa10: 1500 },
+    { date: "Mar", nm: 360, psa9: 680, psa10: 1450 },
+    { date: "Avr", nm: 340, psa9: 650, psa10: 1350 },
+    { date: "Mai", nm: 330, psa9: 620, psa10: 1300 },
+  ],
+  "Évoli ex SIR": [
+    { date: "Jan", nm: 160, psa9: 220, psa10: 500 },
+    { date: "Fév", nm: 155, psa9: 215, psa10: 490 },
+    { date: "Mar", nm: 145, psa9: 200, psa10: 460 },
+    { date: "Avr", nm: 130, psa9: 190, psa10: 430 },
+    { date: "Mai", nm: 128, psa9: 185, psa10: 420 },
+  ],
+  "Flareon ex SIR": [
+    { date: "Jan", nm: 120, psa9: 180, psa10: 380 },
+    { date: "Fév", nm: 130, psa9: 190, psa10: 400 },
+    { date: "Mar", nm: 145, psa9: 200, psa10: 430 },
+    { date: "Avr", nm: 155, psa9: 210, psa10: 450 },
+    { date: "Mai", nm: 170, psa9: 220, psa10: 480 },
+  ],
+  "Dracaufeu VMAX": [
+    { date: "Jan", nm: 180, psa9: 280, psa10: 600 },
+    { date: "Fév", nm: 185, psa9: 285, psa10: 610 },
+    { date: "Mar", nm: 190, psa9: 290, psa10: 620 },
+    { date: "Avr", nm: 200, psa9: 300, psa10: 650 },
+    { date: "Mai", nm: 210, psa9: 310, psa10: 680 },
+  ],
+  "Rosa EN": [
+    { date: "Jan", nm: 65, psa9: 100, psa10: 220 },
+    { date: "Fév", nm: 68, psa9: 105, psa10: 230 },
+    { date: "Mar", nm: 70, psa9: 108, psa10: 235 },
+    { date: "Avr", nm: 72, psa9: 110, psa10: 240 },
+    { date: "Mai", nm: 72, psa9: 110, psa10: 240 },
+  ],
+};
+
+function CoursLiveRow({ card, livePrice, loading, onLoad }) {
+  const paid   = card.price;
+  const market = livePrice?.avgEur ?? null;
+  const diff   = market !== null && paid > 0 ? market - paid : null;
+  const pct    = diff !== null && paid > 0 ? (diff / paid) * 100 : null;
+  const up     = diff !== null && diff >= 0;
+
+  return (
+    <div style={{ ...css.card, marginBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 100 }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {LANG_FLAG[card.lang]} {card.name}
+          </div>
+          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 1 }}>{card.set}</div>
+        </div>
+        <div style={{ textAlign: "right", minWidth: 50 }}>
+          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>Payé</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: T.textSub, fontVariantNumeric: "tabular-nums" }}>
+            {paid > 0 ? `${fmt(paid, 2)}€` : "—"}
+          </div>
+        </div>
+        <div style={{ textAlign: "right", minWidth: 60 }}>
+          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>Marché</div>
+          {loading
+            ? <div style={{ fontSize: 11, color: T.textMuted }}>⏳</div>
+            : market !== null
+              ? <div style={{ fontSize: 13, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>~{market}€</div>
+              : <button onClick={onLoad} style={{ ...css.btn("primary"), padding: "3px 9px", fontSize: 10 }}>⚡</button>
+          }
+        </div>
+        <div style={{ textAlign: "right", minWidth: 70 }}>
+          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>+/- valeur</div>
+          {diff !== null
+            ? <div style={{ fontSize: 12, fontWeight: 700, color: up ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>
+                {up ? "+" : ""}{fmt(diff)}€
+                <span style={{ fontSize: 9, opacity: 0.7, marginLeft: 3 }}>({up ? "+" : ""}{fmt(pct, 0)}%)</span>
+              </div>
+            : <div style={{ fontSize: 11, color: T.textMuted }}>—</div>
+          }
+        </div>
+      </div>
+      {livePrice && (
+        <div style={{ marginTop: 6, display: "flex", gap: 10, alignItems: "center" }}>
+          <div style={{ fontSize: 9, color: T.textMuted }}>
+            Min {livePrice.minEur}€ · Max {livePrice.maxEur}€ · {livePrice.count} ventes · {relTime(livePrice.ts)}
+          </div>
+          <button onClick={onLoad} style={{ fontSize: 9, color: T.textMuted, background: "none", border: "none", cursor: "pointer" }}>↻</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CoursTab({ ownedList }) {
+  const cards = Object.keys(PRICE_HISTORY);
+  const [selectedCard, setSelectedCard] = useState(cards[0]);
+  const [viewMode, setViewMode] = useState("psa10");
+  const [livePrices, setLivePrices] = useLs("pk_cours_live", {});
+  const [loadingIds, setLoadingIds] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const data   = PRICE_HISTORY[selectedCard];
+  const latest = data[data.length - 1];
+  const prev   = data[data.length - 2];
+
+  const linesCfg = {
+    nm:    { key: "nm",    color: "#60a5fa", label: "NM brute" },
+    psa9:  { key: "psa9",  color: "#fb923c", label: "PSA 9" },
+    psa10: { key: "psa10", color: "#4ade80", label: "PSA 10" },
+  };
+  const activeLines = viewMode === "all" ? Object.values(linesCfg) : [linesCfg[viewMode]];
+
+  const loadOne = useCallback(async (card) => {
+    if (!card.ebayQuery) return;
+    setLoadingIds(p => ({ ...p, [card.id]: true }));
+    const data = await fetchEbayPrices(card.ebayQuery);
+    if (data && !data.corsBlocked) {
+      setLivePrices(p => ({ ...p, [card.id]: data }));
+    }
+    setLoadingIds(p => ({ ...p, [card.id]: false }));
+  }, []);
+
+  const refreshAll = async () => {
+    setRefreshing(true); setProgress(0);
+    const cardsWithQuery = ownedList.filter(c => c.ebayQuery);
+    for (let i = 0; i < cardsWithQuery.length; i++) {
+      await loadOne(cardsWithQuery[i]);
+      setProgress(Math.round(((i + 1) / cardsWithQuery.length) * 100));
+    }
+    setRefreshing(false);
+  };
+
+  const totalPaid   = ownedList.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
+  const totalMarket = ownedList.reduce((s, c) => { const p = livePrices[c.id]?.avgEur; return p ? s + p : s; }, 0);
+  const covered     = ownedList.filter(c => livePrices[c.id]).length;
+  const totalDiff   = totalMarket > 0 ? totalMarket - (totalPaid * covered / ownedList.length) : null;
+
+  return (
+    <div>
+      {/* ── Graphes historiques ── */}
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+        Évolution des prix — historique
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+        {cards.map(c => (
+          <button key={c} onClick={() => setSelectedCard(c)} style={{
+            fontSize: 11, padding: "4px 10px", borderRadius: 20, cursor: "pointer",
+            fontFamily: "inherit", fontWeight: selectedCard === c ? 600 : 400,
+            background: selectedCard === c ? T.accentGlow : "transparent",
+            color: selectedCard === c ? T.accent : T.textSub,
+            border: `1px solid ${selectedCard === c ? T.accent : T.border}`,
+          }}>{c}</button>
+        ))}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
+        {[
+          { label: "NM actuel", val: latest.nm, prev: prev.nm, color: "#60a5fa" },
+          { label: "PSA 9 est.", val: latest.psa9, prev: prev.psa9, color: "#fb923c" },
+          { label: "PSA 10 est.", val: latest.psa10, prev: prev.psa10, color: "#4ade80" },
+        ].map((s, i) => {
+          const diff = s.val - s.prev;
+          return (
+            <div key={i} style={{ background: `${s.color}10`, border: `1px solid ${s.color}30`, borderRadius: 10, padding: "10px 6px", textAlign: "center" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.val}€</div>
+              <div style={{ fontSize: 9, color: s.color, opacity: 0.7, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: diff >= 0 ? "#4ade80" : "#f87171", marginTop: 3, fontWeight: 600 }}>
+                {diff >= 0 ? "+" : ""}{diff}€
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+        {["nm", "psa9", "psa10", "all"].map(m => (
+          <button key={m} onClick={() => setViewMode(m)} style={{
+            fontSize: 11, padding: "3px 10px", borderRadius: 6, cursor: "pointer",
+            fontFamily: "inherit", fontWeight: viewMode === m ? 600 : 400,
+            background: viewMode === m ? "rgba(255,255,255,0.08)" : "transparent",
+            color: viewMode === m ? T.text : T.textMuted,
+            border: `1px solid ${viewMode === m ? T.borderMid : T.border}`,
+          }}>{m === "nm" ? "NM" : m === "psa9" ? "PSA 9" : m === "psa10" ? "PSA 10" : "Tout"}</button>
+        ))}
+      </div>
+
+      <SvgLineChart data={data} lines={activeLines} />
+
+      {/* ── Cours live — toute la collection ── */}
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+        Cours live eBay — ma collection
+      </div>
+
+      {/* Résumé portfolio live */}
+      {(totalMarket > 0 || totalPaid > 0) && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 12px" }}>
+            <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", marginBottom: 2 }}>Total investi</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: T.textSub, fontVariantNumeric: "tabular-nums" }}>{fmt(totalPaid, 2)}€</div>
+          </div>
+          <div style={{ background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "10px 12px" }}>
+            <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", marginBottom: 2 }}>Valeur marché ({covered}/{ownedList.length})</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>
+              {totalMarket > 0 ? `~${Math.round(totalMarket)}€` : "—"}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bouton refresh */}
+      <div style={{ marginBottom: 12 }}>
+        {refreshing ? (
+          <div style={{ background: "rgba(74,222,128,0.05)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 8, padding: "10px 14px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#4ade80", marginBottom: 6 }}>
+              <span>⚡ Récupération des cours…</span><span>{progress}%</span>
+            </div>
+            <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
+              <div style={{ height: "100%", width: `${progress}%`, background: "#4ade80", borderRadius: 2, transition: "width 0.3s" }} />
+            </div>
+          </div>
+        ) : (
+          <button onClick={refreshAll} style={{ ...css.btn("primary"), width: "100%", justifyContent: "center" }}>
+            ⚡ Actualiser tous les cours ({ownedList.filter(c => c.ebayQuery).length} cartes)
+          </button>
+        )}
+      </div>
+
+      {/* En-têtes */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 50px 60px 70px", gap: 8, padding: "0 14px", marginBottom: 4 }}>
+        {["Carte", "Payé", "Marché", "+/- val."].map(h => (
+          <div key={h} style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: h !== "Carte" ? "right" : "left" }}>{h}</div>
+        ))}
+      </div>
+
+      {ownedList.map(card => (
+        <CoursLiveRow
+          key={card.id}
+          card={card}
+          livePrice={livePrices[card.id] ?? null}
+          loading={!!loadingIds[card.id]}
+          onLoad={() => loadOne(card)}
+        />
+      ))}
+
+      <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, color: T.textMuted }}>
+        Prix estimatifs — eBay vendus + CardMarket. Historique mis à jour manuellement.
+      </div>
+    </div>
+  );
+}
+
+// ── CalendrierTab ──────────────────────────────────────────────────────────────
+
+function CalendrierTab() {
+  const today = new Date();
+  const sets = [
+    { date: "2026-01-17", code: "PRE",  en: "Prismatic Evolutions",              fr: "Évolutions Prismatiques",         etb: "ETB Évolutions Prismatiques",           status: "past",     chase: "Sylveon ex SIR, Évoli ex SIR, Flareon ex SIR" },
+    { date: "2026-01-30", code: "ME2.5",en: "Mega Evolution – Ascended Heroes",  fr: "Méga-Évolution – Héros Transcendants", etb: "ETB Héros Transcendants (20 fév.)", status: "past",     chase: "Méga-Dracolosse ex, Pokémon Téracristallisés" },
+    { date: "2026-03-27", code: "ME03", en: "Mega Evolution – Perfect Order",    fr: "Méga-Évolution – Équilibre Parfait",   etb: "ETB Équilibre Parfait (promo Papilusion)",status: "past", chase: "Méga-Zygarde ex, Méga-Staross ex, Méga-Mélodelfe ex" },
+    { date: "2026-03-30", code: "FP1",  en: "Forces of Pheros – Set 1",          fr: "Forces de Phéros 1",               etb: "Booster FP1 (JP)",                    status: "past",     chase: "À confirmer" },
+    { date: "2026-05-22", code: "ME04", en: "Mega Evolution – Chaos Rising",     fr: "Méga-Évolution – Chaos Ascendant", etb: "ETB Chaos Ascendant (promo Feunnec)", status: "soon",     chase: "Méga-Amphinobi ex Hyper Rare, SIR Supporters Z-A" },
+    { date: "2026-06-19", code: "FP2",  en: "Forces of Pheros – Set 2",          fr: "Forces de Phéros 2",               etb: "Booster FP2 (JP)",                    status: "upcoming", chase: "À confirmer" },
+    { date: "2026-07-17", code: "ME05", en: "Mega Evolution – Pitch Black",      fr: "Méga-Évolution – Nuit Noire",      etb: "ETB Nuit Noire (annoncé)",            status: "upcoming", chase: "Méga-Darkrai ex, Méga-Zeraora ex, Méga-Lugulabre ex" },
+    { date: "2026-09-01", code: "FP3",  en: "Forces of Pheros – Set 3",          fr: "Forces de Phéros 3",               etb: "Booster FP3 (JP)",                    status: "upcoming", chase: "À confirmer" },
+    { date: "2026-09-18", code: "30TH", en: "30th Anniversary Celebration",      fr: "Célébration 30 ans Pokémon",       etb: "ETB 30 ans (à confirmer)",            status: "upcoming", chase: "Cartes collector anniversaire, promos spéciales" },
+  ];
+  const statusCfg = {
+    past:     { color: T.textMuted, bg: "rgba(255,255,255,0.03)", border: T.border, dot: T.textMuted },
+    soon:     { color: "#facc15",   bg: "rgba(250,204,21,0.08)",  border: "rgba(250,204,21,0.3)",  dot: "#facc15" },
+    upcoming: { color: "#60a5fa",   bg: "rgba(96,165,250,0.08)",  border: "rgba(96,165,250,0.2)",  dot: "#60a5fa" },
+  };
+  const formatDate = d => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const daysUntil  = d => Math.ceil((new Date(d) - today) / 86400000);
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 14 }}>Ère Méga-Évolution · 2026 · 30e anniversaire du JCC</div>
+      {sets.map((s, i) => {
+        const sc   = statusCfg[s.status];
+        const days = daysUntil(s.date);
+        return (
+          <div key={i} style={{ ...css.card, background: sc.bg, border: `1px solid ${sc.border}`, marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: sc.dot, flexShrink: 0, marginTop: 5 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
+                  <div>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.code}</span>
+                    <span style={{ fontSize: 10, color: T.textMuted, marginLeft: 8 }}>{formatDate(s.date)}</span>
+                  </div>
+                  <span style={{ ...css.pill(sc.color, sc.bg, sc.border), fontSize: 9 }}>
+                    {s.status === "past" ? "Sorti" : days <= 0 ? "Cette semaine" : `J-${days}`}
+                  </span>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginTop: 3 }}>{s.fr}</div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1, fontStyle: "italic" }}>{s.en}</div>
+                <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <span style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0 }}>ETB</span>
+                    <span style={{ fontSize: 11, color: T.textSub }}>{s.etb}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <span style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0 }}>Chase</span>
+                    <span style={{ fontSize: 11, color: T.accent }}>{s.chase}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ fontSize: 10, color: T.textMuted, marginTop: 8, textAlign: "center" }}>
+        Sources : pokemon.com · pokeindex.fr · lorenzone.fr
+      </div>
+    </div>
+  );
+}
+
+// ── RessourcesTab ─────────────────────────────────────────────────────────────
+
+function RessourcesTab() {
+  return (
+    <div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Précommandes EN</div>
+      {[
+        { name: "Pokémon Center US",  desc: "ETB Chaos Rising — préco ouverte",               url: "https://www.pokemoncenter.com",          badge: "Chaos Rising ✓", badgeColor: "#4ade80" },
+        { name: "Pokémon Center UK",  desc: "ETB Pitch Black — activer alerte 'Notify me'",   url: "https://www.pokemoncenter.com/en-gb",    badge: "Pitch Black ⏳", badgeColor: "#facc15" },
+        { name: "Amazon.fr",          desc: "ETB EN — souvent dispo au lancement",             url: "https://www.amazon.fr/s?k=pokemon+elite+trainer+box+english", badge: null, badgeColor: null },
+        { name: "PokeBeach Twitter",  desc: "Alerte temps réel dès ouverture des précos",     url: "https://twitter.com/pokebeach",          badge: "🔔 Suivre", badgeColor: "#60a5fa" },
+        { name: "r/pokemontcg",       desc: "Communauté — annonces précos en live",           url: "https://www.reddit.com/r/pokemontcg",    badge: null, badgeColor: null },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Apps & Sites</div>
+      {[
+        { name: "CardMarket",     desc: "Singles Europe — prix de marché FR",                     url: "https://www.cardmarket.com/fr/Pokemon", color: "#60a5fa" },
+        { name: "eBay (vendus)",  desc: "Ventes finalisées = vrais prix de référence",            url: "https://www.ebay.fr/sch/i.html?LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&_nkw=pokemon+near+mint", color: "#60a5fa" },
+        { name: "Coded Yellow",   desc: "Dates de sorties TCG 2026 — calendrier EN/JP",           url: "https://www.codedyellow.com", color: "#facc15" },
+        { name: "Eyevo",          desc: "Scanner de cartes — app mobile",                         url: null, color: "#a78bfa" },
+        { name: "Cardzia",        desc: "Prix marché FR — app mobile",                            url: null, color: "#a78bfa" },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.color, flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+                 : <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0 }}>App</span>}
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Grading PSA</div>
+      <div style={{ ...css.card, border: "1px solid rgba(251,146,60,0.3)", background: "rgba(251,146,60,0.05)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>PokéLoutre</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>Envoi groupé le 15 de chaque mois</div>
+            <div style={{ fontSize: 11, color: "#fb923c", marginTop: 4, fontWeight: 500 }}>Prochain envoi : 15 juin</div>
+          </div>
+          <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c", flexShrink: 0 }}>pokeloutre.fr →</a>
+        </div>
+      </div>
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Boutiques Paris</div>
+      {[
+        { name: "Fuji Store",         addr: "6 Rue Rampon, 75011", tel: "09 55 62 24 56", maps: "https://maps.google.com/?q=Fuji+Store+6+Rue+Rampon+Paris", zone: "République" },
+        { name: "Joe La Carte",       addr: "Paris",               tel: null,             maps: "https://maps.google.com/?q=Joe+La+Carte+Paris+Pokemon",    zone: "Paris" },
+        { name: "Cards and Games",    addr: "Paris",               tel: null,             maps: "https://maps.google.com/?q=Cards+and+Games+Paris",         zone: "Paris" },
+        { name: "UltraJeux Bastille", addr: "Paris 11e",           tel: null,             maps: "https://maps.google.com/?q=UltraJeux+Bastille+Paris",      zone: "Bastille" },
+      ].map((b, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{b.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{b.addr}{b.tel ? ` · ${b.tel}` : ""}</div>
+          </div>
+          <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0, padding: "2px 7px", border: `1px solid ${T.border}`, borderRadius: 6 }}>{b.zone}</span>
+          <a href={b.maps} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Maps →</a>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── App ────────────────────────────────────────────────────────────────────────
+
+function PokemonTracker() {
+  const [watchList, setWatchList] = useStorage("pk_watch", DEFAULT_WATCH);
+  const [ownedList, setOwnedList] = useStorage("pk_owned", DEFAULT_OWNED);
+  const [tab, setTab]             = useState("watch");
+  const [filterP, setFilterP]     = useState("all");
+  const [filterT, setFilterT]     = useState("all");
+  const [search, setSearch]       = useState("");
+  const [showAddWatch, setShowAddWatch] = useState(false);
+  const [showAddOwned, setShowAddOwned] = useState(false);
+
+  const totalOwned    = ownedList.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
+  const gradingCount  = ownedList.filter(c => c.status === "grading").length;
+  const transitCount  = ownedList.filter(c => c.status === "transit").length;
+
+  const filtered = watchList.filter(c => {
+    if (filterP !== "all" && c.priority !== parseInt(filterP)) return false;
+    if (filterT !== "all" && c.type !== filterT) return false;
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const addWatch = c => setWatchList(p => [...p, c]);
+  const delWatch = id => setWatchList(p => p.filter(c => c.id !== id));
+  const addOwned = c => setOwnedList(p => [...p, c]);
+  const delOwned = id => setOwnedList(p => p.filter(c => c.id !== id));
+
+  const NAV = [
+    { id: "watch",      label: "Surveiller", icon: "🔍" },
+    { id: "owned",      label: "Collection", icon: "📦" },
+    { id: "urgent",     label: "Urgent",     icon: "⚡" },
+    { id: "cours",      label: "Cours",      icon: "📈" },
+    { id: "calendrier", label: "Calendrier", icon: "📅" },
+    { id: "ressources", label: "Outils",     icon: "🛠️" },
+  ];
+
+  const statItems = [
+    { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
+    { label: "Investi",      val: `${Math.round(totalOwned)}€`, color: "#4ade80", bg: "rgba(74,222,128,0.08)", border: "rgba(74,222,128,0.2)" },
+    { label: "En grading",   val: gradingCount, color: "#fb923c", bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.2)" },
+    { label: "En transit",   val: transitCount, color: "#facc15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.2)" },
+  ];
+
+  return (
+    <div style={{ padding: "20px 16px", maxWidth: 700, margin: "0 auto", fontFamily: "'DM Sans', 'Inter', sans-serif", background: T.bg, minHeight: "100vh", color: T.text }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 20, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>Pokémon Tracker</div>
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => { if (window.confirm("Réinitialiser toutes les données ?")) { localStorage.removeItem("pk_watch"); localStorage.removeItem("pk_owned"); localStorage.removeItem("pk_cours_live"); window.location.reload(); } }}
+            style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
+            ↺ Reset
+          </button>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 8px #4ade80" }} />
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
+        {statItems.map((st, i) => (
+          <div key={i} style={{ background: st.bg, border: `1px solid ${st.border}`, borderRadius: 10, padding: "10px", textAlign: "center" }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{st.val}</div>
+            <div style={{ fontSize: 10, color: st.color, opacity: 0.7, marginTop: 4, letterSpacing: "0.04em", textTransform: "uppercase" }}>{st.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Alert */}
+      <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
+        <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
+        <span style={{ color: "#fca5a5" }}>
+          Envoyer {gradingCount} cartes chez PokéLoutre — prochain envoi 15 juin · {transitCount} carte{transitCount > 1 ? "s" : ""} en transit
+        </span>
+      </div>
+
+      {/* Spacer nav fixe */}
+      <div style={{ height: 70 }} />
+
+      {/* ── WATCH ── */}
+      {tab === "watch" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            <input placeholder="Rechercher…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...css.input, flex: 1, minWidth: 120 }} />
+            <select value={filterP} onChange={e => setFilterP(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Toutes priorités</option>
+              <option value="1">P1</option><option value="2">P2</option><option value="3">P3</option>
+              <option value="4">P4</option><option value="5">Collection</option>
+            </select>
+            <select value={filterT} onChange={e => setFilterT(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Tous types</option>
+              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option>
+            </select>
+          </div>
+          {showAddWatch && <AddCardForm onAdd={addWatch} onClose={() => setShowAddWatch(false)} />}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · cliquer pour prix live</span>
+            {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
+          </div>
+          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+        </div>
+      )}
+
+      {/* ── OWNED ── */}
+      {tab === "owned" && (
+        <div>
+          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
+            <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>{totalOwned.toFixed(2)}€</div>
+          </div>
+          {showAddOwned && <AddOwnedForm onAdd={addOwned} onClose={() => setShowAddOwned(false)} />}
+          {!showAddOwned && <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setShowAddOwned(true)} style={css.btn("primary")}>+ Ajouter</button></div>}
+          {["enchère", "transit", "grading", "à grader", "collection", "sealed"].map(status => {
+            const cards = ownedList.filter(c => c.status === status);
+            if (!cards.length) return null;
+            const sc = STATUS_CONFIG[status];
+            return (
+              <div key={status} style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: sc.color, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  {sc.label} <span style={{ opacity: 0.5 }}>({cards.length})</span>
+                </div>
+                {cards.map(c => <OwnedCard key={c.id} card={c} onDelete={delOwned} />)}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── URGENT ── */}
+      {tab === "urgent" && (
+        <div>
+          <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 15 juin</div>
+            <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
+              {gradingCount} cartes à envoyer chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex)
+            </div>
+            <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
+          </div>
+
+          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#4ade80", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>✅ Reçu — Très bonne affaire</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: T.text }}>Mew ex SAR PSA 9 JP 205/165</div>
+            <div style={{ display: "flex", gap: 16, margin: "8px 0", alignItems: "baseline" }}>
+              <div>
+                <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payé</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>256€</div>
+              </div>
+              <div style={{ color: T.textMuted }}>→</div>
+              <div>
+                <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Valeur réelle</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: T.text, fontVariantNumeric: "tabular-nums" }}>~818€</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 12, color: "#86efac" }}>Plus-value latente : ~562€</div>
+          </div>
+
+          <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Priorité 1 — à trouver</div>
+          {watchList.filter(c => c.priority === 1).map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+        </div>
+      )}
+
+      {/* ── COURS ── */}
+      {tab === "cours" && <CoursTab ownedList={ownedList} />}
+
+      {/* ── CALENDRIER ── */}
+      {tab === "calendrier" && <CalendrierTab />}
+
+      {/* ── RESSOURCES ── */}
+      {tab === "ressources" && <RessourcesTab />}
+
+      <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em", marginBottom: 80 }}>
+        eBay Finding API · ventes USD · données sauvegardées localement
+      </div>
+
+      {/* ── Navigation fixe bas ── */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,15,0.97)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", overflowX: "auto", WebkitOverflowScrolling: "touch", padding: "0 8px" }}>
+          {NAV.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: "10px 14px 12px",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+              fontFamily: "inherit", flexShrink: 0,
+              borderTop: tab === t.id ? `2px solid ${T.accent}` : "2px solid transparent",
+              transition: "all 0.15s",
+            }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>{t.icon}</span>
+              <span style={{ fontSize: 10, fontWeight: tab === t.id ? 600 : 400, color: tab === t.id ? T.accent : T.textMuted, whiteSpace: "nowrap" }}>{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<PokemonTracker />);
+</script>
+</body>
+</html>
