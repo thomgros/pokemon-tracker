@@ -530,44 +530,30 @@ function SvgLineChart({ data, lines }) {
   );
 }
 
-// ── CoursTab ──────────────────────────────────────────────────────────────────
+// ── CoursTab / Classeur Grading ───────────────────────────────────────────────
 
-const PRICE_HISTORY = {
-  "Mew ex SAR JP": [
-    { date: "Jan", nm: 350, psa9: 650, psa10: 1400 },
-    { date: "Fév", nm: 370, psa9: 700, psa10: 1500 },
-    { date: "Mar", nm: 360, psa9: 680, psa10: 1450 },
-    { date: "Avr", nm: 340, psa9: 650, psa10: 1350 },
-    { date: "Mai", nm: 330, psa9: 620, psa10: 1300 },
-  ],
-  "Évoli ex SIR": [
-    { date: "Jan", nm: 160, psa9: 220, psa10: 500 },
-    { date: "Fév", nm: 155, psa9: 215, psa10: 490 },
-    { date: "Mar", nm: 145, psa9: 200, psa10: 460 },
-    { date: "Avr", nm: 130, psa9: 190, psa10: 430 },
-    { date: "Mai", nm: 128, psa9: 185, psa10: 420 },
-  ],
-  "Flareon ex SIR": [
-    { date: "Jan", nm: 120, psa9: 180, psa10: 380 },
-    { date: "Fév", nm: 130, psa9: 190, psa10: 400 },
-    { date: "Mar", nm: 145, psa9: 200, psa10: 430 },
-    { date: "Avr", nm: 155, psa9: 210, psa10: 450 },
-    { date: "Mai", nm: 170, psa9: 220, psa10: 480 },
-  ],
-  "Dracaufeu VMAX": [
-    { date: "Jan", nm: 180, psa9: 280, psa10: 600 },
-    { date: "Fév", nm: 185, psa9: 285, psa10: 610 },
-    { date: "Mar", nm: 190, psa9: 290, psa10: 620 },
-    { date: "Avr", nm: 200, psa9: 300, psa10: 650 },
-    { date: "Mai", nm: 210, psa9: 310, psa10: 680 },
-  ],
-  "Rosa EN": [
-    { date: "Jan", nm: 65, psa9: 100, psa10: 220 },
-    { date: "Fév", nm: 68, psa9: 105, psa10: 230 },
-    { date: "Mar", nm: 70, psa9: 108, psa10: 235 },
-    { date: "Avr", nm: 72, psa9: 110, psa10: 240 },
-    { date: "Mai", nm: 72, psa9: 110, psa10: 240 },
-  ],
+const GRADING_HISTORY = {
+  "o1":  { h:[{date:"Sep 24",nm:180,psa9:280,psa10:600},{date:"Nov 24",nm:195,psa9:300,psa10:640},{date:"Jan 25",nm:200,psa9:310,psa10:670},{date:"Mar 25",nm:210,psa9:320,psa10:700},{date:"Mai 25",nm:215,psa9:328,psa10:720},{date:"Juil 25",nm:220,psa9:335,psa10:740},{date:"Sep 25",nm:222,psa9:340,psa10:750},{date:"Nov 25",nm:225,psa9:345,psa10:760},{date:"Jan 26",nm:228,psa9:348,psa10:770},{date:"Mar 26",nm:229,psa9:350,psa10:775},{date:"Mai 26",nm:230,psa9:352,psa10:780}] },
+  "o2":  { h:[{date:"Jan 26",nm:60,psa9:95,psa10:200},{date:"Fév 26",nm:63,psa9:98,psa10:210},{date:"Mar 26",nm:65,psa9:100,psa10:215},{date:"Avr 26",nm:68,psa9:104,psa10:222},{date:"Mai 26",nm:70,psa9:108,psa10:228}] },
+  "o3":  { h:[{date:"Jan 26",nm:82,psa9:135,psa10:280},{date:"Fév 26",nm:85,psa9:140,psa10:290},{date:"Mar 26",nm:88,psa9:144,psa10:300},{date:"Avr 26",nm:90,psa9:148,psa10:308},{date:"Mai 26",nm:92,psa9:150,psa10:315}] },
+  "o4":  { h:[{date:"Jan 25",nm:175,psa9:240,psa10:530},{date:"Mar 25",nm:165,psa9:228,psa10:505},{date:"Mai 25",nm:155,psa9:215,psa10:478},{date:"Juil 25",nm:148,psa9:205,psa10:458},{date:"Sep 25",nm:143,psa9:198,psa10:443},{date:"Nov 25",nm:138,psa9:192,psa10:430},{date:"Jan 26",nm:135,psa9:188,psa10:420},{date:"Mar 26",nm:132,psa9:186,psa10:415},{date:"Mai 26",nm:130,psa9:184,psa10:410}] },
+  "o5":  { h:[{date:"Jan 24",nm:35,psa9:70,psa10:160},{date:"Juil 24",nm:32,psa9:64,psa10:148},{date:"Jan 25",nm:30,psa9:60,psa10:138},{date:"Juil 25",nm:27,psa9:54,psa10:124},{date:"Jan 26",nm:26,psa9:50,psa10:115},{date:"Mar 26",nm:26,psa9:48,psa10:112},{date:"Mai 26",nm:25,psa9:47,psa10:108}] },
+  "o10": { h:[{date:"Jan 25",nm:110,psa9:162,psa10:345},{date:"Mar 25",nm:118,psa9:172,psa10:368},{date:"Mai 25",nm:128,psa9:184,psa10:395},{date:"Juil 25",nm:135,psa9:192,psa10:415},{date:"Sep 25",nm:140,psa9:200,psa10:432},{date:"Nov 25",nm:144,psa9:205,psa10:445},{date:"Jan 26",nm:147,psa9:210,psa10:455},{date:"Mar 26",nm:149,psa9:213,psa10:463},{date:"Mai 26",nm:150,psa9:215,psa10:470}] },
+  "o11": { h:[{date:"Jan 26",nm:15,psa9:30,psa10:68},{date:"Fév 26",nm:15,psa9:30,psa10:70},{date:"Mar 26",nm:16,psa9:32,psa10:73},{date:"Avr 26",nm:16,psa9:32,psa10:75},{date:"Mai 26",nm:17,psa9:34,psa10:78}] },
+  "o12": { h:[{date:"Jan 26",nm:45,psa9:82,psa10:185},{date:"Fév 26",nm:46,psa9:84,psa10:190},{date:"Mar 26",nm:48,psa9:87,psa10:197},{date:"Avr 26",nm:49,psa9:89,psa10:201},{date:"Mai 26",nm:50,psa9:91,psa10:205}] },
+  "o13": { h:[{date:"Jan 26",nm:28,psa9:55,psa10:122},{date:"Fév 26",nm:29,psa9:56,psa10:125},{date:"Mar 26",nm:30,psa9:58,psa10:128},{date:"Avr 26",nm:31,psa9:59,psa10:132},{date:"Mai 26",nm:32,psa9:61,psa10:136}] },
+};
+
+const GRADING_META = {
+  "o1":  { apiQ:'set.name:"Champion\'s Path" number:74',       grade:"PSA 10" },
+  "o2":  { apiQ:'set.id:me1 number:123',                       grade:"PSA 9-10" },
+  "o3":  { apiQ:'name:"Rosa" number:115',                      grade:"PSA 9-10" },
+  "o4":  { apiQ:'set.name:"Prismatic Evolutions" number:167',  grade:"PSA 10" },
+  "o5":  { apiQ:'name:"Mew ex" number:205',                    grade:"PSA 9" },
+  "o10": { apiQ:'set.name:"Prismatic Evolutions" number:146',  grade:"PSA 10" },
+  "o11": { apiQ:'set.id:me4 number:22',                        grade:"PSA 8-9" },
+  "o12": { apiQ:'name:"Dragonite ex" number:232',              grade:"PSA 10" },
+  "o13": { apiQ:'name:"Froslass ex" number:36',                grade:"PSA 9" },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
@@ -875,216 +861,257 @@ function ClasseurTab() {
   );
 }
 
-function CoursLiveRow({ card, livePrice, loading, onLoad }) {
-  const paid   = card.price;
-  const market = livePrice?.avgEur ?? null;
-  const diff   = market !== null && paid > 0 ? market - paid : null;
-  const pct    = diff !== null && paid > 0 ? (diff / paid) * 100 : null;
-  const up     = diff !== null && diff >= 0;
-
-  return (
-    <div style={{ ...css.card, marginBottom: 4 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 100 }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {LANG_FLAG[card.lang]} {card.name}
-          </div>
-          <div style={{ fontSize: 10, color: T.textMuted, marginTop: 1 }}>{card.set}</div>
-        </div>
-        <div style={{ textAlign: "right", minWidth: 50 }}>
-          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>Payé</div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: T.textSub, fontVariantNumeric: "tabular-nums" }}>
-            {paid > 0 ? `${fmt(paid, 2)}€` : "—"}
-          </div>
-        </div>
-        <div style={{ textAlign: "right", minWidth: 60 }}>
-          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>Marché</div>
-          {loading
-            ? <div style={{ fontSize: 11, color: T.textMuted }}>⏳</div>
-            : market !== null
-              ? <div style={{ fontSize: 13, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>~{market}€</div>
-              : <button onClick={onLoad} style={{ ...css.btn("primary"), padding: "3px 9px", fontSize: 10 }}>⚡</button>
-          }
-        </div>
-        <div style={{ textAlign: "right", minWidth: 70 }}>
-          <div style={{ fontSize: 9, color: T.textMuted, marginBottom: 1, textTransform: "uppercase" }}>+/- valeur</div>
-          {diff !== null
-            ? <div style={{ fontSize: 12, fontWeight: 700, color: up ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>
-                {up ? "+" : ""}{fmt(diff)}€
-                <span style={{ fontSize: 9, opacity: 0.7, marginLeft: 3 }}>({up ? "+" : ""}{fmt(pct, 0)}%)</span>
-              </div>
-            : <div style={{ fontSize: 11, color: T.textMuted }}>—</div>
-          }
-        </div>
-      </div>
-      {livePrice && (
-        <div style={{ marginTop: 6, display: "flex", gap: 10, alignItems: "center" }}>
-          <div style={{ fontSize: 9, color: T.textMuted }}>
-            Min {livePrice.minEur}€ · Max {livePrice.maxEur}€ · {livePrice.count} ventes · {relTime(livePrice.ts)}
-          </div>
-          <button onClick={onLoad} style={{ fontSize: 9, color: T.textMuted, background: "none", border: "none", cursor: "pointer" }}>↻</button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function CoursTab({ ownedList }) {
-  const cards = Object.keys(PRICE_HISTORY);
-  const [selectedCard, setSelectedCard] = useState(cards[0]);
-  const [viewMode, setViewMode] = useState("psa10");
+  const [lang, setLang]         = useState("FR");
+  const [selected, setSelected] = useState(null);
+  const [grade, setGrade]       = useState("psa10");
   const [livePrices, setLivePrices] = useLs("pk_cours_live", {});
-  const [loadingIds, setLoadingIds] = useState({});
-  const [refreshing, setRefreshing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [loadingId, setLoadingId]   = useState(null);
 
-  const data   = PRICE_HISTORY[selectedCard];
-  const latest = data[data.length - 1];
-  const prev   = data[data.length - 2];
+  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader");
+  const langCards    = gradingCards.filter(c => c.lang === lang);
 
-  const linesCfg = {
-    nm:    { key: "nm",    color: "#60a5fa", label: "NM brute" },
-    psa9:  { key: "psa9",  color: "#fb923c", label: "PSA 9" },
-    psa10: { key: "psa10", color: "#4ade80", label: "PSA 10" },
-  };
-  const activeLines = viewMode === "all" ? Object.values(linesCfg) : [linesCfg[viewMode]];
+  // Adapter le format pour useCardImages
+  const imgCards = langCards.map(c => ({
+    id: c.id, name: c.name, fullName: c.name, img: "",
+    apiQ: GRADING_META[c.id]?.apiQ || "",
+  }));
+  const imgCache = useCardImages(imgCards);
 
-  const loadOne = useCallback(async (card) => {
-    if (!card.ebayQuery) return;
-    setLoadingIds(p => ({ ...p, [card.id]: true }));
-    const data = await fetchEbayPrices(card.ebayQuery);
-    if (data && !data.corsBlocked) {
-      setLivePrices(p => ({ ...p, [card.id]: data }));
-    }
-    setLoadingIds(p => ({ ...p, [card.id]: false }));
-  }, []);
+  const histData = selected ? GRADING_HISTORY[selected.id]?.h : null;
+  const meta     = selected ? GRADING_META[selected.id]   : null;
+  const curColor = LANG_TABS_CFG.find(t => t.id === lang).color;
 
-  const refreshAll = async () => {
-    setRefreshing(true); setProgress(0);
-    const cardsWithQuery = ownedList.filter(c => c.ebayQuery);
-    for (let i = 0; i < cardsWithQuery.length; i++) {
-      await loadOne(cardsWithQuery[i]);
-      setProgress(Math.round(((i + 1) / cardsWithQuery.length) * 100));
-    }
-    setRefreshing(false);
+  const linesCfg = [
+    { key:"nm",    color:"#60a5fa", label:"NM brute" },
+    { key:"psa9",  color:"#fb923c", label:"PSA 9" },
+    { key:"psa10", color:"#4ade80", label:"PSA 10" },
+  ];
+
+  const loadLive = async (card) => {
+    if (!card.ebayQuery || loadingId) return;
+    setLoadingId(card.id);
+    const d = await fetchEbayPrices(card.ebayQuery);
+    if (d && !d.corsBlocked) setLivePrices(p => ({ ...p, [card.id]: d }));
+    setLoadingId(null);
   };
 
-  const totalPaid   = ownedList.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
-  const totalMarket = ownedList.reduce((s, c) => { const p = livePrices[c.id]?.avgEur; return p ? s + p : s; }, 0);
-  const covered     = ownedList.filter(c => livePrices[c.id]).length;
-  const totalDiff   = totalMarket > 0 ? totalMarket - (totalPaid * covered / ownedList.length) : null;
+  // Valeur PSA estimée totale (toutes langues)
+  const totalPaid = gradingCards.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
+  const totalEst  = gradingCards.reduce((s, c) => {
+    const h = GRADING_HISTORY[c.id]?.h;
+    if (!h) return s;
+    const last = h[h.length - 1];
+    const g    = (GRADING_META[c.id]?.grade || "").includes("10") ? "psa10" : "psa9";
+    return s + (last[g] || 0);
+  }, 0);
+
+  const BINDER_SIZE = 9;
+  const pageCards   = Array.from({ length: BINDER_SIZE }, (_, i) => langCards[i] ?? null);
 
   return (
     <div>
-      {/* ── Graphes historiques ── */}
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-        Évolution des prix — historique
+      {/* Résumé portfolio grading */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:14 }}>
+        <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${T.border}`, borderRadius:10, padding:"10px 12px" }}>
+          <div style={{ fontSize:9, color:T.textMuted, textTransform:"uppercase", marginBottom:2 }}>Investi grading</div>
+          <div style={{ fontSize:18, fontWeight:700, color:T.textSub }}>{fmt(totalPaid, 0)}€</div>
+          <div style={{ fontSize:9, color:T.textMuted, marginTop:1 }}>{gradingCards.length} cartes</div>
+        </div>
+        <div style={{ background:"rgba(74,222,128,0.06)", border:"1px solid rgba(74,222,128,0.2)", borderRadius:10, padding:"10px 12px" }}>
+          <div style={{ fontSize:9, color:T.textMuted, textTransform:"uppercase", marginBottom:2 }}>Valeur PSA estimée</div>
+          <div style={{ fontSize:18, fontWeight:700, color:"#4ade80" }}>{totalEst > 0 ? `~${Math.round(totalEst)}€` : "—"}</div>
+          <div style={{ fontSize:9, color:"#4ade80", opacity:0.6, marginTop:1 }}>
+            {totalEst > 0 && totalPaid > 0 ? `×${(totalEst/totalPaid).toFixed(1)} multiplier` : ""}
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
-        {cards.map(c => (
-          <button key={c} onClick={() => setSelectedCard(c)} style={{
-            fontSize: 11, padding: "4px 10px", borderRadius: 20, cursor: "pointer",
-            fontFamily: "inherit", fontWeight: selectedCard === c ? 600 : 400,
-            background: selectedCard === c ? T.accentGlow : "transparent",
-            color: selectedCard === c ? T.accent : T.textSub,
-            border: `1px solid ${selectedCard === c ? T.accent : T.border}`,
-          }}>{c}</button>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
-        {[
-          { label: "NM actuel", val: latest.nm, prev: prev.nm, color: "#60a5fa" },
-          { label: "PSA 9 est.", val: latest.psa9, prev: prev.psa9, color: "#fb923c" },
-          { label: "PSA 10 est.", val: latest.psa10, prev: prev.psa10, color: "#4ade80" },
-        ].map((s, i) => {
-          const diff = s.val - s.prev;
+      {/* Onglets langue */}
+      <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+        {LANG_TABS_CFG.map(t => {
+          const cnt    = gradingCards.filter(c => c.lang === t.id).length;
+          const active = lang === t.id;
           return (
-            <div key={i} style={{ background: `${s.color}10`, border: `1px solid ${s.color}30`, borderRadius: 10, padding: "10px 6px", textAlign: "center" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.val}€</div>
-              <div style={{ fontSize: 9, color: s.color, opacity: 0.7, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</div>
-              <div style={{ fontSize: 10, color: diff >= 0 ? "#4ade80" : "#f87171", marginTop: 3, fontWeight: 600 }}>
-                {diff >= 0 ? "+" : ""}{diff}€
-              </div>
-            </div>
+            <button key={t.id} onClick={() => { setLang(t.id); setSelected(null); }} style={{
+              flex:1, padding:"8px 4px", borderRadius:10, cursor:"pointer", fontFamily:"inherit",
+              background: active ? `${t.color}18` : "transparent",
+              color: active ? t.color : T.textMuted,
+              border:`1px solid ${active ? t.color + "55" : T.border}`,
+              display:"flex", flexDirection:"column", alignItems:"center", gap:2,
+            }}>
+              <span style={{ fontSize:20 }}>{t.icon}</span>
+              <span style={{ fontSize:10, fontWeight: active ? 700 : 400 }}>{t.label}</span>
+              <span style={{ fontSize:9, opacity:0.6 }}>{cnt} carte{cnt!==1?"s":""}</span>
+            </button>
           );
         })}
       </div>
 
-      <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
-        {["nm", "psa9", "psa10", "all"].map(m => (
-          <button key={m} onClick={() => setViewMode(m)} style={{
-            fontSize: 11, padding: "3px 10px", borderRadius: 6, cursor: "pointer",
-            fontFamily: "inherit", fontWeight: viewMode === m ? 600 : 400,
-            background: viewMode === m ? "rgba(255,255,255,0.08)" : "transparent",
-            color: viewMode === m ? T.text : T.textMuted,
-            border: `1px solid ${viewMode === m ? T.borderMid : T.border}`,
-          }}>{m === "nm" ? "NM" : m === "psa9" ? "PSA 9" : m === "psa10" ? "PSA 10" : "Tout"}</button>
-        ))}
-      </div>
-
-      <SvgLineChart data={data} lines={activeLines} />
-
-      {/* ── Cours live — toute la collection ── */}
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-        Cours live eBay — ma collection
-      </div>
-
-      {/* Résumé portfolio live */}
-      {(totalMarket > 0 || totalPaid > 0) && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
-          <div style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${T.border}`, borderRadius: 10, padding: "10px 12px" }}>
-            <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", marginBottom: 2 }}>Total investi</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: T.textSub, fontVariantNumeric: "tabular-nums" }}>{fmt(totalPaid, 2)}€</div>
-          </div>
-          <div style={{ background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "10px 12px" }}>
-            <div style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", marginBottom: 2 }}>Valeur marché ({covered}/{ownedList.length})</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>
-              {totalMarket > 0 ? `~${Math.round(totalMarket)}€` : "—"}
-            </div>
+      {/* Classeur grading */}
+      <div style={{ borderRadius:14, overflow:"hidden", boxShadow:`0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px ${curColor}22`, display:"flex", marginBottom:12 }}>
+        {/* Spine */}
+        <div style={{ width:28, flexShrink:0, background:"linear-gradient(to right,#0c0703,#1c0f07,#231206)", display:"flex", flexDirection:"column", justifyContent:"space-evenly", alignItems:"center", padding:"10px 0", borderRight:"1px solid rgba(255,255,255,0.04)" }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{ width:15, height:15, borderRadius:"50%", background:"linear-gradient(135deg,#c0c0c0 0%,#808080 40%,#404040 70%,#a0a0a0 100%)", boxShadow:"0 2px 5px rgba(0,0,0,0.9),inset 0 1px 2px rgba(255,255,255,0.25)", border:"1px solid #1a1a1a" }} />
+          ))}
+        </div>
+        {/* Grille */}
+        <div style={{ flex:1, background:"linear-gradient(160deg,#1d1208 0%,#261506 60%,#1a1005 100%)", padding:"12px 12px 12px 8px" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gridTemplateRows:"repeat(3,1fr)", gap:7 }}>
+            {pageCards.map((card, i) => {
+              const imgSrc   = card ? (imgCache[card.id] ?? null) : null;
+              const loading  = card && imgCache[card.id] === undefined;
+              const isSel    = selected?.id === card?.id;
+              const sBadge   = card?.status === "grading";
+              return (
+                <div key={i} onClick={() => card && setSelected(isSel ? null : card)} style={{
+                  aspectRatio:"5/7", borderRadius:7, overflow:"hidden",
+                  background: card ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.15)",
+                  border: card ? `2px solid ${isSel ? T.accent : (sBadge ? "#60a5fa" : "#fb923c") + "55"}` : "2px dashed rgba(255,255,255,0.06)",
+                  cursor: card ? "pointer" : "default",
+                  boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7)" : "none",
+                  transform: isSel ? "scale(1.06)" : "scale(1)",
+                  transition:"transform 0.15s,border-color 0.15s",
+                  position:"relative", display:"flex", alignItems:"center", justifyContent:"center",
+                }}>
+                  {card && imgSrc && (
+                    <img src={imgSrc} alt={card.name}
+                      style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }}
+                      onError={e => e.target.style.display="none"}
+                    />
+                  )}
+                  {card && !imgSrc && (
+                    <div style={{ padding:4, textAlign:"center", zIndex:1 }}>
+                      {loading
+                        ? <div style={{ fontSize:16, opacity:0.2 }}>⏳</div>
+                        : <>
+                            <div style={{ fontSize:8, color:T.textSub, fontWeight:600, lineHeight:1.3, wordBreak:"break-word" }}>{card.name}</div>
+                            <div style={{ fontSize:7, color:T.textMuted, marginTop:2 }}>{card.set}</div>
+                          </>
+                      }
+                    </div>
+                  )}
+                  {/* Badge statut */}
+                  {card && (
+                    <div style={{
+                      position:"absolute", bottom:3, left:"50%", transform:"translateX(-50%)",
+                      background: sBadge ? "rgba(96,165,250,0.88)" : "rgba(251,146,60,0.88)",
+                      borderRadius:4, padding:"1px 5px", fontSize:7, fontWeight:700, color:"#000",
+                      whiteSpace:"nowrap", zIndex:2, letterSpacing:"0.03em",
+                    }}>
+                      {sBadge ? "⏳ PSA" : "📬 À envoyer"}
+                    </div>
+                  )}
+                  {!card && <div style={{ fontSize:18, opacity:0.07, color:"#fff" }}>◇</div>}
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Bouton refresh */}
-      <div style={{ marginBottom: 12 }}>
-        {refreshing ? (
-          <div style={{ background: "rgba(74,222,128,0.05)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 8, padding: "10px 14px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#4ade80", marginBottom: 6 }}>
-              <span>⚡ Récupération des cours…</span><span>{progress}%</span>
+      <div style={{ textAlign:"center", fontSize:10, color:T.textMuted, marginBottom:14 }}>
+        {langCards.length} carte{langCards.length!==1?"s":""} · cliquer pour prix PSA
+      </div>
+
+      {/* Panneau détail carte sélectionnée */}
+      {selected && (
+        <div style={{ ...css.card, border:`1px solid ${curColor}55`, marginBottom:8 }}>
+          {/* Header */}
+          <div style={{ display:"flex", gap:12, alignItems:"flex-start", marginBottom:14 }}>
+            {imgCache[selected.id] && (
+              <img src={imgCache[selected.id]} alt={selected.name}
+                style={{ width:64, height:90, objectFit:"cover", borderRadius:7, flexShrink:0, boxShadow:"0 6px 20px rgba(0,0,0,0.6)" }}
+                onError={e => e.target.style.display="none"}
+              />
+            )}
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{LANG_FLAG[selected.lang]} {selected.name}</div>
+              <div style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{selected.set}</div>
+              {/* Statut badge */}
+              <div style={{ marginTop:6, display:"inline-flex", alignItems:"center", gap:5,
+                background: selected.status === "grading" ? "rgba(96,165,250,0.12)" : "rgba(251,146,60,0.12)",
+                border:`1px solid ${selected.status === "grading" ? "#60a5fa44" : "#fb923c44"}`,
+                borderRadius:6, padding:"3px 8px" }}>
+                <span style={{ fontSize:10, fontWeight:600, color: selected.status === "grading" ? "#60a5fa" : "#fb923c" }}>
+                  {selected.status === "grading" ? "⏳ En cours de grading PSA" : "📬 À envoyer au grading"}
+                </span>
+              </div>
+              {meta?.grade && (
+                <div style={{ marginTop:5, fontSize:10, color:"#4ade80", fontWeight:600 }}>
+                  Grade attendu : {meta.grade}
+                </div>
+              )}
+              {selected.note && (
+                <div style={{ marginTop:4, fontSize:10, color:T.textMuted, lineHeight:1.5 }}>{selected.note}</div>
+              )}
             </div>
-            <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
-              <div style={{ height: "100%", width: `${progress}%`, background: "#4ade80", borderRadius: 2, transition: "width 0.3s" }} />
-            </div>
+            <button onClick={() => setSelected(null)} style={{ fontSize:11, color:T.textMuted, background:"none", border:"none", cursor:"pointer", padding:"2px 6px", flexShrink:0 }}>✕</button>
           </div>
-        ) : (
-          <button onClick={refreshAll} style={{ ...css.btn("primary"), width: "100%", justifyContent: "center" }}>
-            ⚡ Actualiser tous les cours ({ownedList.filter(c => c.ebayQuery).length} cartes)
-          </button>
-        )}
-      </div>
 
-      {/* En-têtes */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 50px 60px 70px", gap: 8, padding: "0 14px", marginBottom: 4 }}>
-        {["Carte", "Payé", "Marché", "+/- val."].map(h => (
-          <div key={h} style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", textAlign: h !== "Carte" ? "right" : "left" }}>{h}</div>
-        ))}
-      </div>
+          {histData ? (
+            <>
+              {/* Sélecteur grade */}
+              <div style={{ display:"flex", gap:4, marginBottom:12 }}>
+                {linesCfg.map(l => (
+                  <button key={l.key} onClick={() => setGrade(l.key)} style={{
+                    flex:1, fontSize:11, padding:"4px 4px", borderRadius:6, cursor:"pointer",
+                    fontFamily:"inherit", fontWeight: grade === l.key ? 700 : 400,
+                    background: grade === l.key ? `${l.color}18` : "transparent",
+                    color: grade === l.key ? l.color : T.textMuted,
+                    border:`1px solid ${grade === l.key ? l.color + "55" : T.border}`,
+                  }}>{l.label}</button>
+                ))}
+              </div>
 
-      {ownedList.map(card => (
-        <CoursLiveRow
-          key={card.id}
-          card={card}
-          livePrice={livePrices[card.id] ?? null}
-          loading={!!loadingIds[card.id]}
-          onLoad={() => loadOne(card)}
-        />
-      ))}
+              {/* Valeurs actuelles */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:14 }}>
+                {linesCfg.map(l => {
+                  const last = histData[histData.length - 1];
+                  const prev = histData.length > 1 ? histData[histData.length - 2] : last;
+                  const diff = last[l.key] - prev[l.key];
+                  return (
+                    <div key={l.key} style={{ background:`${l.color}10`, border:`1px solid ${l.color}30`, borderRadius:8, padding:"8px 6px", textAlign:"center", outline: grade === l.key ? `2px solid ${l.color}55` : "none" }}>
+                      <div style={{ fontSize:15, fontWeight:700, color:l.color }}>{last[l.key]}€</div>
+                      <div style={{ fontSize:8, color:l.color, opacity:0.7, marginTop:1, textTransform:"uppercase" }}>{l.label}</div>
+                      <div style={{ fontSize:10, color: diff >= 0 ? "#4ade80" : "#f87171", marginTop:2, fontWeight:600 }}>
+                        {diff >= 0 ? "+" : ""}{diff}€
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-      <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, color: T.textMuted }}>
-        Prix estimatifs — eBay vendus + CardMarket. Historique mis à jour manuellement.
-      </div>
+              {/* Graphique */}
+              <SvgLineChart data={histData} lines={grade === "all" ? linesCfg : linesCfg.filter(l => l.key === grade)} />
+
+              {/* Cours eBay live */}
+              {selected.ebayQuery && (
+                <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                  {livePrices[selected.id] && (
+                    <div style={{ flex:1, fontSize:11, color:T.textMuted }}>
+                      eBay NM : <span style={{ color:"#4ade80", fontWeight:600 }}>~{livePrices[selected.id].avgEur}€</span>
+                      <span style={{ opacity:0.5, marginLeft:4 }}>· {relTime(livePrices[selected.id].ts)}</span>
+                      <span style={{ opacity:0.4, marginLeft:4 }}>(min {livePrices[selected.id].minEur}€ / max {livePrices[selected.id].maxEur}€)</span>
+                    </div>
+                  )}
+                  <button onClick={() => loadLive(selected)} disabled={loadingId === selected.id}
+                    style={{ ...css.btn(), padding:"4px 12px", fontSize:10, opacity: loadingId === selected.id ? 0.5 : 1 }}>
+                    {loadingId === selected.id ? "⏳…" : "⚡ Cours eBay"}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign:"center", padding:"20px 10px", color:T.textMuted, fontSize:11, lineHeight:1.6 }}>
+              {selected.status === "à grader"
+                ? "📬 En attente d'envoi. Les données de prix s'afficheront après réception du grade PSA."
+                : "⏳ Carte en cours de grading. Résultat attendu prochainement."}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
