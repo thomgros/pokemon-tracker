@@ -650,53 +650,128 @@ const CLASSEUR_CARDS = [
 
 const BINDER_PAGE_SIZE = 9;
 
-const LANG_BORDER = { FR: "#60a5fa", JP: "#f87171", EN: "#4ade80" };
+const LANG_TABS_CFG = [
+  { id: "FR", icon: "🇫🇷", label: "Français", color: "#60a5fa" },
+  { id: "JP", icon: "🇯🇵", label: "Japonais", color: "#f87171" },
+  { id: "EN", icon: "🇬🇧", label: "Anglais",  color: "#4ade80" },
+];
 
-function ClasseurTab() {
+// ── Chargement d'images via pokemontcg.io ────────────────────────────────────
+
+function useCardImages(cards) {
+  const [cache, setCache] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("pk_img_v2") || "{}"); } catch { return {}; }
+  });
+
+  useEffect(() => {
+    const toFetch = cards.filter(c => !c.img && cache[c.id] === undefined);
+    if (!toFetch.length) return;
+    let alive = true;
+    const save = (id, img) => setCache(p => {
+      const n = { ...p, [id]: img };
+      try { localStorage.setItem("pk_img_v2", JSON.stringify(n)); } catch {}
+      return n;
+    });
+    (async () => {
+      for (const card of toFetch) {
+        if (!alive) break;
+        const m = card.fullName.match(/\b(\d+)\//);
+        if (!m) { save(card.id, null); continue; }
+        const num = parseInt(m[1], 10);
+        try {
+          const q = encodeURIComponent(`name:"${card.name}" number:${num}`);
+          const r = await fetch(`https://api.pokemontcg.io/v2/cards?q=${q}&pageSize=5&select=images`);
+          if (r.ok) {
+            const d = await r.json();
+            const img = d?.data?.[0]?.images?.large ?? null;
+            save(card.id, img);
+            if (img) { await new Promise(r => setTimeout(r, 200)); continue; }
+          }
+        } catch {}
+        save(card.id, null);
+        await new Promise(r => setTimeout(r, 100));
+      }
+    })();
+    return () => { alive = false; };
+  }, [cards.map(c => c.id).join(",")]);
+
+  return cache;
+}
+
+// ── Slot individuel ───────────────────────────────────────────────────────────
+
+function CardSlot({ card, imgSrc, loading, selected, color, onClick }) {
+  const [err, setErr] = useState(false);
+  const showImg = imgSrc && !err;
+  return (
+    <div onClick={onClick} style={{
+      aspectRatio: "5/7", borderRadius: 7, overflow: "hidden",
+      background: card ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.15)",
+      border: card
+        ? `2px solid ${selected ? T.accent : color + "44"}`
+        : "2px dashed rgba(255,255,255,0.06)",
+      cursor: card ? "pointer" : "default",
+      boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7)" : "none",
+      transform: selected ? "scale(1.06)" : "scale(1)",
+      transition: "transform 0.15s, border-color 0.15s",
+      position: "relative", display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      {card && showImg && (
+        <img src={imgSrc} alt={card.name}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          onError={() => setErr(true)}
+        />
+      )}
+      {card && !showImg && (
+        <div style={{ padding: 4, textAlign: "center", zIndex: 1 }}>
+          {loading
+            ? <div style={{ fontSize: 16, opacity: 0.2 }}>⏳</div>
+            : <>
+              <div style={{ fontSize: 9, color: T.textSub, fontWeight: 600, lineHeight: 1.3, wordBreak: "break-word" }}>{card.name}</div>
+              <div style={{ fontSize: 7, color: T.textMuted, marginTop: 2 }}>{card.set.split(" · ")[0]}</div>
+            </>
+          }
+        </div>
+      )}
+      {!card && <div style={{ fontSize: 18, opacity: 0.07, color: "#fff" }}>◇</div>}
+    </div>
+  );
+}
+
+// ── Classeur d'une langue ─────────────────────────────────────────────────────
+
+function BinderView({ cards, color }) {
   const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
+  const imgCache = useCardImages(cards);
 
-  const totalPages = Math.max(1, Math.ceil(CLASSEUR_CARDS.length / BINDER_PAGE_SIZE));
-  const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => CLASSEUR_CARDS[page * BINDER_PAGE_SIZE + i] ?? null);
-
-  const pageStart = page * BINDER_PAGE_SIZE + 1;
-  const pageEnd   = Math.min((page + 1) * BINDER_PAGE_SIZE, CLASSEUR_CARDS.length);
+  const totalPages = Math.max(1, Math.ceil(cards.length / BINDER_PAGE_SIZE));
+  const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => cards[page * BINDER_PAGE_SIZE + i] ?? null);
+  const pageStart  = page * BINDER_PAGE_SIZE + 1;
+  const pageEnd    = Math.min((page + 1) * BINDER_PAGE_SIZE, cards.length);
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-          Mon classeur — {CLASSEUR_CARDS.length} cartes
-        </div>
-        <div style={{ display: "flex", gap: 10, fontSize: 10 }}>
-          {[["FR","#60a5fa"],["JP","#f87171"],["EN","#4ade80"]].map(([l,c]) => (
-            <span key={l} style={{ color: c, fontWeight: 600 }}>{LANG_FLAG[l]} {l}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Binder ── */}
+      {/* Classeur */}
       <div style={{
-        borderRadius: 14,
-        overflow: "hidden",
-        boxShadow: "0 16px 48px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)",
-        display: "flex",
-        marginBottom: 14,
+        borderRadius: 14, overflow: "hidden",
+        boxShadow: `0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px ${color}22`,
+        display: "flex", marginBottom: 12,
       }}>
-        {/* Spine */}
+        {/* Spine anneaux */}
         <div style={{
-          width: 30, flexShrink: 0,
-          background: "linear-gradient(to right, #0e0804, #1e1009, #261508)",
+          width: 28, flexShrink: 0,
+          background: "linear-gradient(to right, #0c0703, #1c0f07, #231206)",
           display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center",
-          padding: "12px 0",
-          borderRight: "1px solid rgba(255,255,255,0.05)",
+          padding: "10px 0",
+          borderRight: "1px solid rgba(255,255,255,0.04)",
         }}>
           {[0,1,2,3].map(i => (
             <div key={i} style={{
-              width: 16, height: 16, borderRadius: "50%",
-              background: "linear-gradient(135deg, #bbb 0%, #777 40%, #444 70%, #999 100%)",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.2)",
-              border: "1px solid #222",
+              width: 15, height: 15, borderRadius: "50%",
+              background: "linear-gradient(135deg, #c0c0c0 0%, #808080 40%, #404040 70%, #a0a0a0 100%)",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.25)",
+              border: "1px solid #1a1a1a",
             }} />
           ))}
         </div>
@@ -704,85 +779,94 @@ function ClasseurTab() {
         {/* Page */}
         <div style={{
           flex: 1,
-          background: "linear-gradient(160deg, #1e1308 0%, #271608 60%, #1c1106 100%)",
-          padding: "14px 14px 14px 10px",
+          background: "linear-gradient(160deg, #1d1208 0%, #261506 60%, #1a1005 100%)",
+          padding: "12px 12px 12px 8px",
         }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: 8 }}>
-            {pageCards.map((card, i) => (
-              <div key={i}
-                onClick={() => card && setSelected(selected?.id === card.id ? null : card)}
-                style={{
-                  aspectRatio: "5/7",
-                  borderRadius: 7,
-                  overflow: "hidden",
-                  background: card ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.18)",
-                  border: card
-                    ? `2px solid ${selected?.id === card.id ? T.accent : (LANG_BORDER[card.lang] + "55")}`
-                    : "2px dashed rgba(255,255,255,0.07)",
-                  cursor: card ? "pointer" : "default",
-                  boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.04)" : "none",
-                  transform: selected?.id === card?.id ? "scale(1.05)" : "scale(1)",
-                  transition: "transform 0.15s, border-color 0.15s",
-                  position: "relative",
-                }}
-              >
-                {card ? (
-                  <>
-                    <img src={card.img} alt={card.fullName}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      onError={e => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
-                    />
-                    <div style={{
-                      display: "none", position: "absolute", inset: 0,
-                      flexDirection: "column", alignItems: "center", justifyContent: "center",
-                      background: "rgba(255,255,255,0.03)", padding: 4, textAlign: "center",
-                    }}>
-                      <div style={{ fontSize: 9, color: T.textMuted, fontWeight: 600, lineHeight: 1.3 }}>{card.name}</div>
-                      <div style={{ fontSize: 8, color: T.textMuted, marginTop: 2 }}>{card.set}</div>
-                    </div>
-                  </>
-                ) : (
-                  <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ fontSize: 20, opacity: 0.08, color: "#fff" }}>◇</div>
-                  </div>
-                )}
-              </div>
-            ))}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: 7 }}>
+            {pageCards.map((card, i) => {
+              const imgSrc = card?.img || (imgCache[card?.id] ?? null);
+              const loading = card && !card.img && imgCache[card.id] === undefined;
+              return (
+                <CardSlot key={i}
+                  card={card} imgSrc={imgSrc} loading={loading}
+                  selected={selected?.id === card?.id} color={color}
+                  onClick={() => card && setSelected(selected?.id === card.id ? null : card)}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* ── Info carte sélectionnée ── */}
+      {/* Info carte sélectionnée */}
       {selected && (
-        <div style={{ ...css.card, border: `1px solid ${T.accent}`, marginBottom: 14, display: "flex", gap: 12, alignItems: "flex-start" }}>
-          <img src={selected.img} alt={selected.fullName}
-            style={{ width: 56, height: 78, objectFit: "cover", borderRadius: 6, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
-            onError={e => e.target.style.display = "none"}
-          />
+        <div style={{ ...css.card, border: `1px solid ${color}55`, marginBottom: 12, display: "flex", gap: 12, alignItems: "flex-start" }}>
+          {(selected.img || imgCache[selected.id]) && (
+            <img src={selected.img || imgCache[selected.id]} alt={selected.fullName}
+              style={{ width: 52, height: 73, objectFit: "cover", borderRadius: 5, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
+              onError={e => e.target.style.display = "none"}
+            />
+          )}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{LANG_FLAG[selected.lang]} {selected.fullName}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{LANG_FLAG[selected.lang]} {selected.fullName}</div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
-            {selected.value && (
-              <div style={{ fontSize: 12, color: "#4ade80", fontWeight: 600, marginTop: 4 }}>{selected.value}</div>
-            )}
+            {selected.value && <div style={{ fontSize: 12, color: "#4ade80", fontWeight: 600, marginTop: 4 }}>{selected.value}</div>}
           </div>
           <button onClick={() => setSelected(null)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>✕</button>
         </div>
       )}
 
-      {/* ── Pagination ── */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginBottom: 8 }}>
+      {/* Pagination */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 4 }}>
         <button onClick={() => { setPage(p => Math.max(0, p - 1)); setSelected(null); }}
           disabled={page === 0}
-          style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "6px 14px" }}>← Préc.</button>
+          style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "5px 12px" }}>←</button>
         <span style={{ fontSize: 11, color: T.textMuted }}>
-          Page {page + 1} / {totalPages} · cartes {pageStart}–{pageEnd}
+          {cards.length > 0 ? `${pageStart}–${pageEnd} / ${cards.length} cartes` : "Vide"}
         </span>
         <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
           disabled={page === totalPages - 1}
-          style={{ ...css.btn(), opacity: page === totalPages - 1 ? 0.3 : 1, padding: "6px 14px" }}>Suiv. →</button>
+          style={{ ...css.btn(), opacity: page === totalPages - 1 ? 0.3 : 1, padding: "5px 12px" }}>→</button>
       </div>
-      <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center" }}>Cartes hors grading · cliquer pour détails</div>
+    </div>
+  );
+}
+
+// ── ClasseurTab — 3 classeurs par langue ──────────────────────────────────────
+
+function ClasseurTab() {
+  const [lang, setLang] = useState("FR");
+  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang);
+  const cur   = LANG_TABS_CFG.find(t => t.id === lang);
+
+  return (
+    <div>
+      {/* Sélecteur de classeur */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+        {LANG_TABS_CFG.map(t => {
+          const count  = CLASSEUR_CARDS.filter(c => c.lang === t.id).length;
+          const active = lang === t.id;
+          return (
+            <button key={t.id} onClick={() => setLang(t.id)} style={{
+              flex: 1, padding: "8px 4px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+              background: active ? `${t.color}18` : "transparent",
+              color: active ? t.color : T.textMuted,
+              border: `1px solid ${active ? t.color + "55" : T.border}`,
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+            }}>
+              <span style={{ fontSize: 20 }}>{t.icon}</span>
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, letterSpacing: "0.02em" }}>{t.label}</span>
+              <span style={{ fontSize: 9, opacity: 0.6 }}>{count} cartes</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <BinderView key={lang} cards={cards} color={cur.color} />
+
+      <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center", marginTop: 2 }}>
+        Images : pokemontcg.io · cliquer pour détails
+      </div>
     </div>
   );
 }
