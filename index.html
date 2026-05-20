@@ -119,27 +119,34 @@ const DEFAULT_WATCH = [
   { id: 3,  name: "Dracaufeu ex Alt Art",     ebayQuery: "Charizard ex 199/165 Pokemon 151 Near Mint",                            set: "Pokémon Card 151",       number: "MEW 199", maxPrice: 450,  priority: 2, lang: "EN", type: "modern" },
   { id: 4,  name: "Charizard VMAX Rainbow",   ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint",           set: "Champion's Path",        number: "74/73",   maxPrice: 300,  priority: 2, lang: "EN", type: "modern" },
   { id: 5,  name: "Lugia Holo Unlimited",     ebayQuery: "Lugia 9/111 Neo Genesis Unlimited Near Mint",                           set: "Neo Genesis",            number: "9/111",   maxPrice: 400,  priority: 3, lang: "EN", type: "vintage" },
-  { id: 6,  name: "Mew ex SAR JP",            ebayQuery: "Mew ex 205/165 SV2a Japanese Special Art Rare Near Mint",               set: "Pokémon Card 151 SV2a",  number: "205/165", maxPrice: 250,  priority: 3, lang: "JP", type: "modern" },
   { id: 7,  name: "Gengar VMAX Alt Art",      ebayQuery: "Gengar VMAX 271/264 Fusion Strike Alt Art Near Mint",                   set: "Fusion Strike",          number: "271/264", maxPrice: 550,  priority: 3, lang: "EN", type: "modern" },
   { id: 8,  name: "Umbreon VMAX Alt Art",     ebayQuery: "Umbreon VMAX Evolving Skies Alt Art Near Mint",                         set: "Evolving Skies",         number: "215/203", maxPrice: 400,  priority: 3, lang: "EN", type: "modern" },
   { id: 9,  name: "Sylveon ex SIR",           ebayQuery: "Sylveon ex SIR 156 Prismatic Evolutions Near Mint",                     set: "Évolutions Prismatiques",number: "PRE 156", maxPrice: 300,  priority: 3, lang: "EN", type: "modern" },
   { id: 10, name: "Mewtwo 10/102",            ebayQuery: "Mewtwo 10/102 Base Set Unlimited Near Mint",                            set: "Base Expansion Pack",    number: "10/102",  maxPrice: 100,  priority: 3, lang: "EN", type: "vintage" },
   { id: 11, name: "Rayquaza Gold Star",       ebayQuery: "Rayquaza Gold Star 107/97 EX Deoxys Near Mint",                         set: "EX Deoxys",              number: "107/97",  maxPrice: 1000, priority: 4, lang: "EN", type: "vintage" },
-  { id: 14, name: "Flareon ex SIR",           ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Special Illustration Rare Near Mint", set: "Prismatic Evolutions", number: "146/131", maxPrice: 200, priority: 3, lang: "EN", type: "modern" },
   { id: 12, name: "Mega Lopunny + Jigglypuff GX", ebayQuery: "Mega Lopunny Jigglypuff GX 226/236 Cosmic Eclipse Alt Art Near Mint", set: "Cosmic Eclipse",      number: "226/236", maxPrice: 120,  priority: 5, lang: "EN", type: "collector" },
   { id: 13, name: "Jigglypuff Shiny Rare JP", ebayQuery: "Jigglypuff 306/190 SV4a Shiny Treasure ex Japanese Near Mint",          set: "Shiny Treasure ex",      number: "306/190", maxPrice: 35,   priority: 5, lang: "JP", type: "collector" },
 ];
 
 const DEFAULT_OWNED = [
-  { id: "o1", name: "Dracaufeu VMAX Rainbow 074/073", price: 220,    status: "grading",    set: "Champion's Path",       lang: "FR", note: "Valeur déclarée 220€",                        ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint" },
-  { id: "o2", name: "Rosa's Encouragement 123/088",   price: 72,     status: "grading",    set: "Mega Evolution",        lang: "FR", note: "Valeur déclarée 72€",                         ebayQuery: "Rosa 123/088 Mega Evolution Near Mint" },
-  { id: "o3", name: "Rosa's Encouragement 115/080",   price: 100,    status: "grading",    set: "M3: Nihil Zero",        lang: "JP", note: "Valeur déclarée 100€",                        ebayQuery: "Rosa 115/080 Nihil Zero Japanese Near Mint" },
-  { id: "o4", name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "Prochain envoi PokéLoutre 15 juin",           ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
-  { id: "o5", name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                     ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
-  { id: "o6", name: "Snorlax JU 11",                  price: 40,     status: "transit",    set: "Jungle",                lang: "EN", note: "",                                             ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
-  { id: "o7", name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "transit",    set: "151 SV2a",              lang: "JP", note: "Enchère gagnée 256€ · valeur réelle ~818€",   ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
-  { id: "o8", name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                  ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
-  { id: "o9", name: "ETB Chaos Ascendant",             price: 55,     status: "sealed",     set: "Méga-Évolution",        lang: "FR", note: "",                                             ebayQuery: "ETB Elite Trainer Box Mega Evolution French" },
+  // En grading PSA — envoi PokéLoutre 11 mai
+  { id: "o1",  name: "Dracaufeu VMAX Rainbow 074/073", price: 220,    status: "grading",    set: "Champion's Path",       lang: "FR", note: "Valeur déclarée 220€",                              ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint" },
+  { id: "o2",  name: "Rosa's Encouragement 123/088",   price: 72,     status: "grading",    set: "Mega Evolution",        lang: "FR", note: "Valeur déclarée 72€",                               ebayQuery: "Rosa 123/088 Mega Evolution Near Mint" },
+  { id: "o3",  name: "Rosa's Encouragement 115/080",   price: 100,    status: "grading",    set: "M3: Nihil Zero",        lang: "JP", note: "Valeur déclarée 100€",                              ebayQuery: "Rosa 115/080 Nihil Zero Japanese Near Mint" },
+  // À envoyer grading — prochain envoi 15 juin
+  { id: "o4",  name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€",             ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
+  { id: "o10", name: "Flareon ex SIR PRE 146/131",     price: 149.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€",             ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Near Mint" },
+  { id: "o11", name: "Méga-Amphinobi ex 022/086",      price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA 8-9 · défaut fabrication coin BG",              ebayQuery: "" },
+  { id: "o12", name: "Méga-Dratatin ex 232/193",       price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 10 candidat ⭐ · tous coins parfaits",          ebayQuery: "" },
+  { id: "o13", name: "Méga-Yukimenoko ex 036/193",     price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 9 probable · coins propres",                    ebayQuery: "" },
+  // Envoi grading séparé
+  { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
+  // Collection physique
+  { id: "o6",  name: "Snorlax JU 11/64",               price: 40,     status: "collection", set: "Jungle",                lang: "EN", note: "Holo propre, micro-usures coins — collection vintage", ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
+  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "collection", set: "151 SV2a",              lang: "JP", note: "Acheté 256€ · valeur réelle ~818€ ✅",               ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
+  { id: "o8",  name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                        ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
+  // Scellé
+  { id: "o9",  name: "ETB Chaos Ascendant",             price: 55,     status: "collection", set: "Méga-Évolution",        lang: "FR", note: "",                                                   ebayQuery: "ETB Elite Trainer Box Mega Evolution French" },
 ];
 
 // ── localStorage ──────────────────────────────────────────────────────────────
@@ -150,15 +157,22 @@ function useStorage(key, fallback) {
       const ls = localStorage.getItem(key);
       if (!ls) return fallback;
       const stored = JSON.parse(ls);
+      if (!Array.isArray(stored) || stored.length === 0) return fallback;
       const storedIds = new Set(stored.map(i => i.id));
       const newDefaults = fallback.filter(i => !storedIds.has(i.id));
       return [...stored, ...newDefaults];
-    } catch { return fallback; }
+    } catch {
+      try { localStorage.removeItem(key); } catch {}
+      return fallback;
+    }
   });
   useEffect(() => {
     try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
   }, [key, val]);
-  return [val, setVal];
+  return [val, setVal, () => {
+    try { localStorage.removeItem(key); } catch {}
+    setVal(fallback);
+  }];
 }
 
 function useLs(key, fallback) {
@@ -778,11 +792,11 @@ function CalendrierTab() {
     { date: "2026-01-17", code: "PRE",  en: "Prismatic Evolutions",              fr: "Évolutions Prismatiques",         etb: "ETB Évolutions Prismatiques",           status: "past",     chase: "Sylveon ex SIR, Évoli ex SIR, Flareon ex SIR" },
     { date: "2026-01-30", code: "ME2.5",en: "Mega Evolution – Ascended Heroes",  fr: "Méga-Évolution – Héros Transcendants", etb: "ETB Héros Transcendants (20 fév.)", status: "past",     chase: "Méga-Dracolosse ex, Pokémon Téracristallisés" },
     { date: "2026-03-27", code: "ME03", en: "Mega Evolution – Perfect Order",    fr: "Méga-Évolution – Équilibre Parfait",   etb: "ETB Équilibre Parfait (promo Papilusion)",status: "past", chase: "Méga-Zygarde ex, Méga-Staross ex, Méga-Mélodelfe ex" },
-    { date: "2026-03-30", code: "FP1",  en: "Forces of Pheros – Set 1",          fr: "Forces de Phéros 1",               etb: "Booster FP1 (JP)",                    status: "past",     chase: "À confirmer" },
+    { date: "2026-03-30", code: "FP1",  en: "First Partner Illustration Collection – Series 1", fr: "First Partner Série 1 — Kanto, Sinnoh, Alola", etb: "Coffret ~15$ · 3 promos IR + 2 boosters", status: "past", chase: "Starters Kanto, Sinnoh, Alola en Illustration Rare" },
     { date: "2026-05-22", code: "ME04", en: "Mega Evolution – Chaos Rising",     fr: "Méga-Évolution – Chaos Ascendant", etb: "ETB Chaos Ascendant (promo Feunnec)", status: "soon",     chase: "Méga-Amphinobi ex Hyper Rare, SIR Supporters Z-A" },
-    { date: "2026-06-19", code: "FP2",  en: "Forces of Pheros – Set 2",          fr: "Forces de Phéros 2",               etb: "Booster FP2 (JP)",                    status: "upcoming", chase: "À confirmer" },
+    { date: "2026-06-19", code: "FP2",  en: "First Partner Illustration Collection – Series 2", fr: "First Partner Série 2 — Johto, Unova, Galar", etb: "Coffret ~15$ · 3 promos IR + 2 boosters (Héricendre, Scorbunny…)", status: "soon", chase: "Germignon, Héricendre, Kaiminus, Vipélierre, Gruikui, Moustillon, Ouistempo, Flambino, Larméléon" },
     { date: "2026-07-17", code: "ME05", en: "Mega Evolution – Pitch Black",      fr: "Méga-Évolution – Nuit Noire",      etb: "ETB Nuit Noire (annoncé)",            status: "upcoming", chase: "Méga-Darkrai ex, Méga-Zeraora ex, Méga-Lugulabre ex" },
-    { date: "2026-09-01", code: "FP3",  en: "Forces of Pheros – Set 3",          fr: "Forces de Phéros 3",               etb: "Booster FP3 (JP)",                    status: "upcoming", chase: "À confirmer" },
+    { date: "2026-09-01", code: "FP3",  en: "First Partner Illustration Collection – Series 3", fr: "First Partner Série 3 — Hoenn, Kalos, Paldea", etb: "Coffret ~15$ · 3 promos IR + 2 boosters (à confirmer)", status: "upcoming", chase: "Poussifeu, Arcko, Gobou, Marisson, Feunnec, Grenousse, Brindibou, Flamiaou, Otaquin" },
     { date: "2026-09-18", code: "30TH", en: "30th Anniversary Celebration",      fr: "Célébration 30 ans Pokémon",       etb: "ETB 30 ans (à confirmer)",            status: "upcoming", chase: "Cartes collector anniversaire, promos spéciales" },
   ];
   const statusCfg = {
@@ -914,8 +928,8 @@ function RessourcesTab() {
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function PokemonTracker() {
-  const [watchList, setWatchList] = useStorage("pk_watch", DEFAULT_WATCH);
-  const [ownedList, setOwnedList] = useStorage("pk_owned", DEFAULT_OWNED);
+  const [watchList, setWatchList, resetWatch] = useStorage("pk_watch", DEFAULT_WATCH);
+  const [ownedList, setOwnedList, resetOwned] = useStorage("pk_owned", DEFAULT_OWNED);
   const [tab, setTab]             = useState("watch");
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
@@ -965,7 +979,7 @@ function PokemonTracker() {
           <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => { if (window.confirm("Réinitialiser toutes les données ?")) { localStorage.removeItem("pk_watch"); localStorage.removeItem("pk_owned"); localStorage.removeItem("pk_cours_live"); window.location.reload(); } }}
+          <button onClick={() => { if (window.confirm("Réinitialiser toutes les données aux valeurs par défaut ?")) { resetWatch(); resetOwned(); try { localStorage.removeItem("pk_cours_live"); } catch {} } }}
             style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
             ↺ Reset
           </button>
@@ -987,7 +1001,7 @@ function PokemonTracker() {
       <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
         <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
         <span style={{ color: "#fca5a5" }}>
-          Envoyer {gradingCount} cartes chez PokéLoutre — prochain envoi 15 juin · {transitCount} carte{transitCount > 1 ? "s" : ""} en transit
+          {gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA (envoi 11 mai) · prochain envoi PokéLoutre 15 juin
         </span>
       </div>
 
@@ -1047,9 +1061,9 @@ function PokemonTracker() {
       {tab === "urgent" && (
         <div>
           <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 15 juin</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 11 mai ✅</div>
             <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
-              {gradingCount} cartes à envoyer chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex)
+              {gradingCount} cartes en grading PSA chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex) · prochain envoi 15 juin
             </div>
             <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
           </div>
