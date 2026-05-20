@@ -573,24 +573,106 @@ const PRICE_HISTORY = {
 // ── Classeur ──────────────────────────────────────────────────────────────────
 
 const CLASSEUR_CARDS = [
-  { id: "c1", name: "Snorlax",           fullName: "Snorlax 11/64",        set: "Jungle",      lang: "EN", note: "Holo · micro-usures coins",   img: "https://images.pokemontcg.io/base2/11_hires.png" },
-  { id: "c2", name: "Mew ex SAR PSA 9",  fullName: "Mew ex SAR 205/165",   set: "151 SV2a JP", lang: "JP", note: "PSA 9 · acheté 256€ · ~818€", img: "https://images.pokemontcg.io/sv3pt5/205_hires.png" },
-  { id: "c3", name: "Jigglypuff 1st Ed", fullName: "Jigglypuff 54/64",     set: "Jungle",      lang: "EN", note: "1st Edition · état played",   img: "https://images.pokemontcg.io/base2/54_hires.png" },
+  // ── 🇫🇷 Chaos Ascendant — ME04 / CLN ──────────────────────────────────────
+  // Méga-Amphinobi ex exclu (à grader)
+  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   img:"" },
+  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    img:"" },
+  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
+  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
+  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
+  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
+  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    img:"" },
+  // ── 🇫🇷 Équilibre Parfait — ME03 / MEP ────────────────────────────────────
+  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEP · Équilibre Parfait",  lang:"FR", value:"~10€",   img:"" },
+  { id:"c09", name:"Ptyranidur",          fullName:"Ptyranidur 070",              set:"MEP · Équilibre Parfait",  lang:"FR", value:"~4€",    img:"" },
+  // ── 🇫🇷 Méga-Évolution — ME01 / MEG ──────────────────────────────────────
+  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"" },
+  // ── 🇫🇷 Perfect Order — POR FR ───────────────────────────────────────────
+  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    img:"" },
+  { id:"c12", name:"Illumis",             fullName:"Illumis 117/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"" },
+  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"" },
+  // ── 🇫🇷 Chaos Ascendant — ASC FR ─────────────────────────────────────────
+  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    img:"" },
+  // ── 🇫🇷 Failles Prismatiques — PFL FR ────────────────────────────────────
+  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",    img:"" },
+  // ── 🇫🇷 Faille Temporelle — TEF FR ───────────────────────────────────────
+  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    img:"" },
+  // ── 🇯🇵 M2α — Ascended Heroes ────────────────────────────────────────────
+  // Méga-Dratatin ex + Méga-Yukimenoko ex exclus (à grader)
+  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"" },
+  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"" },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"" },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"" },
+  // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
+  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"" },
+  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
+  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
+  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
+  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
+  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
+  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
+  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
+  // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
+  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", img:"" },
+  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    img:"" },
+  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"" },
+  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"" },
+  // ── 🇯🇵 sv11B — Méga-Évolution JP ────────────────────────────────────────
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~10€",   img:"" },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"" },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"" },
+  // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"" },
+  // ── 🇯🇵 sv2P — Clay Burst ────────────────────────────────────────────────
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"" },
+  // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
+  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
+  // ── 🇬🇧 Perfect Order — POR EN ───────────────────────────────────────────
+  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 013/217",    set:"POR · Perfect Order",      lang:"EN", value:"~18€ ⭐", img:"" },
+  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
+  { id:"c44", name:"Prime Catcher",       fullName:"Prime Catcher 013/088",       set:"POR · Perfect Order",      lang:"EN", value:"~8€",    img:"" },
+  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 017/088",        set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
+  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
+  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"" },
+  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"" },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"" },
+  // ── 🇬🇧 Chaos Ascendant — ASC EN ─────────────────────────────────────────
+  { id:"c50", name:"Trevenant",           fullName:"Trevenant 43/217",            set:"ASC EN",                   lang:"EN", value:"~5€",    img:"" },
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 025/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"" },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 091/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"" },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 022/217",             set:"ASC EN",                   lang:"EN", value:"~2€",    img:"" },
+  // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEF 070",        set:"Promos EN",                lang:"EN", value:"~2€",    img:"" },
 ];
 
 const BINDER_PAGE_SIZE = 9;
 
+const LANG_BORDER = { FR: "#60a5fa", JP: "#f87171", EN: "#4ade80" };
+
 function ClasseurTab() {
-  const [page, setPage]       = useState(0);
+  const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
 
   const totalPages = Math.max(1, Math.ceil(CLASSEUR_CARDS.length / BINDER_PAGE_SIZE));
   const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => CLASSEUR_CARDS[page * BINDER_PAGE_SIZE + i] ?? null);
 
+  const pageStart = page * BINDER_PAGE_SIZE + 1;
+  const pageEnd   = Math.min((page + 1) * BINDER_PAGE_SIZE, CLASSEUR_CARDS.length);
+
   return (
     <div>
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-        Mon classeur — collection physique
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+        <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+          Mon classeur — {CLASSEUR_CARDS.length} cartes
+        </div>
+        <div style={{ display: "flex", gap: 10, fontSize: 10 }}>
+          {[["FR","#60a5fa"],["JP","#f87171"],["EN","#4ade80"]].map(([l,c]) => (
+            <span key={l} style={{ color: c, fontWeight: 600 }}>{LANG_FLAG[l]} {l}</span>
+          ))}
+        </div>
       </div>
 
       {/* ── Binder ── */}
@@ -635,7 +717,7 @@ function ClasseurTab() {
                   overflow: "hidden",
                   background: card ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.18)",
                   border: card
-                    ? `2px solid ${selected?.id === card.id ? T.accent : "rgba(255,255,255,0.13)"}`
+                    ? `2px solid ${selected?.id === card.id ? T.accent : (LANG_BORDER[card.lang] + "55")}`
                     : "2px dashed rgba(255,255,255,0.07)",
                   cursor: card ? "pointer" : "default",
                   boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.04)" : "none",
@@ -680,7 +762,9 @@ function ClasseurTab() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{LANG_FLAG[selected.lang]} {selected.fullName}</div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
-            {selected.note && <div style={{ fontSize: 10, color: T.textMuted, marginTop: 4, fontStyle: "italic" }}>{selected.note}</div>}
+            {selected.value && (
+              <div style={{ fontSize: 12, color: "#4ade80", fontWeight: 600, marginTop: 4 }}>{selected.value}</div>
+            )}
           </div>
           <button onClick={() => setSelected(null)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>✕</button>
         </div>
@@ -692,7 +776,7 @@ function ClasseurTab() {
           disabled={page === 0}
           style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "6px 14px" }}>← Préc.</button>
         <span style={{ fontSize: 11, color: T.textMuted }}>
-          Page {page + 1} / {totalPages} · {CLASSEUR_CARDS.length} carte{CLASSEUR_CARDS.length > 1 ? "s" : ""}
+          Page {page + 1} / {totalPages} · cartes {pageStart}–{pageEnd}
         </span>
         <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
           disabled={page === totalPages - 1}
