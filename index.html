@@ -575,77 +575,77 @@ const PRICE_HISTORY = {
 const CLASSEUR_CARDS = [
   // ── 🇫🇷 Chaos Ascendant — ME04 / CLN ──────────────────────────────────────
   // Méga-Amphinobi ex exclu (à grader)
-  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   img:"" },
-  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    img:"" },
-  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
-  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
-  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
-  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"" },
-  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    img:"" },
-  // ── 🇫🇷 Équilibre Parfait — ME03 / MEP ────────────────────────────────────
-  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEP · Équilibre Parfait",  lang:"FR", value:"~10€",   img:"" },
-  { id:"c09", name:"Ptyranidur",          fullName:"Ptyranidur 070",              set:"MEP · Équilibre Parfait",  lang:"FR", value:"~4€",    img:"" },
-  // ── 🇫🇷 Méga-Évolution — ME01 / MEG ──────────────────────────────────────
-  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"" },
-  // ── 🇫🇷 Perfect Order — POR FR ───────────────────────────────────────────
-  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    img:"" },
-  { id:"c12", name:"Illumis",             fullName:"Illumis 117/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"" },
-  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"" },
-  // ── 🇫🇷 Chaos Ascendant — ASC FR ─────────────────────────────────────────
-  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    img:"" },
-  // ── 🇫🇷 Failles Prismatiques — PFL FR ────────────────────────────────────
-  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",    img:"" },
-  // ── 🇫🇷 Faille Temporelle — TEF FR ───────────────────────────────────────
-  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    img:"" },
+  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   img:"", apiQ:'set.id:me4 number:107' },
+  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    img:"", apiQ:'name:"Fennekin" number:80' },
+  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:68' },
+  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:95' },
+  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:42' },
+  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:29' },
+  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me4 number:32' },
+  // ── 🇫🇷 Équilibre Parfait — ME01 / MEP (132 base cards) ───────────────────
+  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEP · Équilibre Parfait",  lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me1 number:155' },
+  { id:"c09", name:"Ptyranidur",          fullName:"Ptyranidur 070",              set:"MEP · Équilibre Parfait",  lang:"FR", value:"~4€",    img:"", apiQ:'set.id:me1 number:70' },
+  // ── 🇫🇷 Méga-Évolution — ME03 / MEG (031/088) ─────────────────────────────
+  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me3 number:31' },
+  // ── 🇫🇷 Perfect Order — POR FR / ME03 (088 base) ─────────────────────────
+  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:62' },
+  { id:"c12", name:"Illumis",             fullName:"Illumis 117/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me3 number:117' },
+  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me3 number:81' },
+  // ── 🇫🇷 Ascended Heroes — ASC FR (217 cards) ──────────────────────────────
+  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    img:"", apiQ:'set.name:"Ascended Heroes" number:96' },
+  // ── 🇫🇷 Phantasmal Flames — ME02 / PFL (094 base) ─────────────────────────
+  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",   img:"", apiQ:'set.id:me2 number:45' },
+  // ── 🇫🇷 Temporal Forces — SV5 / TEF ──────────────────────────────────────
+  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    img:"", apiQ:'set.id:sv5 number:51' },
   // ── 🇯🇵 M2α — Ascended Heroes ────────────────────────────────────────────
   // Méga-Dratatin ex + Méga-Yukimenoko ex exclus (à grader)
-  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"" },
-  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"" },
-  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"" },
-  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"" },
+  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"", apiQ:'name:"Ho-Oh ex" number:21' },
+  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"", apiQ:'name:"Terapagos ex" number:145' },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'name:"Butterfree" number:194' },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'name:"Medicham" number:207' },
   // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
-  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"" },
-  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
-  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
-  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"" },
-  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
-  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
-  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
-  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"" },
+  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"", apiQ:'name:"Metagross ex" number:54' },
+  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Mismagius ex" number:16' },
+  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Meowth ex" number:61' },
+  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Poke Pad" number:103' },
+  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Aurorus" number:84' },
+  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Rattata" number:92' },
+  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Cofagrigus" number:81' },
+  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Starmie ex" number:21' },
   // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
-  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", img:"" },
-  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    img:"" },
-  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"" },
-  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"" },
+  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", img:"", apiQ:'name:"Dragonite ex" number:63' },
+  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    img:"", apiQ:'name:"Prism Tower" number:113' },
+  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'name:"Tool Scrapper" number:107' },
+  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'name:"Greninja ex" number:71' },
   // ── 🇯🇵 sv11B — Méga-Évolution JP ────────────────────────────────────────
-  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~10€",   img:"" },
-  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"" },
-  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"" },
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~10€",   img:"", apiQ:'name:"Serperior ex" number:159' },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"", apiQ:'name:"Genesect ex" number:69' },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"", apiQ:'name:"Druddigon" number:151' },
   // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
-  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
-  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
-  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"" },
-  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"" },
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:67' },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:69' },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:77' },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"", apiQ:'set.id:sv4k number:52' },
   // ── 🇯🇵 sv2P — Clay Burst ────────────────────────────────────────────────
-  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"" },
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv2p number:65' },
   // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
   { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
-  // ── 🇬🇧 Perfect Order — POR EN ───────────────────────────────────────────
-  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 013/217",    set:"POR · Perfect Order",      lang:"EN", value:"~18€ ⭐", img:"" },
-  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
-  { id:"c44", name:"Prime Catcher",       fullName:"Prime Catcher 013/088",       set:"POR · Perfect Order",      lang:"EN", value:"~8€",    img:"" },
-  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 017/088",        set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
-  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"" },
-  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"" },
-  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"" },
-  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"" },
-  // ── 🇬🇧 Chaos Ascendant — ASC EN ─────────────────────────────────────────
-  { id:"c50", name:"Trevenant",           fullName:"Trevenant 43/217",            set:"ASC EN",                   lang:"EN", value:"~5€",    img:"" },
-  { id:"c51", name:"Leafeon",             fullName:"Leafeon 025/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"" },
-  { id:"c52", name:"Miltank",             fullName:"Miltank 091/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"" },
-  { id:"c53", name:"Goldeen",             fullName:"Goldeen 022/217",             set:"ASC EN",                   lang:"EN", value:"~2€",    img:"" },
+  // ── 🇬🇧 Perfect Order — POR EN / ME03 (088 base) ─────────────────────────
+  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 013/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", img:"", apiQ:'set.name:"Ascended Heroes" number:13' },
+  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:62' },
+  { id:"c44", name:"Prime Catcher",       fullName:"Prime Catcher 013/088",       set:"POR · Perfect Order",      lang:"EN", value:"~8€",    img:"", apiQ:'set.id:me3 number:13' },
+  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 017/088",        set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:17' },
+  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:16' },
+  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:24' },
+  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:115' },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'set.id:me3 number:89' },
+  // ── 🇬🇧 Ascended Heroes — ASC EN (217 cards) ─────────────────────────────
+  { id:"c50", name:"Trevenant",           fullName:"Trevenant 43/217",            set:"ASC EN",                   lang:"EN", value:"~5€",    img:"", apiQ:'set.name:"Ascended Heroes" number:43' },
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 025/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"", apiQ:'set.name:"Ascended Heroes" number:25' },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 091/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"", apiQ:'set.name:"Ascended Heroes" number:91' },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 022/217",             set:"ASC EN",                   lang:"EN", value:"~2€",    img:"", apiQ:'set.name:"Ascended Heroes" number:22' },
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
-  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEF 070",        set:"Promos EN",                lang:"EN", value:"~2€",    img:"" },
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEF 070",        set:"Promos EN",                lang:"EN", value:"~2€",    img:"", apiQ:'name:"Tyrunt" number:70' },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v2") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v3") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -669,18 +669,22 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v2", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v3", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
       for (const card of toFetch) {
         if (!alive) break;
-        const m = card.fullName.match(/\b(\d+)\//);
-        if (!m) { save(card.id, null); continue; }
-        const num = parseInt(m[1], 10);
+        let query;
+        if (card.apiQ) {
+          query = card.apiQ;
+        } else {
+          const m = card.fullName.match(/\b(\d+)\//);
+          if (!m) { save(card.id, null); continue; }
+          query = `name:"${card.name}" number:${parseInt(m[1], 10)}`;
+        }
         try {
-          const q = encodeURIComponent(`name:"${card.name}" number:${num}`);
-          const r = await fetch(`https://api.pokemontcg.io/v2/cards?q=${q}&pageSize=5&select=images`);
+          const r = await fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(query)}&pageSize=5&select=images`);
           if (r.ok) {
             const d = await r.json();
             const img = d?.data?.[0]?.images?.large ?? null;
