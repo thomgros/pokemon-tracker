@@ -105,6 +105,7 @@ const TYPE_CONFIG = {
 const STATUS_CONFIG = {
   grading:    { label: "En grading PSA",      color: "#f97316", bg: "rgba(249,115,22,0.1)",  border: "rgba(249,115,22,0.3)" },
   "à grader": { label: "À envoyer grading",   color: "#c084fc", bg: "rgba(192,132,252,0.1)", border: "rgba(192,132,252,0.3)" },
+  graded:     { label: "Gradé PSA",           color: "#4ade80", bg: "rgba(74,222,128,0.1)",  border: "rgba(74,222,128,0.3)" },
   transit:    { label: "En transit",           color: "#facc15", bg: "rgba(250,204,21,0.1)",  border: "rgba(250,204,21,0.3)" },
   collection: { label: "Collection",           color: "#38bdf8", bg: "rgba(56,189,248,0.1)",  border: "rgba(56,189,248,0.3)" },
   sealed:     { label: "Scellé",               color: "#a78bfa", bg: "rgba(167,139,250,0.1)", border: "rgba(167,139,250,0.3)" },
@@ -143,10 +144,8 @@ const DEFAULT_OWNED = [
   { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
   // Collection physique
   { id: "o6",  name: "Snorlax JU 11/64",               price: 40,     status: "collection", set: "Jungle",                lang: "EN", note: "Holo propre, micro-usures coins — collection vintage", ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
-  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "collection", set: "151 SV2a",              lang: "JP", note: "Acheté 256€ · valeur réelle ~818€ ✅",               ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
+  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "graded",     set: "151 SV2a",              lang: "JP", note: "Gradé PSA 9 ✓ · Acheté 256€ · valeur réelle ~818€",   ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
   { id: "o8",  name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                        ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
-  // Scellé
-  { id: "o9",  name: "ETB Chaos Ascendant",             price: 55,     status: "collection", set: "Méga-Évolution",        lang: "FR", note: "",                                                   ebayQuery: "ETB Elite Trainer Box Mega Evolution French" },
 ];
 
 // ── localStorage ──────────────────────────────────────────────────────────────
@@ -400,7 +399,7 @@ function AddOwnedForm({ onAdd, onClose }) {
           <label style={css.label}>Statut</label>
           <select style={css.input} value={f.status} onChange={e => upd("status", e.target.value)}>
             <option value="collection">Collection</option><option value="à grader">À envoyer grading</option>
-            <option value="grading">Grading PSA</option><option value="transit">En transit</option>
+            <option value="grading">Grading PSA</option><option value="graded">Gradé PSA ✓</option><option value="transit">En transit</option>
             <option value="sealed">Scellé</option><option value="enchère">Enchère</option>
           </select>
         </div>
@@ -542,6 +541,7 @@ const GRADING_HISTORY = {
   "o11": { h:[{date:"Jan 26",nm:15,psa9:30,psa10:68},{date:"Fév 26",nm:15,psa9:30,psa10:70},{date:"Mar 26",nm:16,psa9:32,psa10:73},{date:"Avr 26",nm:16,psa9:32,psa10:75},{date:"Mai 26",nm:17,psa9:34,psa10:78}] },
   "o12": { h:[{date:"Jan 26",nm:45,psa9:82,psa10:185},{date:"Fév 26",nm:46,psa9:84,psa10:190},{date:"Mar 26",nm:48,psa9:87,psa10:197},{date:"Avr 26",nm:49,psa9:89,psa10:201},{date:"Mai 26",nm:50,psa9:91,psa10:205}] },
   "o13": { h:[{date:"Jan 26",nm:28,psa9:55,psa10:122},{date:"Fév 26",nm:29,psa9:56,psa10:125},{date:"Mar 26",nm:30,psa9:58,psa10:128},{date:"Avr 26",nm:31,psa9:59,psa10:132},{date:"Mai 26",nm:32,psa9:61,psa10:136}] },
+  "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
 };
 
 const GRADING_META = {
@@ -554,6 +554,7 @@ const GRADING_META = {
   "o11": { apiQ:'set.id:me4 number:22',                        grade:"PSA 8-9" },
   "o12": { apiQ:'name:"Dragonite ex" number:232',              grade:"PSA 10" },
   "o13": { apiQ:'name:"Froslass ex" number:36',                grade:"PSA 9" },
+  "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓" },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
@@ -868,7 +869,7 @@ function CoursTab({ ownedList }) {
   const [livePrices, setLivePrices] = useLs("pk_cours_live", {});
   const [loadingId, setLoadingId]   = useState(null);
 
-  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader");
+  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded");
   const langCards    = gradingCards.filter(c => c.lang === lang);
 
   // Adapter le format pour useCardImages
@@ -963,12 +964,14 @@ function CoursTab({ ownedList }) {
               const imgSrc   = card ? (imgCache[card.id] ?? null) : null;
               const loading  = card && imgCache[card.id] === undefined;
               const isSel    = selected?.id === card?.id;
+              const sGraded  = card?.status === "graded";
               const sBadge   = card?.status === "grading";
+              const bdrCol   = sGraded ? "#4ade80" : sBadge ? "#60a5fa" : "#fb923c";
               return (
                 <div key={i} onClick={() => card && setSelected(isSel ? null : card)} style={{
                   aspectRatio:"5/7", borderRadius:7, overflow:"hidden",
                   background: card ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.15)",
-                  border: card ? `2px solid ${isSel ? T.accent : (sBadge ? "#60a5fa" : "#fb923c") + "55"}` : "2px dashed rgba(255,255,255,0.06)",
+                  border: card ? `2px solid ${isSel ? T.accent : bdrCol + "55"}` : "2px dashed rgba(255,255,255,0.06)",
                   cursor: card ? "pointer" : "default",
                   boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7)" : "none",
                   transform: isSel ? "scale(1.06)" : "scale(1)",
@@ -996,11 +999,11 @@ function CoursTab({ ownedList }) {
                   {card && (
                     <div style={{
                       position:"absolute", bottom:3, left:"50%", transform:"translateX(-50%)",
-                      background: sBadge ? "rgba(96,165,250,0.88)" : "rgba(251,146,60,0.88)",
+                      background: sGraded ? "rgba(74,222,128,0.88)" : sBadge ? "rgba(96,165,250,0.88)" : "rgba(251,146,60,0.88)",
                       borderRadius:4, padding:"1px 5px", fontSize:7, fontWeight:700, color:"#000",
                       whiteSpace:"nowrap", zIndex:2, letterSpacing:"0.03em",
                     }}>
-                      {sBadge ? "⏳ PSA" : "📬 À envoyer"}
+                      {sGraded ? `✓ ${GRADING_META[card.id]?.grade || "PSA"}` : sBadge ? "⏳ PSA" : "📬 À envoyer"}
                     </div>
                   )}
                   {!card && <div style={{ fontSize:18, opacity:0.07, color:"#fff" }}>◇</div>}
@@ -1031,11 +1034,11 @@ function CoursTab({ ownedList }) {
               <div style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{selected.set}</div>
               {/* Statut badge */}
               <div style={{ marginTop:6, display:"inline-flex", alignItems:"center", gap:5,
-                background: selected.status === "grading" ? "rgba(96,165,250,0.12)" : "rgba(251,146,60,0.12)",
-                border:`1px solid ${selected.status === "grading" ? "#60a5fa44" : "#fb923c44"}`,
+                background: selected.status === "graded" ? "rgba(74,222,128,0.12)" : selected.status === "grading" ? "rgba(96,165,250,0.12)" : "rgba(251,146,60,0.12)",
+                border:`1px solid ${selected.status === "graded" ? "#4ade8044" : selected.status === "grading" ? "#60a5fa44" : "#fb923c44"}`,
                 borderRadius:6, padding:"3px 8px" }}>
-                <span style={{ fontSize:10, fontWeight:600, color: selected.status === "grading" ? "#60a5fa" : "#fb923c" }}>
-                  {selected.status === "grading" ? "⏳ En cours de grading PSA" : "📬 À envoyer au grading"}
+                <span style={{ fontSize:10, fontWeight:600, color: selected.status === "graded" ? "#4ade80" : selected.status === "grading" ? "#60a5fa" : "#fb923c" }}>
+                  {selected.status === "graded" ? "✅ Gradé PSA" : selected.status === "grading" ? "⏳ En cours de grading PSA" : "📬 À envoyer au grading"}
                 </span>
               </div>
               {meta?.grade && (
