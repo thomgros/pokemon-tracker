@@ -1204,15 +1204,31 @@ function CalendrierTab() {
 function RessourcesTab() {
   return (
     <div>
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Précommandes EN</div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Acheter ETB/Display EN · livraison France</div>
+
+      <div style={{ fontSize: 10, color: "#4ade80", fontWeight: 600, margin: "4px 0 6px", letterSpacing: "0.05em" }}>● CHAOS RISING — dispo maintenant</div>
       {[
-        { name: "Pokémon Center US",  desc: "ETB Chaos Rising — préco ouverte",               url: "https://www.pokemoncenter.com",          badge: "Chaos Rising ✓", badgeColor: "#4ade80" },
-        { name: "Pokémon Center UK",  desc: "ETB Pitch Black — activer alerte 'Notify me'",   url: "https://www.pokemoncenter.com/en-gb",    badge: "Pitch Black ⏳", badgeColor: "#facc15" },
-        { name: "Amazon.fr",          desc: "ETB EN — souvent dispo au lancement",             url: "https://www.amazon.fr/s?k=pokemon+elite+trainer+box+english", badge: null, badgeColor: null },
-        { name: "PokeBeach Twitter",  desc: "Alerte temps réel dès ouverture des précos",     url: "https://twitter.com/pokebeach",          badge: "🔔 Suivre", badgeColor: "#60a5fa" },
-        { name: "r/pokemontcg",       desc: "Communauté — annonces précos en live",           url: "https://www.reddit.com/r/pokemontcg",    badge: null, badgeColor: null },
+        { name: "CardsRfun.de",       desc: "Meilleure option EU — livraison France ✅",        url: "https://www.cardsrfun.de",               badge: "🟢 Dispo", badgeColor: "#4ade80" },
+        { name: "Pokémon Center UK",  desc: "ETB exclusif PC (promo stampée)",                  url: "https://www.pokemoncenter.com/en-gb",    badge: "Exclu PC", badgeColor: "#60a5fa" },
+        { name: "Amazon.fr",          desc: 'Cherche "Chaos Rising Elite Trainer Box"',         url: "https://www.amazon.fr/s?k=chaos+rising+elite+trainer+box", badge: null, badgeColor: null },
       ].map((r, i) => (
         <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: "#facc15", fontWeight: 600, margin: "10px 0 6px", letterSpacing: "0.05em" }}>● PITCH BLACK — 17 juillet · précos pas encore ouvertes</div>
+      {[
+        { name: "Pokémon Center UK",  desc: "Activer alerte 'Notify me' — dès ouverture préco", url: "https://www.pokemoncenter.com/en-gb",    badge: "⏳ Bientôt", badgeColor: "#facc15" },
+        { name: "Evol Vault",         desc: "Guide achat Pitch Black + alertes drop UK détaillées", url: "https://evoltvault.com",             badge: null, badgeColor: null },
+        { name: "PokeBeach",          desc: "Suivre pour l'annonce des précos",                  url: "https://twitter.com/pokebeach",          badge: "🔔 Suivre", badgeColor: "#60a5fa" },
+      ].map((r, i) => (
+        <div key={`pb${i}`} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
@@ -1225,7 +1241,7 @@ function RessourcesTab() {
       <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Apps & Sites</div>
       {[
         { name: "Goldin",         desc: "Maison de vente aux enchères premium — grandes pièces",  url: "https://goldin.co", color: "#f87171", badge: "Enchères", badgeColor: "#f87171" },
-        { name: "CardsRfun",      desc: "Marketplace Pokemon — achat/vente singles",              url: "https://www.cardsrfun.com", color: "#4ade80", badge: null, badgeColor: null },
+        { name: "CardsRfun.de",   desc: "Marketplace Pokemon EU — achat/vente singles + loteries", url: "https://www.cardsrfun.de", color: "#4ade80", badge: null, badgeColor: null },
         { name: "CardMarket",     desc: "Singles Europe — prix de marché FR",                     url: "https://www.cardmarket.com/fr/Pokemon", color: "#60a5fa", badge: null, badgeColor: null },
         { name: "eBay (vendus)",  desc: "Ventes finalisées = vrais prix de référence",            url: "https://www.ebay.fr/sch/i.html?LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&_nkw=pokemon+near+mint", color: "#60a5fa", badge: null, badgeColor: null },
         { name: "Coded Yellow",   desc: "Dates de sorties TCG 2026 — calendrier EN/JP",           url: "https://www.codedyellow.com", color: "#facc15", badge: null, badgeColor: null },
@@ -1241,6 +1257,37 @@ function RessourcesTab() {
           {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
           {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
                  : <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0 }}>App</span>}
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Alertes Précos & Restocks</div>
+      {[
+        { name: "@pokenotify",    desc: "191K abonnés — alertes TCG mondiales, restocks, drops en temps réel",  url: "https://www.instagram.com/pokenotify",   badge: "Instagram", badgeColor: "#e879f9" },
+        { name: "Poke Alerts",    desc: "Surveille 100+ retailers — alertes instantanées + giveaways hebdo",    url: "https://www.poke-alerts.com",            badge: "100+ sites", badgeColor: "#60a5fa" },
+        { name: "r/pokemontcg",   desc: "Communauté — annonces précos et drops en live",                        url: "https://www.reddit.com/r/pokemontcg",    badge: null, badgeColor: null },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Loteries & Giveaways</div>
+      {[
+        { name: "Poke Alerts Discord", desc: "Giveaways exclusifs chaque semaine — ETB, SPC scellés",          url: "https://www.poke-alerts.com",            badge: "🎁 Hebdo", badgeColor: "#4ade80" },
+        { name: "CardsRfun.de",        desc: "Loteries régulières sur leur site — cartes et produits scellés", url: "https://www.cardsrfun.de",               badge: "🎰 Loterie", badgeColor: "#fb923c" },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
         </div>
       ))}
 
