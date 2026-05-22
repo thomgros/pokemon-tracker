@@ -549,13 +549,13 @@ const GRADING_HISTORY = {
 const GRADING_META = {
   "o1":  { apiQ:'set.name:"Champion\'s Path" number:74',       grade:"PSA 10" },
   "o2":  { apiQ:'set.id:me3 number:123',                       grade:"PSA 9-10" },
-  "o3":  { apiQ:'name:"Rosa" number:115',                      grade:"PSA 9-10" },
+  "o3":  { apiQ:'name:"Rosa" number:115',                      grade:"PSA 9-10", img:"https://www.serebii.net/card/nihilzero/115.jpg" },
   "o4":  { apiQ:'set.name:"Prismatic Evolutions" number:167',  grade:"PSA 10" },
   "o5":  { apiQ:'name:"Mew ex" number:205',                    grade:"PSA 9" },
   "o10": { apiQ:'set.name:"Prismatic Evolutions" number:146',  grade:"PSA 10" },
   "o11": { apiQ:'set.id:me4 number:22',                        grade:"PSA 8-9" },
-  "o12": { apiQ:'name:"Dragonite ex" number:232',              grade:"PSA 10" },
-  "o13": { apiQ:'name:"Froslass ex" number:36',                grade:"PSA 9" },
+  "o12": { apiQ:'name:"Dragonite ex" number:232',              grade:"PSA 10", img:"https://www.serebii.net/card/megadreamex/232.jpg" },
+  "o13": { apiQ:'name:"Froslass ex" number:36',                grade:"PSA 9",  img:"https://www.serebii.net/card/megadreamex/036.jpg" },
   "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓" },
 };
 
@@ -588,35 +588,35 @@ const CLASSEUR_CARDS = [
   { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    img:"", apiQ:'set.id:sv5 number:51' },
   // ── 🇯🇵 M2α — Ascended Heroes ────────────────────────────────────────────
   // Méga-Dratatin ex + Méga-Yukimenoko ex exclus (à grader)
-  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"", apiQ:'name:"Ho-Oh ex" number:21' },
-  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"", apiQ:'name:"Terapagos ex" number:145' },
-  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'name:"Butterfree" number:194' },
-  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'name:"Medicham" number:207' },
+  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"https://www.serebii.net/card/megadreamex/021.jpg" },
+  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"https://www.serebii.net/card/megadreamex/145.jpg" },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/megadreamex/194.jpg" },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/megadreamex/207.jpg" },
   // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
-  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"", apiQ:'name:"Metagross ex" number:54' },
-  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Mismagius ex" number:16' },
-  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Meowth ex" number:61' },
-  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Poke Pad" number:103' },
-  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Aurorus" number:84' },
-  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Rattata" number:92' },
-  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Cofagrigus" number:81' },
-  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Starmie ex" number:21' },
+  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"https://www.serebii.net/card/nihilzero/054.jpg" },
+  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"https://www.serebii.net/card/nihilzero/016.jpg" },
+  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"https://www.serebii.net/card/nihilzero/061.jpg" },
+  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"https://www.serebii.net/card/nihilzero/103.jpg" },
+  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/nihilzero/084.jpg" },
+  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/nihilzero/092.jpg" },
+  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/nihilzero/081.jpg" },
+  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/nihilzero/021.jpg" },
   // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
-  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", img:"", apiQ:'name:"Dragonite ex" number:63' },
-  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    img:"", apiQ:'name:"Prism Tower" number:113' },
-  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'name:"Tool Scrapper" number:107' },
-  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'name:"Greninja ex" number:71' },
-  // ── 🇯🇵 sv11B — Méga-Évolution JP ────────────────────────────────────────
-  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~10€",   img:"", apiQ:'set.id:sv11b number:159' },
-  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:69' },
-  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Méga-Évo JP",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:151' },
-  // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
-  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:67' },
-  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:69' },
-  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:77' },
-  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"", apiQ:'set.id:sv4k number:52' },
-  // ── 🇯🇵 sv2P — Clay Burst ────────────────────────────────────────────────
-  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv2p number:65' },
+  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", img:"https://www.serebii.net/card/ninjaspinner/063.jpg" },
+  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    img:"https://www.serebii.net/card/ninjaspinner/113.jpg" },
+  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/ninjaspinner/107.jpg" },
+  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"https://www.serebii.net/card/ninjaspinner/071.jpg" },
+  // ── 🇯🇵 sv11B — Black Bolt JP (pokemon-card.com, IDs confirmés via PTCG-database) ──
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   img:"https://www.pokemon-card.com/assets/images/card_images/large/SV11B/047983_P_JIXYARODAEX.jpg" },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV11B/047605_P_GENOSEKUTOEX.jpg" },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV11B/047975_P_ONONDO.jpg" },
+  // ── 🇯🇵 sv4K — Ancient Roar (pokemon-card.com, IDs confirmés) ────────────
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV4K/044420_P_IWAPARESU.jpg" },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV4K/044422_P_KOSOKUMUSHI.jpg" },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV4K/044430_P_ARABURUTAKE.jpg" },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV4K/044298_P_EKUSUREGGU.jpg" },
+  // ── 🇯🇵 sv2P — Clay Burst (pokemon-card.com, ID confirmé) ─────────────────
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"https://www.pokemon-card.com/assets/images/card_images/large/SV2P/043272_P_IKIRINKOEX.jpg" },
   // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
   { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
   // ── 🇬🇧 Perfect Order — POR EN / ME03 (088 base) ─────────────────────────
@@ -887,7 +887,8 @@ function CoursTab({ ownedList }) {
 
   // Adapter le format pour useCardImages
   const imgCards = langCards.map(c => ({
-    id: c.id, name: c.name, fullName: c.name, img: "",
+    id: c.id, name: c.name, fullName: c.name,
+    img:  GRADING_META[c.id]?.img  || "",
     apiQ: GRADING_META[c.id]?.apiQ || "",
   }));
   const imgCache = useCardImages(imgCards);
