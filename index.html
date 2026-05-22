@@ -1224,11 +1224,13 @@ function RessourcesTab() {
 
       <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Apps & Sites</div>
       {[
-        { name: "CardMarket",     desc: "Singles Europe — prix de marché FR",                     url: "https://www.cardmarket.com/fr/Pokemon", color: "#60a5fa" },
-        { name: "eBay (vendus)",  desc: "Ventes finalisées = vrais prix de référence",            url: "https://www.ebay.fr/sch/i.html?LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&_nkw=pokemon+near+mint", color: "#60a5fa" },
-        { name: "Coded Yellow",   desc: "Dates de sorties TCG 2026 — calendrier EN/JP",           url: "https://www.codedyellow.com", color: "#facc15" },
-        { name: "Eyevo",          desc: "Scanner de cartes — app mobile",                         url: null, color: "#a78bfa" },
-        { name: "Cardzia",        desc: "Prix marché FR — app mobile",                            url: null, color: "#a78bfa" },
+        { name: "Goldin",         desc: "Maison de vente aux enchères premium — grandes pièces",  url: "https://goldin.co", color: "#f87171", badge: "Enchères", badgeColor: "#f87171" },
+        { name: "CardsRfun",      desc: "Marketplace Pokemon — achat/vente singles",              url: "https://www.cardsrfun.com", color: "#4ade80", badge: null, badgeColor: null },
+        { name: "CardMarket",     desc: "Singles Europe — prix de marché FR",                     url: "https://www.cardmarket.com/fr/Pokemon", color: "#60a5fa", badge: null, badgeColor: null },
+        { name: "eBay (vendus)",  desc: "Ventes finalisées = vrais prix de référence",            url: "https://www.ebay.fr/sch/i.html?LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&_nkw=pokemon+near+mint", color: "#60a5fa", badge: null, badgeColor: null },
+        { name: "Coded Yellow",   desc: "Dates de sorties TCG 2026 — calendrier EN/JP",           url: "https://www.codedyellow.com", color: "#facc15", badge: null, badgeColor: null },
+        { name: "Eyevo",          desc: "Scanner de cartes — app mobile",                         url: null, color: "#a78bfa", badge: null, badgeColor: null },
+        { name: "Cardzia",        desc: "Prix marché FR — app mobile",                            url: null, color: "#a78bfa", badge: null, badgeColor: null },
       ].map((r, i) => (
         <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.color, flexShrink: 0 }} />
@@ -1236,6 +1238,7 @@ function RessourcesTab() {
             <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
           </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
           {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
                  : <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0 }}>App</span>}
         </div>
