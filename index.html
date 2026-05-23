@@ -598,7 +598,7 @@ const CLASSEUR_CARDS = [
   { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'name:"Meowth ex"' },
   { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:"" },
   { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:"" },
-  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Rattata"' },
+  { id:"c26", name:"Rattata",             fullName:"Rattata 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'set.id:me3 number:92' },
   { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:"" },
   { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    img:"", apiQ:'name:"Starmie ex"' },
   // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
@@ -649,7 +649,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v5") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v6") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -658,19 +658,22 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v5", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v6", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
       for (const card of toFetch) {
         if (!alive) break;
         // Construction directe de l'URL CDN selon set.id + number (évite un appel API)
+        // Sauf pour les sets 2025 récents sans scans — on passe par l'API pour éviter le placeholder dos de carte
         const cdnM = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
         if (cdnM) {
           const setId = cdnM[1], num = parseInt(cdnM[2]);
-          const url = `https://images.pokemontcg.io/${setId}/${num}_hires.png`;
-          save(card.id, url);
-          continue;
+          if (!['me2pt5','me3','me4'].includes(setId)) {
+            save(card.id, `https://images.pokemontcg.io/${setId}/${num}_hires.png`);
+            continue;
+          }
+          // me2pt5/me3/me4 : scans pas encore dispo → appel API, null si absent → fallback texte
         }
         // Sinon requête API pokemontcg.io
         let query;
