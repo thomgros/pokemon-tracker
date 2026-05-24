@@ -613,16 +613,16 @@ const CLASSEUR_CARDS = [
   { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'name:"Tool Scrapper" set.id:me4',         jpImg:'https://www.pokemon-card.com/assets/images/card_images/large/M4/107.jpg' },
   { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    img:"", apiQ:'set.id:me4 number:73',              jpImg:'https://www.pokemon-card.com/assets/images/card_images/large/M4/071.jpg' },
   // ── 🇯🇵 sv11B — Black Bolt JP ─────────────────────────────────────────────
-  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   img:"", apiQ:'set.id:sv11b number:159' },
-  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:69' },
-  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:151' },
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   img:"", apiQ:'set.id:sv11b number:159', jpImg:'https://assets.tcgdex.net/ja/SV/SV11B/159/high.webp' },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:69',  jpImg:'https://assets.tcgdex.net/ja/SV/SV11B/069/high.webp' },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv11b number:151', jpImg:'https://assets.tcgdex.net/ja/SV/SV11B/151/high.webp' },
   // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
-  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:67' },
-  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:69' },
-  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:77' },
-  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"", apiQ:'set.id:sv4k number:52' },
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:67',  jpImg:'https://assets.tcgdex.net/ja/SV/SV4K/067/high.webp' },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:69',  jpImg:'https://assets.tcgdex.net/ja/SV/SV4K/069/high.webp' },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv4k number:77',  jpImg:'https://assets.tcgdex.net/ja/SV/SV4K/077/high.webp' },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    img:"", apiQ:'set.id:sv4k number:52',  jpImg:'https://assets.tcgdex.net/ja/SV/SV4K/052/high.webp' },
   // ── 🇯🇵 sv2P — Clay Burst ─────────────────────────────────────────────────
-  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv2p number:65' },
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    img:"", apiQ:'set.id:sv2p number:65',  jpImg:'https://assets.tcgdex.net/ja/SV/SV2P/065/high.webp' },
   // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
   { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
   // ── 🇬🇧 Perfect Order — POR EN / ME03 (088 base) ─────────────────────────
@@ -657,7 +657,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v14") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v15") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -666,7 +666,7 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v14", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v15", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
