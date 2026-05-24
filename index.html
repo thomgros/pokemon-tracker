@@ -551,7 +551,7 @@ const GRADING_HISTORY = {
 const GRADING_META = {
   "o1":  { apiQ:'set.name:"Champion\'s Path" number:74',       grade:"PSA 10" },
   "o2":  { apiQ:'set.id:me3 number:123',                       grade:"PSA 9-10" },
-  "o3":  { apiQ:'set.id:me3 number:115',                       grade:"PSA 9-10" },
+  "o3":  { apiQ:'set.id:me3 number:115',                       grade:"PSA 9-10", jpImg:'https://assets.tcgdex.net/ja/M/M3/115/high.webp' },
   "o4":  { apiQ:'set.name:"Prismatic Evolutions" number:167',  grade:"PSA 10" },
   "o5":  { apiQ:'name:"Mew ex" number:205',                    grade:"PSA 9" },
   "o10": { apiQ:'set.name:"Prismatic Evolutions" number:146',  grade:"PSA 10" },
@@ -657,7 +657,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v15") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v16") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -666,7 +666,7 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v15", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v16", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
