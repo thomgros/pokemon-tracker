@@ -575,14 +575,12 @@ const CLASSEUR_CARDS = [
   { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:42' },
   { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:29' },
   { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me4 number:32' },
-  // ── 🇫🇷 Équilibre Parfait — ME01 / MEP (132 base cards) ───────────────────
-  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEP · Équilibre Parfait",  lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me1 number:155' },
-  { id:"c09", name:"Ptyranidur",          fullName:"Ptyranidur 070",              set:"MEP · Équilibre Parfait",  lang:"FR", value:"~4€",    img:"", apiQ:'set.id:me1 number:70' },
-  // ── 🇫🇷 Méga-Évolution — ME03 / MEG (031/088) ─────────────────────────────
-  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me3 number:31' },
-  // ── 🇫🇷 Perfect Order — POR FR / ME03 (088 base) ─────────────────────────
+  // ── 🇫🇷 Méga-Évolution — ME01 / MEG (132 base cards) ───────────────────────
+  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me1 number:155' },
+  { id:"c09", name:"Ptyranidur",          fullName:"Ptyranidur 070/132",          set:"MEG · Méga-Évolution",     lang:"FR", value:"~4€",    img:"", apiQ:'set.id:me1 number:70' },
+  // ── 🇫🇷 Perfect Order — ME03 / POR (088 base cards) ─────────────────────
+  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"POR · Perfect Order",      lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me3 number:31' },
   { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:62' },
-  { id:"c12", name:"Illumis",             fullName:"Illumis 117/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me3 number:117' },
   { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me3 number:81' },
   // ── 🇫🇷 Ascended Heroes — ASC FR (217 cards) ──────────────────────────────
   { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me2pt5 number:96' },
@@ -654,7 +652,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v8") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v9") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -663,7 +661,7 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v8", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v9", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
