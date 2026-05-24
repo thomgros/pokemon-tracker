@@ -626,19 +626,20 @@ const CLASSEUR_CARDS = [
   // ── 🇬🇧 Perfect Order — POR EN / ME03 (088 base) ─────────────────────────
   { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 116/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", img:"", apiQ:'set.id:me2pt5 number:116' },
   { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:62' },
-  { id:"c44", name:"Prime Catcher",       fullName:"Prime Catcher 013/088",       set:"POR · Perfect Order",      lang:"EN", value:"~8€",    img:"", apiQ:'set.id:me3 number:13' },
-  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 017/088",        set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:17' },
+  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 012/088",        set:"POR · Perfect Order",      lang:"EN", value:"~8€ ⭐", img:"", apiQ:'set.id:me3 number:12' },
   { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:16' },
   { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:24' },
   { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:115' },
   { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'set.id:me3 number:89' },
+  { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:96' },
   // ── 🇬🇧 Ascended Heroes — ASC EN (217 cards) ─────────────────────────────
   { id:"c50", name:"Trevenant",           fullName:"Trevenant 43/217",            set:"ASC EN",                   lang:"EN", value:"~5€",    img:"", apiQ:'name:"Trevenant" set.id:me2pt5' },
-  { id:"c51", name:"Leafeon",             fullName:"Leafeon 025/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"", apiQ:'name:"Leafeon" set.id:me2pt5' },
-  { id:"c52", name:"Miltank",             fullName:"Miltank 091/217",             set:"ASC EN",                   lang:"EN", value:"~3€",    img:"", apiQ:'name:"Miltank" set.id:me2pt5' },
-  { id:"c53", name:"Goldeen",             fullName:"Goldeen 022/217",             set:"ASC EN",                   lang:"EN", value:"~2€",    img:"", apiQ:'name:"Goldeen" set.id:me2pt5' },
+  // ── 🇬🇧 Prismatic Evolutions — PRE EN (131 cards) ────────────────────────
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"", apiQ:'set.id:sv8pt5 number:5' },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"", apiQ:'set.id:sv8pt5 number:81' },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"", apiQ:'set.id:sv8pt5 number:20' },
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
-  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEF 070",        set:"Promos EN",                lang:"EN", value:"~2€",    img:"", apiQ:'name:"Tyrunt" number:70' },
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Promos EN",          lang:"EN", value:"~2€",    img:"", apiQ:'name:"Tyrunt" number:70' },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -653,7 +654,7 @@ const LANG_TABS_CFG = [
 
 function useCardImages(cards) {
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v7") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem("pk_img_v8") || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -662,7 +663,7 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v7", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem("pk_img_v8", JSON.stringify(n)); } catch {}
       return n;
     });
     (async () => {
