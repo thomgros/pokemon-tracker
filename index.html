@@ -660,8 +660,9 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
+  const CACHE_KEY = "pk_img_v18";
   const [cache, setCache] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("pk_img_v17") || "{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
 
   useEffect(() => {
@@ -670,41 +671,110 @@ function useCardImages(cards) {
     let alive = true;
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
-      try { localStorage.setItem("pk_img_v17", JSON.stringify(n)); } catch {}
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
       return n;
     });
+
+    // Teste si une URL charge en tant qu'image (ne nécessite pas CORS)
+    const tryImg = (url, ms = 6000) => new Promise(res => {
+      const t = new Image();
+      const timer = setTimeout(() => { t.src = ""; res(false); }, ms);
+      t.onload  = () => { clearTimeout(timer); res(true); };
+      t.onerror = () => { clearTimeout(timer); res(false); };
+      t.src = url;
+    });
+
+    // Extrait le numéro JP de la carte depuis son fullName ("Ho-Oh ex 021/193" → "021")
+    const jpNumOf = card => (card.fullName?.match(/\b(\d+)\//) ?? [])[1] ?? null;
+
     (async () => {
-      for (const card of toFetch) {
+      outer: for (const card of toFetch) {
         if (!alive) break;
-        // TCGdex FR pour cartes françaises (série Méga-Évolution)
+
+        // ── FR : TCGdex série Méga-Évolution ─────────────────────────────────
         if (card.lang === 'FR') {
           const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
-          const mFr = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
-          if (mFr && meMap[mFr[1]]) {
-            const frUrl = `https://assets.tcgdex.net/fr/me/${meMap[mFr[1]]}/${parseInt(mFr[2])}/high.webp`;
-            const ok = await new Promise(res => {
-              const t = new Image();
-              const timer = setTimeout(() => res(false), 5000);
-              t.onload = () => { clearTimeout(timer); res(true); };
-              t.onerror = () => { clearTimeout(timer); res(false); };
-              t.src = frUrl;
-            });
-            if (ok) { save(card.id, frUrl); continue; }
+          const m = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
+          if (m && meMap[m[1]]) {
+            const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${parseInt(m[2])}/high.webp`;
+            if (await tryImg(url)) { save(card.id, url); continue; }
           }
         }
-        // Source JP directe (TCGdex ja ou pokemon-card.com) pour sets M2α/M3/M4
-        if (card.jpImg) {
-          const ok = await new Promise(res => {
-            const t = new Image();
-            const timer = setTimeout(() => res(false), 5000);
-            t.onload  = () => { clearTimeout(timer); res(true); };
-            t.onerror = () => { clearTimeout(timer); res(false); };
-            t.src = card.jpImg;
-          });
-          if (ok) { save(card.id, card.jpImg); continue; }
+
+        // ── JP : cascade de sources ───────────────────────────────────────────
+        if (card.lang === 'JP') {
+          const num = jpNumOf(card);           // numéro JP brut (ex: "021", "159")
+          const setM = card.apiQ?.match(/set\.id:(\S+)/);
+          const setId = setM?.[1];
+
+          // Table de correspondance → TCGdex (serie / setId)
+          const tcgdexMap = {
+            me3:   { serie: 'M',  set: 'M3'    },
+            sv11b: { serie: 'SV', set: 'SV11B' },
+            sv4k:  { serie: 'SV', set: 'SV4K'  },
+            sv2p:  { serie: 'SV', set: 'SV2P'  },
+          };
+          // sets JP sans équivalent TCGdex → pokemon-card.com via proxies
+          const pokemonCardCode = { me2pt5: 'M2a', me4: 'M4' };
+
+          // 1. jpImg codé en dur sur la carte (wsrv.nl ou TCGdex)
+          if (card.jpImg && await tryImg(card.jpImg)) {
+            save(card.id, card.jpImg); continue outer;
+          }
+
+          // 2. TCGdex CDN directement (avec le bon chemin série)
+          if (setId && tcgdexMap[setId] && num) {
+            const { serie, set } = tcgdexMap[setId];
+            const localId = num.padStart(3, '0');
+            const cdnUrl = `https://assets.tcgdex.net/ja/${serie}/${set}/${localId}/high.webp`;
+            if (await tryImg(cdnUrl)) { save(card.id, cdnUrl); continue outer; }
+
+            // 3. TCGdex API (retourne l'URL exacte même si localId diffère)
+            try {
+              const r = await fetch(`https://api.tcgdex.net/v2/ja/cards/${set}-${localId}`);
+              if (r.ok) {
+                const d = await r.json();
+                if (d?.image) {
+                  const apiUrl = `${d.image}/high.webp`;
+                  if (await tryImg(apiUrl)) { save(card.id, apiUrl); continue outer; }
+                }
+              }
+            } catch {}
+          }
+
+          // 4. pokemon-card.com via proxies successifs (M2α, M4)
+          if (setId && pokemonCardCode[setId] && num) {
+            const base = `https://www.pokemon-card.com/assets/images/card_images/large/${pokemonCardCode[setId]}/${num}.jpg`;
+            const proxies = [
+              `https://wsrv.nl/?url=${encodeURIComponent(base)}`,
+              `https://wsrv.nl/?url=${encodeURIComponent(base)}&default=1`,
+              `https://external-content.duckduckgo.com/iu/?u=${encodeURIComponent(base)}&f=1`,
+              `https://corsproxy.io/?${encodeURIComponent(base)}`,
+            ];
+            for (const proxy of proxies) {
+              if (!alive) break outer;
+              if (await tryImg(proxy)) { save(card.id, proxy); continue outer; }
+            }
+          }
+
+          // 5. Fallback JP : pokemontcg.io API (illustration EN, meilleur que rien)
+          if (card.apiQ) {
+            try {
+              const r = await fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(card.apiQ)}&pageSize=5&select=images`);
+              if (r.ok) {
+                const d = await r.json();
+                const img = d?.data?.[0]?.images?.large ?? null;
+                if (img) { save(card.id, img); continue outer; }
+              }
+            } catch {}
+          }
+
+          save(card.id, null);
+          await new Promise(r => setTimeout(r, 100));
+          continue outer;
         }
-        // Construction directe de l'URL CDN selon set.id + number (évite un appel API)
-        // Sauf pour les sets récents sans scans — on passe par l'API pour éviter le placeholder dos de carte
+
+        // ── EN : CDN pokemontcg.io direct (évite l'appel API) ────────────────
         const cdnM = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
         if (cdnM) {
           const setId = cdnM[1], num = parseInt(cdnM[2]);
@@ -712,14 +782,14 @@ function useCardImages(cards) {
             save(card.id, `https://images.pokemontcg.io/${setId}/${num}_hires.png`);
             continue;
           }
-          // sets sans CDN fiable → appel API, null si absent → fallback texte
         }
-        // Sinon requête API pokemontcg.io
+
+        // ── Fallback : pokemontcg.io API ─────────────────────────────────────
         let query;
         if (card.apiQ) {
           query = card.apiQ;
         } else {
-          const m = card.fullName.match(/\b(\d+)\//);
+          const m = card.fullName?.match(/\b(\d+)\//);
           if (!m) { save(card.id, null); continue; }
           query = `name:"${card.name}" number:${parseInt(m[1], 10)}`;
         }
