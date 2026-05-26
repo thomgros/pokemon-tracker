@@ -97,9 +97,10 @@ const PRIORITY_CONFIG = {
 };
 
 const TYPE_CONFIG = {
-  vintage:   { label: "Vintage",    color: "#f59e0b" },
-  modern:    { label: "Modern",     color: "#60a5fa" },
-  collector: { label: "Collection", color: "#f472b6" },
+  vintage:   { label: "Vintage",          color: "#f59e0b" },
+  modern:    { label: "Modern",           color: "#60a5fa" },
+  collector: { label: "Collection",       color: "#f472b6" },
+  anniv30:   { label: "30e Anniversaire", color: "#c084fc" },
 };
 
 const STATUS_CONFIG = {
@@ -128,7 +129,10 @@ const DEFAULT_WATCH = [
   { id: 15, name: "Altaria ex SIR",          ebayQuery: "Altaria ex 253/182 Paradox Rift Near Mint",                               set: "Paradox Rift",           number: "253/182", maxPrice: 60,   priority: 3, lang: "EN", type: "modern" },
   { id: 11, name: "Rayquaza Gold Star",       ebayQuery: "Rayquaza Gold Star 107/97 EX Deoxys Near Mint",                         set: "EX Deoxys",              number: "107/97",  maxPrice: 1000, priority: 4, lang: "EN", type: "vintage" },
   { id: 12, name: "Mega Lopunny + Jigglypuff GX", ebayQuery: "Mega Lopunny Jigglypuff GX 226/236 Cosmic Eclipse Alt Art Near Mint", set: "Cosmic Eclipse",      number: "226/236", maxPrice: 120,  priority: 5, lang: "EN", type: "collector" },
-  { id: 13, name: "Jigglypuff Shiny Rare JP", ebayQuery: "Jigglypuff 306/190 SV4a Shiny Treasure ex Japanese Near Mint",          set: "Shiny Treasure ex",      number: "306/190", maxPrice: 35,   priority: 5, lang: "JP", type: "collector" },
+  { id: 13, name: "Jigglypuff Shiny Rare JP",       ebayQuery: "Jigglypuff 306/190 SV4a Shiny Treasure ex Japanese Near Mint",              set: "Shiny Treasure ex",   number: "306/190", maxPrice: 35,  priority: 5, lang: "JP", type: "collector" },
+  // ── 30e Anniversaire ──────────────────────────────────────────────────────
+  { id: 16, name: "Darkrai & Cresselia LEGEND",    ebayQuery: "Darkrai Cresselia Legend 99/102 100/102 Triumphant Near Mint",                set: "Triumphant",          number: "99-100/102", maxPrice: 55,  priority: 2, lang: "EN", type: "anniv30" },
+  { id: 17, name: "Palkia Lv.X",                   ebayQuery: "Palkia Lv.X 126/106 Great Encounters Near Mint",                             set: "Great Encounters",    number: "126/106", maxPrice: 45,  priority: 3, lang: "EN", type: "anniv30" },
 ];
 
 const DEFAULT_OWNED = [
@@ -367,7 +371,7 @@ function AddCardForm({ onAdd, onClose }) {
         <div>
           <label style={css.label}>Type</label>
           <select style={css.input} value={f.type} onChange={e => upd("type", e.target.value)}>
-            <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option>
+            <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
           </select>
         </div>
       </div>
@@ -1458,7 +1462,7 @@ function PokemonTracker() {
             </select>
             <select value={filterT} onChange={e => setFilterT(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
               <option value="all">Tous types</option>
-              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option>
+              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
             </select>
           </div>
           {showAddWatch && <AddCardForm onAdd={addWatch} onClose={() => setShowAddWatch(false)} />}
