@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v18";
+  const CACHE_KEY = "pk_img_v19";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -714,8 +714,8 @@ function useCardImages(cards) {
             sv4k:  { serie: 'SV', set: 'SV4K'  },
             sv2p:  { serie: 'SV', set: 'SV2P'  },
           };
-          // sets JP sans équivalent TCGdex → pokemon-card.com via proxies
-          const pokemonCardCode = { me2pt5: 'M2a', me4: 'M4' };
+          // Codes dossier sur pokemon-card.com (fallback si TCGdex n'a pas encore les images)
+          const pokemonCardCode = { me2pt5: 'M2a', me4: 'M4', me3: 'M3', sv11b: 'SV11B' };
 
           // 1. jpImg codé en dur sur la carte (wsrv.nl ou TCGdex)
           if (card.jpImg && await tryImg(card.jpImg)) {
@@ -742,14 +742,16 @@ function useCardImages(cards) {
             } catch {}
           }
 
-          // 4. pokemon-card.com via proxies successifs (M2α, M4)
+          // 4. pokemon-card.com : accès direct puis cascade de proxies
           if (setId && pokemonCardCode[setId] && num) {
-            const base = `https://www.pokemon-card.com/assets/images/card_images/large/${pokemonCardCode[setId]}/${num}.jpg`;
+            const code = pokemonCardCode[setId];
+            const base = `https://www.pokemon-card.com/assets/images/card_images/large/${code}/${num}.jpg`;
             const proxies = [
-              `https://wsrv.nl/?url=${encodeURIComponent(base)}`,
-              `https://wsrv.nl/?url=${encodeURIComponent(base)}&default=1`,
-              `https://external-content.duckduckgo.com/iu/?u=${encodeURIComponent(base)}&f=1`,
-              `https://corsproxy.io/?${encodeURIComponent(base)}`,
+              base,                                                                                            // accès direct (fonctionne si navigateur n'envoie pas de Referer)
+              `https://wsrv.nl/?url=${encodeURIComponent(base)}`,                                             // proxy image CDN
+              `https://cdn.statically.io/img/www.pokemon-card.com/assets/images/card_images/large/${code}/${num}.jpg`, // Statically CDN
+              `https://external-content.duckduckgo.com/iu/?u=${encodeURIComponent(base)}&f=1`,               // DuckDuckGo image proxy
+              `https://corsproxy.io/?${encodeURIComponent(base)}`,                                            // CORS proxy
             ];
             for (const proxy of proxies) {
               if (!alive) break outer;
