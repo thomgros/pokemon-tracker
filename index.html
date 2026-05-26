@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v19";
+  const CACHE_KEY = "pk_img_v20";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -740,6 +740,12 @@ function useCardImages(cards) {
                 }
               }
             } catch {}
+          }
+
+          // 3.5. Images hébergées dans le repo GitHub (via workflow Actions)
+          if (setId && pokemonCardCode[setId] && num) {
+            const repoUrl = `https://raw.githubusercontent.com/thomgros/pokemon-tracker/main/cards/${pokemonCardCode[setId]}/${num}.jpg`;
+            if (await tryImg(repoUrl)) { save(card.id, repoUrl); continue outer; }
           }
 
           // 4. pokemon-card.com : accès direct puis cascade de proxies

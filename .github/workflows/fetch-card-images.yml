@@ -1,0 +1,63 @@
+name: Fetch JP Card Images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download JP card images from pokemon-card.com
+        run: |
+          mkdir -p cards/M3 cards/SV11B cards/M2a cards/M4
+
+          download() {
+            local set=$1
+            local num=$2
+            local url="https://www.pokemon-card.com/assets/images/card_images/large/${set}/${num}.jpg"
+            local out="cards/${set}/${num}.jpg"
+            http_code=$(curl -s -o "$out" -w "%{http_code}" \
+              -H "Referer: https://www.pokemon-card.com/" \
+              -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
+              -H "Accept: image/webp,image/apng,image/*,*/*;q=0.8" \
+              "$url")
+            size=$(stat -c%s "$out" 2>/dev/null || echo 0)
+            if [ "$http_code" = "200" ] && [ "$size" -gt 5000 ]; then
+              echo "✓ ${set}/${num}.jpg (${size} bytes)"
+            else
+              rm -f "$out"
+              echo "✗ ${set}/${num}.jpg (HTTP ${http_code}, size ${size})"
+            fi
+          }
+
+          echo "=== M3 - Nihil Zero ==="
+          for n in 054 016 061 103 084 092 081 021 115; do download M3 $n; done
+
+          echo "=== SV11B - Black Bolt ==="
+          for n in 159 069 151; do download SV11B $n; done
+
+          echo "=== M2a - Ascended Heroes ==="
+          for n in 021 145 194 207 232 036; do download M2a $n; done
+
+          echo "=== M4 - Ninja Spinner ==="
+          for n in 063 113 107 071; do download M4 $n; done
+
+          echo "=== Résultat ==="
+          find cards -name "*.jpg" | sort
+
+      - name: Commit images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cards/
+          if git diff --cached --quiet; then
+            echo "Aucune nouvelle image à committer."
+          else
+            git commit -m "feat: cache JP card images depuis pokemon-card.com"
+            git push
+          fi
