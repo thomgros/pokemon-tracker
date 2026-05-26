@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v21";
+  const CACHE_KEY = "pk_img_v22";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -754,6 +754,10 @@ function useCardImages(cards) {
             const code = pokemonCardCode[setId];
             const base = `https://www.pokemon-card.com/assets/images/card_images/large/${code}/${num}.jpg`;
             if (await tryImg(base)) { save(card.id, base); continue outer; }
+
+            // 4b. Wayback Machine (archive.org) — pas de protection hotlink
+            const archiveUrl = `https://web.archive.org/web/2im_/${base}`;
+            if (await tryImg(archiveUrl, 8000)) { save(card.id, archiveUrl); continue outer; }
           }
 
           // 5. Fallback JP : pokemontcg.io API (illustration EN, meilleur que rien)
