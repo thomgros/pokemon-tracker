@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v24";
+  const CACHE_KEY = "pk_img_v25";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -672,7 +672,7 @@ function useCardImages(cards) {
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
-        try { localStorage.removeItem("pk_img_v22"); localStorage.removeItem("pk_img_v23"); } catch {}
+        try { ['v22','v23','v24'].forEach(v => localStorage.removeItem(`pk_img_${v}`)); } catch {}
       return n;
     });
 
@@ -693,13 +693,44 @@ function useCardImages(cards) {
       outer: for (const card of toFetch) {
         if (!alive) break;
 
-        // ── FR : TCGdex série Méga-Évolution ─────────────────────────────────
+        // ── FR : cascade de sources ───────────────────────────────────────────
         if (card.lang === 'FR') {
-          const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
           const m = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
-          if (m && meMap[m[1]]) {
-            const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${parseInt(m[2])}/high.webp`;
-            if (await tryImg(url)) { save(card.id, url); continue; }
+          if (m) {
+            const numPad = m[2].padStart(3, '0');   // "55" → "055"
+            const numRaw = parseInt(m[2]).toString(); // "055" → "55" (sécurité)
+
+            // 1a. TCGdex ME series FR — essaie avec et sans padding
+            const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
+            if (meMap[m[1]]) {
+              for (const n of [numPad, numRaw]) {
+                const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${n}/high.webp`;
+                if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
+
+            // 1b. TCGdex SV standard sets FR (sv1-sv9+)
+            const svFrMap = {
+              'sv1':'SV1','sv2':'SV2','sv3':'SV3','sv3pt5':'SV3pt5',
+              'sv4':'SV4','sv4pt5':'SV4pt5','sv5':'SV5','sv6':'SV6',
+              'sv6pt5':'SV6pt5','sv7':'SV7','sv8':'SV8','sv8pt5':'SV8pt5','sv9':'SV9',
+            };
+            if (svFrMap[m[1]]) {
+              for (const n of [numPad, numRaw]) {
+                const url = `https://assets.tcgdex.net/fr/SV/${svFrMap[m[1]]}/${n}/high.webp`;
+                if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
+
+            // 1c. LimitlessTCG CDN FR — pour sets SV standard (même format que JP mais _FR_)
+            if (svFrMap[m[1]]) {
+              const ltcgSet = svFrMap[m[1]];
+              const n = parseInt(m[2]);
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR']) {
+                const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}_${v}_FR_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+              }
+            }
           }
         }
 
@@ -757,10 +788,14 @@ function useCardImages(cards) {
           if (setId && ltcgMap[setId] && num) {
             const ltcgSet = ltcgMap[setId];
             const n = parseInt(num, 10);
-            const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}`;
-            for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
-              const url = `${base}_${v}_JP_LG.png`;
-              if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+            // Essaie le code principal puis M2.5 comme alternative pour M2α
+            const ltcgSets = setId === 'me2pt5' ? [ltcgSet, 'M2.5'] : [ltcgSet];
+            for (const s of ltcgSets) {
+              const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${s}/${s}_${n}`;
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
+                const url = `${base}_${v}_JP_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+              }
             }
           }
 
