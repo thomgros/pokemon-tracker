@@ -660,7 +660,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v23";
+  const CACHE_KEY = "pk_img_v24";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -672,7 +672,7 @@ function useCardImages(cards) {
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
-        try { localStorage.removeItem("pk_img_v22"); } catch {}
+        try { localStorage.removeItem("pk_img_v22"); localStorage.removeItem("pk_img_v23"); } catch {}
       return n;
     });
 
@@ -752,7 +752,19 @@ function useCardImages(cards) {
             } catch {}
           }
 
-          // 3.5. Images hébergées dans le repo GitHub (via workflow Actions)
+          // 3.5. LimitlessTCG CDN — format confirmé : tpc/{SET}/{SET}_{num}_{variant}_JP_LG.png
+          const ltcgMap = { me2pt5:'M2a', me3:'M3', me4:'M4', sv11b:'SV11B', sv4k:'SV4K', sv2p:'SV2P' };
+          if (setId && ltcgMap[setId] && num) {
+            const ltcgSet = ltcgMap[setId];
+            const n = parseInt(num, 10);
+            const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}`;
+            for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
+              const url = `${base}_${v}_JP_LG.png`;
+              if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+            }
+          }
+
+          // 3.6. Images hébergées dans le repo GitHub (via workflow Actions)
           if (setId && pokemonCardCode[setId] && num) {
             const repoUrl = `https://raw.githubusercontent.com/thomgros/pokemon-tracker/main/cards/${pokemonCardCode[setId]}/${num}.jpg`;
             if (await tryImg(repoUrl)) { save(card.id, repoUrl); continue outer; }
