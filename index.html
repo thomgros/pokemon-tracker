@@ -564,7 +564,7 @@ const GRADING_META = {
   "o11": { apiQ:'set.id:me4 number:22',                        grade:"PSA 8-9" },
   "o12": { apiQ:'name:"Mega Dragonite ex" set.id:me2pt5',       grade:"PSA 10", jpImg:'https://assets.tcgdex.net/ja/M/M2a/232/high.webp' },
   "o13": { apiQ:'set.id:me2pt5 number:47',                     grade:"PSA 9",  jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
-  "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓" },
+  "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓", jpImg:'https://assets.tcgdex.net/ja/SV/SV2a/205/high.webp' },
   "o14": { apiQ:'set.id:me4 number:15',                        grade:"à grader" },
   "o15": { apiQ:'set.id:me4 number:91',                        grade:"à grader" },
   "o16": { apiQ:'name:Lugia set.name:"Neo Genesis" number:9',  grade:"PSA 7-8" },
@@ -787,7 +787,7 @@ function useCardImages(cards) {
           }
 
           // 3.5. LimitlessTCG CDN — format confirmé : tpc/{SET}/{SET}_{num}_{variant}_JP_LG.png
-          const ltcgMap = { me2pt5:'M2a', me3:'M3', me4:'M4', sv11b:'SV11B', sv4k:'SV4K', sv2p:'SV2P' };
+          const ltcgMap = { me2pt5:'M2a', me3:'M3', me4:'M4', sv11b:'SV11B', sv4k:'SV4K', sv2p:'SV2P', sv2a:'SV2a' };
           if (setId && ltcgMap[setId] && num) {
             const ltcgSet = ltcgMap[setId];
             const n = parseInt(num, 10);
