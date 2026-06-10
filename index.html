@@ -148,6 +148,7 @@ const DEFAULT_OWNED = [
   { id: "o13", name: "Méga-Yukimenoko ex 036/193",     price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 9 probable · coins propres",                    ebayQuery: "" },
   { id: "o14", name: "Méga-Néméliős ex 015/086",       price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA 10 candidat ⭐⭐ · coins parfaits",              ebayQuery: "" },
   { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA candidat",                                      ebayQuery: "" },
+  { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "PSA 7-8 estimé · holo propre (printlines ok), 2 pts blancs coin BG · catalyseur 30e Anniversaire ⭐", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
   // Envoi grading séparé
   { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
   // Collection physique
@@ -549,6 +550,7 @@ const GRADING_HISTORY = {
   "o11": { h:[{date:"Jan 26",nm:15,psa9:30,psa10:68},{date:"Fév 26",nm:15,psa9:30,psa10:70},{date:"Mar 26",nm:16,psa9:32,psa10:73},{date:"Avr 26",nm:16,psa9:32,psa10:75},{date:"Mai 26",nm:17,psa9:34,psa10:78}] },
   "o12": { h:[{date:"Jan 26",nm:45,psa9:82,psa10:185},{date:"Fév 26",nm:46,psa9:84,psa10:190},{date:"Mar 26",nm:48,psa9:87,psa10:197},{date:"Avr 26",nm:49,psa9:89,psa10:201},{date:"Mai 26",nm:50,psa9:91,psa10:205}] },
   "o13": { h:[{date:"Jan 26",nm:28,psa9:55,psa10:122},{date:"Fév 26",nm:29,psa9:56,psa10:125},{date:"Mar 26",nm:30,psa9:58,psa10:128},{date:"Avr 26",nm:31,psa9:59,psa10:132},{date:"Mai 26",nm:32,psa9:61,psa10:136}] },
+  "o16": { h:[{date:"Jan 26",nm:650,psa9:1600,psa10:5800},{date:"Mar 26",nm:700,psa9:1800,psa10:6200},{date:"Jun 26",nm:750,psa9:1950,psa10:6500}] },
   "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
 };
 
@@ -565,6 +567,7 @@ const GRADING_META = {
   "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓" },
   "o14": { apiQ:'set.id:me4 number:15',                        grade:"à grader" },
   "o15": { apiQ:'set.id:me4 number:91',                        grade:"à grader" },
+  "o16": { apiQ:'name:Lugia set.name:"Neo Genesis" number:9',  grade:"PSA 7-8" },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
@@ -600,8 +603,8 @@ const CLASSEUR_CARDS = [
   // Méga-Dratatin ex + Méga-Yukimenoko ex exclus (à grader)
   { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", img:"", apiQ:'set.id:me2pt5 number:26',              jpImg:'https://assets.tcgdex.net/ja/M/M2a/021/high.webp' },
   { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    img:"", apiQ:'name:"Terapagos ex" set.id:me2pt5',       jpImg:'https://assets.tcgdex.net/ja/M/M2a/145/high.webp' },
-  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'',                                        jpImg:'https://assets.tcgdex.net/ja/M/M2a/194/high.webp' },
-  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'',                                        jpImg:'https://assets.tcgdex.net/ja/M/M2a/207/high.webp' },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:me2pt5 number:194',               jpImg:'https://assets.tcgdex.net/ja/M/M2a/194/high.webp' },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    img:"", apiQ:'set.id:me2pt5 number:207',               jpImg:'https://assets.tcgdex.net/ja/M/M2a/207/high.webp' },
   // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
   { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   img:"", apiQ:'set.id:me3 number:55',  jpImg:'https://assets.tcgdex.net/ja/M/M3/054/high.webp' },
   { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    img:"", apiQ:'set.id:me3 number:16',  jpImg:'https://assets.tcgdex.net/ja/M/M3/016/high.webp' },
@@ -660,7 +663,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v24";
+  const CACHE_KEY = "pk_img_v25";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -672,7 +675,7 @@ function useCardImages(cards) {
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
-        try { localStorage.removeItem("pk_img_v22"); localStorage.removeItem("pk_img_v23"); } catch {}
+        try { ['v22','v23','v24'].forEach(v => localStorage.removeItem(`pk_img_${v}`)); } catch {}
       return n;
     });
 
@@ -693,13 +696,44 @@ function useCardImages(cards) {
       outer: for (const card of toFetch) {
         if (!alive) break;
 
-        // ── FR : TCGdex série Méga-Évolution ─────────────────────────────────
+        // ── FR : cascade de sources ───────────────────────────────────────────
         if (card.lang === 'FR') {
-          const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
           const m = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
-          if (m && meMap[m[1]]) {
-            const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${parseInt(m[2])}/high.webp`;
-            if (await tryImg(url)) { save(card.id, url); continue; }
+          if (m) {
+            const numPad = m[2].padStart(3, '0');   // "55" → "055"
+            const numRaw = parseInt(m[2]).toString(); // "055" → "55" (sécurité)
+
+            // 1a. TCGdex ME series FR — essaie avec et sans padding
+            const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
+            if (meMap[m[1]]) {
+              for (const n of [numPad, numRaw]) {
+                const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${n}/high.webp`;
+                if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
+
+            // 1b. TCGdex SV standard sets FR (sv1-sv9+)
+            const svFrMap = {
+              'sv1':'SV1','sv2':'SV2','sv3':'SV3','sv3pt5':'SV3pt5',
+              'sv4':'SV4','sv4pt5':'SV4pt5','sv5':'SV5','sv6':'SV6',
+              'sv6pt5':'SV6pt5','sv7':'SV7','sv8':'SV8','sv8pt5':'SV8pt5','sv9':'SV9',
+            };
+            if (svFrMap[m[1]]) {
+              for (const n of [numPad, numRaw]) {
+                const url = `https://assets.tcgdex.net/fr/SV/${svFrMap[m[1]]}/${n}/high.webp`;
+                if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
+
+            // 1c. LimitlessTCG CDN FR — pour sets SV standard (même format que JP mais _FR_)
+            if (svFrMap[m[1]]) {
+              const ltcgSet = svFrMap[m[1]];
+              const n = parseInt(m[2]);
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR']) {
+                const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}_${v}_FR_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+              }
+            }
           }
         }
 
@@ -757,10 +791,14 @@ function useCardImages(cards) {
           if (setId && ltcgMap[setId] && num) {
             const ltcgSet = ltcgMap[setId];
             const n = parseInt(num, 10);
-            const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}`;
-            for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
-              const url = `${base}_${v}_JP_LG.png`;
-              if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+            // Essaie le code principal puis M2.5 comme alternative pour M2α
+            const ltcgSets = setId === 'me2pt5' ? [ltcgSet, 'M2.5'] : [ltcgSet];
+            for (const s of ltcgSets) {
+              const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${s}/${s}_${n}`;
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
+                const url = `${base}_${v}_JP_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
+              }
             }
           }
 
@@ -1604,7 +1642,7 @@ function PokemonTracker() {
           <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 11 mai ✅</div>
             <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
-              {gradingCount} cartes en grading PSA chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex) · prochain envoi 15 juin
+              {gradingCount} cartes en grading PSA chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex) · prochain envoi 15 juin : Lugia Neo Genesis + autres
             </div>
             <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
           </div>
