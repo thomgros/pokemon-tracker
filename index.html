@@ -147,8 +147,10 @@ const DEFAULT_OWNED = [
   { id: "o12", name: "Méga-Dratatin ex 232/193",       price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 10 candidat ⭐ · tous coins parfaits",          ebayQuery: "" },
   { id: "o13", name: "Méga-Yukimenoko ex 036/193",     price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 9 probable · coins propres",                    ebayQuery: "" },
   { id: "o14", name: "Méga-Néméliős ex 015/086",       price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA 10 candidat ⭐⭐ · coins parfaits",              ebayQuery: "" },
-  { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA candidat",                                      ebayQuery: "" },
+  { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "collection", set: "CRI Chaos Rising",      lang: "FR", note: "IR mid-tier (~14$ raw) · PSA 10 ne rentabilise pas · garder brut",               ebayQuery: "" },
   { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "PSA 7-8 estimé · holo propre (printlines ok), 2 pts blancs coin BG · catalyseur 30e Anniversaire ⭐", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
+  { id: "o17", name: "Yveltal ex 105/088",            price: 0,      status: "à grader",   set: "POR Promo",             lang: "FR", note: "Full art promo · vérifier hype avant envoi",               ebayQuery: "Yveltal ex 105/088 French Promo Near Mint" },
+  { id: "o18", name: "Dogrino ex de Pepper 139/182",  price: 0,      status: "à grader",   set: "Destined Rivals (DRI)", lang: "FR", note: "Character FA SAR · surveiller hype",                        ebayQuery: "Kieran Bouffalant ex 139/182 Destined Rivals Near Mint" },
   // Envoi grading séparé
   { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
   // Collection physique
@@ -566,8 +568,10 @@ const GRADING_META = {
   "o13": { apiQ:'set.id:me2pt5 number:47',                     grade:"PSA 9",  jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
   "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓", jpImg:'https://assets.tcgdex.net/ja/SV/SV2a/205/high.webp' },
   "o14": { apiQ:'set.id:me4 number:15',                        grade:"à grader" },
-  "o15": { apiQ:'set.id:me4 number:91',                        grade:"à grader" },
+  "o15": { apiQ:'set.id:me4 number:91',                        grade:"collection" },
   "o16": { apiQ:'name:Lugia set.name:"Neo Genesis" number:9',  grade:"PSA 7-8" },
+  "o17": { apiQ:'name:"Yveltal ex" number:105',                grade:"à grader" },
+  "o18": { apiQ:'set.id:sv9 number:139',                       grade:"à grader" },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
