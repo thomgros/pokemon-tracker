@@ -677,7 +677,7 @@ const CLASSEUR_CARDS = [
   { id:"c79", name:"Tauros",                 fullName:"Tauros",                      set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Tauros' },
   { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex",                 set:"EN",                        lang:"EN", value:"~8€",    img:"", apiQ:'name:"Beedrill ex"' },
   { id:"c81", name:"M Pyroar-EX",            fullName:"M Pyroar-EX",                 set:"XY · Fates Collide",        lang:"EN", value:"~5€",    img:"", apiQ:'name:"M Pyroar-EX"' },
-  { id:"c82", name:"Xerneas",               fullName:"Xerneas",                     set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Xerneas hp:130' },
+  { id:"c82", name:"Xerneas SIR",           fullName:"Xerneas 097/086",             set:"Journey Together",          lang:"EN", value:"~5€",    img:"", apiQ:'name:Xerneas number:97' },
 
   // ── 🇯🇵 Nouvelles cartes JP ──────────────────────────────────────────────────
   { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   img:"", apiQ:'set.id:me2pt5 number:36', jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
@@ -694,7 +694,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v28";
+  const CACHE_KEY = "pk_img_v29";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
