@@ -2,6 +2,11 @@ name: Fetch JP Card Images
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
 
 jobs:
   fetch:
