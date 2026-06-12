@@ -654,6 +654,33 @@ const CLASSEUR_CARDS = [
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
   { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Promos EN",          lang:"EN", value:"~2€",    img:"", apiQ:'name:"Tyrunt" number:70' },
   { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"", apiQ:'set.id:sv8pt5 number:119' },
+
+  // ── 🇫🇷 Nouvelles cartes FR ──────────────────────────────────────────────────
+  { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/089",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me3 number:105' },
+  { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me4 number:35' },
+  { id:"c65", name:"Nostenfer",              fullName:"Nostenfer 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:73' },
+  { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:me4 number:22' },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 127/089",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:127' },
+  { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:91' },
+  { id:"c69", name:"Fragrain",              fullName:"Fragrain 183/217",            set:"ASC FR",                    lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me2pt5 number:183' },
+  { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me4 number:65' },
+  { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  img:"", apiQ:'set.id:sv2 number:130' },
+  { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv3 number:22' },
+  { id:"c73", name:"Méga-Zygarde ex",        fullName:"Méga-Zygarde ex 007",         set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:mef number:7' },
+  { id:"c74", name:"Performance de Strykna", fullName:"Performance de Strykna 041/086",set:"CLN · Chaos Ascendant",  lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:41' },
+  { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/182",         set:"PAR · Destins de Paldea",   lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv4 number:23' },
+  { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   img:"", apiQ:'set.id:sv3 number:210' },
+  { id:"c77", name:"Dogrino ex de Pepper",   fullName:"Dogrino ex de Pepper 139/182",set:"DRI · Rivaux Émergents",    lang:"FR", value:"~5€",    img:"", apiQ:'set.id:sv9 number:139' },
+  { id:"c78", name:"Méga-Néméliős ex",       fullName:"Méga-Néméliős ex 075/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me4 number:75' },
+
+  // ── 🇬🇧 Nouvelles cartes EN ──────────────────────────────────────────────────
+  { id:"c79", name:"Tauros",                 fullName:"Tauros",                      set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Tauros' },
+  { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex",                 set:"EN",                        lang:"EN", value:"~8€",    img:"", apiQ:'name:"Beedrill ex"' },
+  { id:"c81", name:"Mega Pyroar ex",         fullName:"Mega Pyroar ex",              set:"CLN EN",                    lang:"EN", value:"~5€",    img:"", apiQ:'name:"Pyroar ex" set.id:me4' },
+  { id:"c82", name:"Xerneas",               fullName:"Xerneas",                     set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Xerneas' },
+
+  // ── 🇯🇵 Nouvelles cartes JP ──────────────────────────────────────────────────
+  { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   img:"", apiQ:'set.id:me2pt5 number:36', jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -667,7 +694,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v25";
+  const CACHE_KEY = "pk_img_v26";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
