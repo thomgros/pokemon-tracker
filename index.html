@@ -643,7 +643,7 @@ const CLASSEUR_CARDS = [
   { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:16' },
   { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:24' },
   { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:115' },
-  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'set.id:me3 number:89' },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'name:"Cheniti" set.id:me3' },
   { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:96' },
   // ── 🇬🇧 Ascended Heroes — ASC EN (217 cards) ─────────────────────────────
   { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   img:"", apiQ:'set.id:me2pt5 number:237' },
@@ -660,7 +660,7 @@ const CLASSEUR_CARDS = [
   { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me4 number:35' },
   { id:"c65", name:"Nostenfer",              fullName:"Nostenfer 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:73' },
   { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:me4 number:22' },
-  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 127/089",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"https://images.pokemontcg.io/me3/127_hires.png", apiQ:'set.id:me3 number:127' },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 127/089",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:127' },
   { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:91' },
   { id:"c69", name:"Fragrain",              fullName:"Fragrain 183/217",            set:"ASC FR",                    lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me2pt5 number:183' },
   { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me4 number:65' },
@@ -694,7 +694,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v30";
+  const CACHE_KEY = "pk_img_v31";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -740,6 +740,17 @@ function useCardImages(cards) {
               for (const n of [numPad, numRaw]) {
                 const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${n}/high.webp`;
                 if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
+
+            // 1a2. LimitlessTCG CDN FR — pour sets ME (fallback secret rares non indexés sur TCGdex)
+            const ltcgMeMap = { me1:'M1', me2:'M2', me2pt5:'M2a', me3:'M3', me4:'M4' };
+            if (ltcgMeMap[m[1]]) {
+              const ltcgSet = ltcgMeMap[m[1]];
+              const n = parseInt(m[2]);
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR', 'UR', 'HR']) {
+                const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}_${v}_FR_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
               }
             }
 
