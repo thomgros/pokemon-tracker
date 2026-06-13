@@ -685,7 +685,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v31";
+  const CACHE_KEY = "pk_img_v32";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
