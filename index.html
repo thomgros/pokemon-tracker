@@ -1550,7 +1550,7 @@ function RessourcesTab() {
 
 function PokemonTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pk_watch", DEFAULT_WATCH);
-  const [ownedList, setOwnedList, resetOwned] = useStorage("pk_owned", DEFAULT_OWNED);
+  const [ownedList, setOwnedList, resetOwned] = useStorage("pk_owned_v2", DEFAULT_OWNED);
   const [tab, setTab]             = useState("watch");
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
