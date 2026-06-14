@@ -236,6 +236,7 @@ function CardRow({ card, onDelete }) {
   const [price, setPrice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [cardImg, setCardImg] = useState(null);
   const tc = TYPE_CONFIG[card.type];
   const pc = PRIORITY_CONFIG[card.priority];
 
@@ -248,6 +249,17 @@ function CardRow({ card, onDelete }) {
   }, [card.ebayQuery, loaded]);
 
   useEffect(() => { if (open && !loaded) load(); }, [open, loaded, load]);
+
+  useEffect(() => {
+    if (!open || cardImg !== null) return;
+    const num = card.number?.match(/\d+/)?.[0];
+    if (!num) { setCardImg(""); return; }
+    const q = `name:"${card.name}" number:${num}`;
+    fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=1&select=images`)
+      .then(r => r.json())
+      .then(d => setCardImg(d?.data?.[0]?.images?.large || ""))
+      .catch(() => setCardImg(""));
+  }, [open, cardImg, card.name, card.number]);
 
   const avgEur = price && !price.corsBlocked ? toEur(price.avg) : null;
   const isGood = avgEur !== null && avgEur < card.maxPrice;
@@ -274,6 +286,9 @@ function CardRow({ card, onDelete }) {
 
       {open && (
         <div onClick={e => e.stopPropagation()} style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+            {cardImg && <img src={cardImg} alt={card.name} style={{ width: 90, borderRadius: 8, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }} />}
+            <div style={{ flex: 1 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
               <div style={css.label}>Set</div>
@@ -282,6 +297,8 @@ function CardRow({ card, onDelete }) {
             <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
               <div style={css.label}>Numéro</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.number}</div>
+            </div>
+          </div>
             </div>
           </div>
 
@@ -651,7 +668,7 @@ const CLASSEUR_CARDS = [
   { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me4 number:35' },
   { id:"c65", name:"Nostenfer",              fullName:"Nostenfer 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:73' },
   { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:me4 number:22' },
-  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 127/089",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:127' },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 117/088",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:117' },
   { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:91' },
   { id:"c69", name:"Fragrain",              fullName:"Fragrain 183/217",            set:"ASC FR",                    lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me2pt5 number:183' },
   { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me4 number:65' },
@@ -685,7 +702,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v32";
+  const CACHE_KEY = "pk_img_v33";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -725,7 +742,7 @@ function useCardImages(cards) {
             const numPad = m[2].padStart(3, '0');   // "55" → "055"
             const numRaw = parseInt(m[2]).toString(); // "055" → "55" (sécurité)
 
-            // 1a. TCGdex ME series FR — essaie avec et sans padding
+            // 1a. TCGdex ME series FR — essaie lowercase puis uppercase
             const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
             if (meMap[m[1]]) {
               for (const n of [numPad, numRaw]) {
@@ -733,13 +750,21 @@ function useCardImages(cards) {
                 if (await tryImg(url)) { save(card.id, url); continue outer; }
               }
             }
+            // 1a1. TCGdex ME series FR — variante majuscule (ME/ME3/, ME/MEP/, etc.)
+            const meMapUP = {'me1':'ME1','me2':'ME2','me3':'ME3','me4':'ME4','me2pt5':'ME2.5','mef':'MEP'};
+            if (meMapUP[m[1]]) {
+              for (const n of [numPad, numRaw]) {
+                const url = `https://assets.tcgdex.net/fr/ME/${meMapUP[m[1]]}/${n}/high.webp`;
+                if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+            }
 
             // 1a2. LimitlessTCG CDN FR — pour sets ME (fallback secret rares non indexés sur TCGdex)
-            const ltcgMeMap = { me1:'M1', me2:'M2', me2pt5:'M2a', me3:'M3', me4:'M4' };
+            const ltcgMeMap = { me1:'M1', me2:'M2', me2pt5:'M2a', me3:'M3', me4:'M4', mef:'MEP' };
             if (ltcgMeMap[m[1]]) {
               const ltcgSet = ltcgMeMap[m[1]];
               const n = parseInt(m[2]);
-              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR', 'UR', 'HR']) {
+              for (const v of ['P', 'R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR', 'UR', 'HR']) {
                 const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}_${v}_FR_LG.png`;
                 if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
               }
@@ -873,7 +898,7 @@ function useCardImages(cards) {
         const cdnM = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
         if (cdnM) {
           const setId = cdnM[1], num = parseInt(cdnM[2]);
-          if (!['me2pt5','me3','me4','mef','sv11b','sv4k','sv2p'].includes(setId)) {
+          if (!['me2pt5','me3','mef','sv11b','sv4k','sv2p'].includes(setId)) {
             save(card.id, `https://images.pokemontcg.io/${setId}/${num}_hires.png`);
             continue;
           }
