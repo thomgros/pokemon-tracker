@@ -143,7 +143,7 @@ const DEFAULT_OWNED = [
   { id: "o4",  name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin",             ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
   { id: "o10", name: "Flareon ex SIR PRE 146/131",     price: 149.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin", ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Near Mint" },
   { id: "o19", name: "Pikachu & Zekrom-GX 33/181",     price: 35,     status: "grading",    set: "Team Up",               lang: "EN", note: "TAG TEAM · PSA 10 estimé · envoyé PokéLoutre 13 juin",               ebayQuery: "Pikachu Zekrom GX 33/181 Team Up Near Mint" },
-  { id: "o20", name: "Méga-Dracolosse ex 229/193",      price: 0,      status: "grading",    set: "M2α Ascended Heroes",   lang: "JP", note: "Secret rare M2α · envoyé PokéLoutre 13 juin",                          ebayQuery: "" },
+  { id: "o20", name: "Méga-Dracolosse ex 232/193",      price: 0,      status: "grading",    set: "M2α Ascended Heroes",   lang: "JP", note: "Secret rare M2α · envoyé PokéLoutre 13 juin",                          ebayQuery: "" },
   { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "collection", set: "CRI Chaos Rising",      lang: "FR", note: "IR mid-tier (~14$ raw) · PSA 10 ne rentabilise pas · garder brut",               ebayQuery: "" },
   { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "transit",    set: "Neo Genesis",           lang: "EN", note: "Acheté · en transit · à grader dès réception · PSA 7-8 estimé · holo propre, 2 pts blancs coin BG", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
   // Envoi grading séparé
@@ -597,7 +597,7 @@ const GRADING_META = {
   "o15": { apiQ:'set.id:me4 number:91',                        grade:"collection" },
   "o16": { apiQ:'name:Lugia set.name:"Neo Genesis" number:9',  grade:"PSA 7-8" },
   "o19": { apiQ:'set.id:sm9 number:33',                        grade:"grading" },
-  "o20": { apiQ:'set.id:me2pt5 number:229',                    grade:"grading", jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
+  "o20": { apiQ:'set.id:me2pt5 number:232',                    grade:"grading", jpImg:'https://assets.tcgdex.net/ja/M/M2a/232/high.webp' },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
@@ -720,7 +720,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v34";
+  const CACHE_KEY = "pk_img_v35";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
