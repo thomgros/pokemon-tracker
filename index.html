@@ -229,6 +229,26 @@ const relTime = ts => {
   return `il y a ${Math.floor(h / 24)}j`;
 };
 
+// ── Images directes pour la liste Surveiller (évite fetch/CORS) ──────────────
+const WATCH_IMGS = {
+  1:  "https://images.pokemontcg.io/base1/4_hires.png",
+  2:  "https://images.pokemontcg.io/base5/4_hires.png",
+  3:  "https://images.pokemontcg.io/sv3pt5/199_hires.png",
+  4:  "https://images.pokemontcg.io/shp/74_hires.png",
+  5:  "https://images.pokemontcg.io/neo1/9_hires.png",
+  7:  "https://images.pokemontcg.io/swsh8/271_hires.png",
+  8:  "https://images.pokemontcg.io/swsh7/215_hires.png",
+  9:  "https://images.pokemontcg.io/sv8pt5/156_hires.png",
+  10: "https://images.pokemontcg.io/base1/10_hires.png",
+  11: "https://images.pokemontcg.io/ex8/107_hires.png",
+  12: "https://images.pokemontcg.io/sm12/226_hires.png",
+  13: "https://assets.tcgdex.net/ja/SV/SV4a/306/high.webp",
+  14: "https://images.pokemontcg.io/sv2/259_hires.png",
+  15: "https://images.pokemontcg.io/sv4/253_hires.png",
+  16: "https://images.pokemontcg.io/hgss4/99_hires.png",
+  17: "https://images.pokemontcg.io/dp4/126_hires.png",
+};
+
 // ── CardRow ───────────────────────────────────────────────────────────────────
 
 function CardRow({ card, onDelete }) {
@@ -252,14 +272,13 @@ function CardRow({ card, onDelete }) {
 
   useEffect(() => {
     if (!open || cardImg !== null) return;
-    const num = card.number?.match(/\d+/)?.[0];
-    if (!num) { setCardImg(""); return; }
-    const q = `name:"${card.name}" number:${num}`;
-    fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=1&select=images`)
-      .then(r => r.json())
-      .then(d => setCardImg(d?.data?.[0]?.images?.large || ""))
-      .catch(() => setCardImg(""));
-  }, [open, cardImg, card.name, card.number]);
+    const url = WATCH_IMGS[card.id];
+    if (!url) { setCardImg(""); return; }
+    const img = new Image();
+    img.onload  = () => setCardImg(url);
+    img.onerror = () => setCardImg("");
+    img.src = url;
+  }, [open, cardImg, card.id]);
 
   const avgEur = price && !price.corsBlocked ? toEur(price.avg) : null;
   const isGood = avgEur !== null && avgEur < card.maxPrice;
@@ -590,7 +609,7 @@ const CLASSEUR_CARDS = [
   { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   img:"", apiQ:'set.id:me4 number:107' },
   { id:"c57", name:"Crocorible ex",      fullName:"Crocorible ex 055/086",      set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    img:"", apiQ:'set.id:me4 number:55' },
   { id:"c58", name:"Tauros",             fullName:"Tauros 096/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~4€",    img:"", apiQ:'set.id:me4 number:96' },
-  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~6€",    img:"", apiQ:'set.id:mef number:80' },
+  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~6€",    img:"https://assets.tcgdex.net/fr/M/MEP/080/high.webp", apiQ:'set.id:mef number:80' },
   { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:68' },
   { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:95' },
   { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:42' },
@@ -598,7 +617,7 @@ const CLASSEUR_CARDS = [
   { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me4 number:32' },
   // ── 🇫🇷 Méga-Évolution — ME01 / MEG (132 base cards) ───────────────────────
   { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me1 number:155' },
-  { id:"c09", name:"Ptyranidur promo",    fullName:"Ptyranidur promo MEP 070",    set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~4€",    img:"", apiQ:'set.id:mef number:70' },
+  { id:"c09", name:"Ptyranidur promo",    fullName:"Ptyranidur promo MEP 070",    set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~4€",    img:"https://assets.tcgdex.net/fr/M/MEP/070/high.webp", apiQ:'set.id:mef number:70' },
   // ── 🇫🇷 Perfect Order — ME03 / POR (088 base cards) ─────────────────────
   { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"POR · Perfect Order",      lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me3 number:31' },
   { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:62' },
@@ -651,7 +670,7 @@ const CLASSEUR_CARDS = [
   { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:16' },
   { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:24' },
   { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:115' },
-  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'name:"Cheniti" set.id:me3' },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"https://assets.tcgdex.net/en/M/ME3/089/high.webp", apiQ:'name:"Spewpa" set.id:me3 number:89' },
   { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:96' },
   // ── 🇬🇧 Ascended Heroes — ASC EN (217 cards) ─────────────────────────────
   { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   img:"", apiQ:'set.id:me2pt5 number:237' },
@@ -674,7 +693,7 @@ const CLASSEUR_CARDS = [
   { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me4 number:65' },
   { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  img:"", apiQ:'set.id:sv2 number:130' },
   { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv3 number:22' },
-  { id:"c73", name:"Méga-Zygarde ex",        fullName:"Méga-Zygarde ex 007",         set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:mef number:7' },
+  { id:"c73", name:"Méga-Zygarde ex",        fullName:"Méga-Zygarde ex 007",         set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~15€",   img:"https://assets.tcgdex.net/fr/M/MEP/007/high.webp", apiQ:'set.id:mef number:7' },
   { id:"c74", name:"Performance de Strykna", fullName:"Performance de Strykna 041/086",set:"CLN · Chaos Ascendant",  lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:41' },
   { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/182",         set:"PAR · Destins de Paldea",   lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv4 number:23' },
   { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   img:"", apiQ:'set.id:sv3 number:210' },
@@ -684,8 +703,8 @@ const CLASSEUR_CARDS = [
   // ── 🇬🇧 Nouvelles cartes EN ──────────────────────────────────────────────────
   { id:"c79", name:"Tauros",                 fullName:"Tauros",                      set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Tauros' },
   { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex",                 set:"EN",                        lang:"EN", value:"~8€",    img:"", apiQ:'name:"Beedrill ex"' },
-  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CLN · Chaos Ascendant EN",  lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me4 number:15' },
-  { id:"c82", name:"Xerneas SIR",           fullName:"Xerneas 097/086",             set:"Journey Together",          lang:"EN", value:"~5€",    img:"", apiQ:'name:Xerneas number:97' },
+  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CLN · Chaos Ascendant EN",  lang:"EN", value:"~5€",    img:"https://assets.tcgdex.net/en/M/ME4/015/high.webp", apiQ:'set.id:me4 number:15' },
+  { id:"c82", name:"Xerneas SIR",           fullName:"Xerneas 097/086",             set:"Journey Together",          lang:"EN", value:"~5€",    img:"https://assets.tcgdex.net/en/SV/SV9/097/high.webp", apiQ:'set.name:"Journey Together" number:97' },
 
   // ── 🇯🇵 Nouvelles cartes JP ──────────────────────────────────────────────────
   { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   img:"", apiQ:'set.id:me2pt5 number:36', jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
@@ -702,7 +721,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v33";
+  const CACHE_KEY = "pk_img_v34";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
