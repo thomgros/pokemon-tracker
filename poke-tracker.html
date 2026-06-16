@@ -1442,12 +1442,58 @@ function RessourcesTab() {
   );
 }
 
+// ── AccueilTab ────────────────────────────────────────────────────────────────
+
+function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
+  const tiles = [
+    { id: "owned",      label: "Ma collection",        icon: "📦", desc: "Statuts & valeur investie" },
+    { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix" },
+    { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading" },
+  ];
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
+        {statItems.map((st, i) => (
+          <div key={i} style={{ background: st.bg, border: `1px solid ${st.border}`, borderRadius: 10, padding: "10px", textAlign: "center" }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{st.val}</div>
+            <div style={{ fontSize: 10, color: st.color, opacity: 0.7, marginTop: 4, letterSpacing: "0.04em", textTransform: "uppercase" }}>{st.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {gradingCount > 0 && (
+        <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
+          <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
+          <span style={{ color: "#fca5a5" }}>{gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA chez PokéLoutre</span>
+        </div>
+      )}
+
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Accès rapide</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+        {tiles.map(t => (
+          <div key={t.id} onClick={() => onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
+            <span style={{ fontSize: 22 }}>{t.icon}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{t.label}</span>
+            <span style={{ fontSize: 10, color: T.textMuted }}>{t.desc}</span>
+          </div>
+        ))}
+        <div onClick={() => onNavTab("calendrier")} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
+          <span style={{ fontSize: 22 }}>📅</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>Calendrier sorties</span>
+          <span style={{ fontSize: 10, color: T.textMuted }}>Prochains sets & ETB</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── App ────────────────────────────────────────────────────────────────────────
 
 function PokeTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pt_watch", DEFAULT_WATCH);
   const [ownedList, setOwnedList, resetOwned] = useStorage("pt_owned_v5", DEFAULT_OWNED);
-  const [tab, setTab]             = useState("watch");
+  const [tab, setTab]             = useState("accueil");
+  const [sub, setSub]             = useState(null); // "owned" | "cours" | "ressources"
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
   const [search, setSearch]       = useState("");
@@ -1471,14 +1517,13 @@ function PokeTracker() {
   const delOwned = id => setOwnedList(p => p.filter(c => c.id !== id));
 
   const NAV = [
-    { id: "watch",      label: "Surveiller", icon: "🔍" },
-    { id: "owned",      label: "Collection", icon: "📦" },
-    { id: "classeur",   label: "Classeur",   icon: "📒" },
-    { id: "urgent",     label: "Urgent",     icon: "⚡" },
-    { id: "cours",      label: "Cours",      icon: "📈" },
+    { id: "accueil",    label: "Accueil",    icon: "🏠" },
+    { id: "classeur",   label: "Classeurs",  icon: "📒" },
+    { id: "suivi",      label: "Suivi",      icon: "⭐" },
     { id: "calendrier", label: "Calendrier", icon: "📅" },
-    { id: "ressources", label: "Outils",     icon: "🛠️" },
   ];
+
+  const SUB_TITLES = { owned: "Ma collection", cours: "Cartes gradées", ressources: "Outils & ressources" };
 
   const statItems = [
     { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
@@ -1493,8 +1538,16 @@ function PokeTracker() {
       {/* Header */}
       <div style={{ marginBottom: 20, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>Poké Tracker</div>
-          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
+          {sub
+            ? <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button onClick={() => setSub(null)} style={{ fontSize: 16, color: T.text, background: "none", border: "none", cursor: "pointer", padding: "2px 4px" }}>←</button>
+                <div style={{ fontSize: 20, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>{SUB_TITLES[sub]}</div>
+              </div>
+            : <>
+                <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>Poké Tracker</div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
+              </>
+          }
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={() => { localStorage.removeItem('pt_img_cache_v1'); window.location.reload(); }}
@@ -1510,53 +1563,10 @@ function PokeTracker() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
-        {statItems.map((st, i) => (
-          <div key={i} style={{ background: st.bg, border: `1px solid ${st.border}`, borderRadius: 10, padding: "10px", textAlign: "center" }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{st.val}</div>
-            <div style={{ fontSize: 10, color: st.color, opacity: 0.7, marginTop: 4, letterSpacing: "0.04em", textTransform: "uppercase" }}>{st.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Alert */}
-      <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
-        <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
-        <span style={{ color: "#fca5a5" }}>
-          {gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA · 2 envois PokéLoutre (11 mai + 13 juin ✅)
-        </span>
-      </div>
-
       {/* Spacer nav fixe */}
       <div style={{ height: 70 }} />
 
-      {/* ── WATCH ── */}
-      {tab === "watch" && (
-        <div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            <input placeholder="Rechercher…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...css.input, flex: 1, minWidth: 120 }} />
-            <select value={filterP} onChange={e => setFilterP(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
-              <option value="all">Toutes priorités</option>
-              <option value="1">P1</option><option value="2">P2</option><option value="3">P3</option>
-              <option value="4">P4</option><option value="5">Collection</option>
-            </select>
-            <select value={filterT} onChange={e => setFilterT(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
-              <option value="all">Tous types</option>
-              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
-            </select>
-          </div>
-          {showAddWatch && <AddCardForm onAdd={addWatch} onClose={() => setShowAddWatch(false)} />}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · cliquer pour prix live</span>
-            {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
-          </div>
-          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
-        </div>
-      )}
-
-      {/* ── OWNED ── */}
-      {tab === "owned" && (
+      {sub === "owned" && (
         <div>
           <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
             <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
@@ -1580,9 +1590,15 @@ function PokeTracker() {
         </div>
       )}
 
-      {/* ── URGENT ── */}
-      {tab === "urgent" && (
+      {sub === "cours" && <CoursTab ownedList={ownedList} />}
+
+      {sub === "ressources" && <RessourcesTab />}
+
+      {!sub && tab === "accueil" && (
         <div>
+          <AccueilTab statItems={statItems} gradingCount={gradingCount} onOpen={setSub} onNavTab={setTab} />
+
+          <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Envois grading en cours</div>
           <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 11 mai ✅</div>
             <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
@@ -1621,16 +1637,34 @@ function PokeTracker() {
       )}
 
       {/* ── CLASSEUR ── */}
-      {tab === "classeur" && <ClasseurTab />}
+      {!sub && tab === "classeur" && <ClasseurTab />}
 
-      {/* ── COURS ── */}
-      {tab === "cours" && <CoursTab ownedList={ownedList} />}
+      {/* ── SUIVI (à surveiller) ── */}
+      {!sub && tab === "suivi" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            <input placeholder="🔍 Rechercher une carte…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...css.input, flex: 1, minWidth: 120, borderRadius: 20 }} />
+            <select value={filterP} onChange={e => setFilterP(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Toutes priorités</option>
+              <option value="1">P1</option><option value="2">P2</option><option value="3">P3</option>
+              <option value="4">P4</option><option value="5">Collection</option>
+            </select>
+            <select value={filterT} onChange={e => setFilterT(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Tous types</option>
+              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
+            </select>
+          </div>
+          {showAddWatch && <AddCardForm onAdd={addWatch} onClose={() => setShowAddWatch(false)} />}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · cliquer pour prix live</span>
+            {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
+          </div>
+          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+        </div>
+      )}
 
       {/* ── CALENDRIER ── */}
-      {tab === "calendrier" && <CalendrierTab />}
-
-      {/* ── RESSOURCES ── */}
-      {tab === "ressources" && <RessourcesTab />}
+      {!sub && tab === "calendrier" && <CalendrierTab />}
 
       <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em", marginBottom: 80 }}>
         eBay Finding API · TCGdex · ventes USD · données sauvegardées localement
@@ -1638,18 +1672,18 @@ function PokeTracker() {
 
       {/* ── Navigation fixe bas ── */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,15,0.97)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
-        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", overflowX: "auto", WebkitOverflowScrolling: "touch", padding: "0 8px" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", justifyContent: "space-around", padding: "0 8px" }}>
           {NAV.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
+            <button key={t.id} onClick={() => { setSub(null); setTab(t.id); }} style={{
               background: "none", border: "none", cursor: "pointer",
               padding: "10px 14px 12px",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-              fontFamily: "inherit", flexShrink: 0,
-              borderTop: tab === t.id ? `2px solid ${T.accent}` : "2px solid transparent",
+              fontFamily: "inherit", flex: 1,
+              borderTop: !sub && tab === t.id ? `2px solid ${T.accent}` : "2px solid transparent",
               transition: "all 0.15s",
             }}>
               <span style={{ fontSize: 18, lineHeight: 1 }}>{t.icon}</span>
-              <span style={{ fontSize: 10, fontWeight: tab === t.id ? 600 : 400, color: tab === t.id ? T.accent : T.textMuted, whiteSpace: "nowrap" }}>{t.label}</span>
+              <span style={{ fontSize: 10, fontWeight: !sub && tab === t.id ? 600 : 400, color: !sub && tab === t.id ? T.accent : T.textMuted, whiteSpace: "nowrap" }}>{t.label}</span>
             </button>
           ))}
         </div>
