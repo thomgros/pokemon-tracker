@@ -723,7 +723,7 @@ function useCardImages(cards) {
   }, []);
 
   useEffect(() => {
-    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && (cache[c.id] === undefined || cache[c.id].sig !== sig(c)));
+    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && (!cache[c.id] || cache[c.id].sig !== sig(c)));
     if (!toFetch.length) return;
     let alive = true;
     const save = (id, signature, data) => setCache(p => {
@@ -788,7 +788,7 @@ function useCardImages(cards) {
   for (const c of cards) {
     if (overrides[c.id]) { images[c.id] = { url: overrides[c.id], override: true }; continue; }
     if (c.img) { images[c.id] = { url: c.img }; continue; }
-    images[c.id] = (cache[c.id] !== undefined && cache[c.id].sig === sig(c)) ? cache[c.id].data : undefined; // undefined = en cours de chargement (ou cache obsolète)
+    images[c.id] = (cache[c.id] && cache[c.id].sig === sig(c)) ? cache[c.id].data : undefined; // undefined = en cours de chargement (ou cache obsolète)
   }
   return { images, setOverride };
 }
