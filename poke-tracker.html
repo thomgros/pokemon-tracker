@@ -1461,7 +1461,8 @@ function RessourcesTab() {
 
 function AccueilTab({ statItems, gradingCount, onOpen }) {
   const tiles = [
-    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs & statuts collection" },
+    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs FR / JP / EN" },
+    { id: "statut",     label: "Statut collection",    icon: "🗂️", desc: "Investi, transit, grading…" },
     { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix" },
     { id: "watch",      label: "À surveiller",          icon: "⭐", desc: "Liste de chasse & prix live eBay" },
     { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading" },
@@ -1527,7 +1528,7 @@ function PokeTracker() {
   const addOwned = c => setOwnedList(p => [...p, c]);
   const delOwned = id => setOwnedList(p => p.filter(c => c.id !== id));
 
-  const SUB_TITLES = { chasse: "Ma collection", cours: "Cartes gradées", watch: "À surveiller", ressources: "Outils & ressources", calendrier: "Calendrier sorties" };
+  const SUB_TITLES = { chasse: "Ma collection", statut: "Statut collection", cours: "Cartes gradées", watch: "À surveiller", ressources: "Outils & ressources", calendrier: "Calendrier sorties" };
 
   const statItems = [
     { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
@@ -1615,8 +1616,11 @@ function PokeTracker() {
         </div>
       )}
 
-      {/* ── CHASSE (ma collection : statuts + classeurs) ── */}
-      {sub === "chasse" && (
+      {/* ── MA COLLECTION (classeurs) ── */}
+      {sub === "chasse" && <ClasseurTab />}
+
+      {/* ── STATUT COLLECTION (cartes possédées par statut) ── */}
+      {sub === "statut" && (
         <div>
           <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
             <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
@@ -1637,9 +1641,6 @@ function PokeTracker() {
               </div>
             );
           })}
-
-          <div style={{ fontSize: 10, color: T.textMuted, margin: "20px 0 10px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Classeurs</div>
-          <ClasseurTab />
         </div>
       )}
 
