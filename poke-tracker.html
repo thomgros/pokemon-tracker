@@ -690,10 +690,17 @@ const LANG_TABS_CFG = [
 
 // ── Chargement d'images — architecture simple ────────────────────────────────
 // Ordre : override utilisateur > img (URL confirmée) > TCGdex API (langue de la carte)
-// > TCGdex API en anglais (uniquement si carte FR introuvable en FR) > pokemontcg.io (dernier recours)
+// > TCGdex API en anglais (si introuvable dans la langue native) > pokemontcg.io (dernier recours, EN uniquement).
+// Toute image qui n'est pas dans la langue native de la carte est marquée fallbackEn :
+// l'UI affiche un badge "EN" + propose à l'utilisateur de coller une URL d'image native.
 // Si rien n'est trouvé : l'UI propose à l'utilisateur de coller une URL d'image (voir CardSlot / panneaux détail).
 
 const LANG_API_CODE = { FR: "fr", JP: "ja", EN: "en" };
+
+// Signature des champs source d'une carte : si elle change (correction de tcgdex/ptcgioQ
+// suite à une erreur de langue détectée), le cache est automatiquement invalidé et l'image
+// est ré-interrogée — sans ça une correction de données resterait masquée par l'ancien cache.
+const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
 function useCardImages(cards) {
   const CACHE_KEY = "pt_img_cache_v1";
@@ -714,11 +721,11 @@ function useCardImages(cards) {
   }, []);
 
   useEffect(() => {
-    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && cache[c.id] === undefined);
+    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && (cache[c.id] === undefined || cache[c.id].sig !== sig(c)));
     if (!toFetch.length) return;
     let alive = true;
-    const save = (id, result) => setCache(p => {
-      const n = { ...p, [id]: result };
+    const save = (id, signature, data) => setCache(p => {
+      const n = { ...p, [id]: { sig: signature, data } };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
       return n;
     });
@@ -755,14 +762,20 @@ function useCardImages(cards) {
 
         if (card.tcgdex) {
           url = await tcgdexLookup(LANG_API_CODE[card.lang] || "en", card.tcgdex);
-          if (!url && card.lang === "FR") {
+          if (!url && card.lang !== "EN") {
             url = await tcgdexLookup("en", card.tcgdex);
             if (url) fallbackEn = true;
           }
         }
-        if (!url && card.ptcgioQ) url = await ptcgio(card.ptcgioQ);
+        // pokemontcg.io ne référence que des cartes EN : tout résultat venant de là pour
+        // une carte FR/JP est donc un repli EN, jamais l'illustration native — il doit
+        // être signalé comme tel (badge + proposition d'image), pas affiché en silence.
+        if (!url && card.ptcgioQ) {
+          url = await ptcgio(card.ptcgioQ);
+          if (url && card.lang !== "EN") fallbackEn = true;
+        }
 
-        save(card.id, url ? { url, fallbackEn } : null);
+        save(card.id, sig(card), url ? { url, fallbackEn } : null);
         if (url) await new Promise(r => setTimeout(r, 120));
       }
     })();
@@ -773,15 +786,15 @@ function useCardImages(cards) {
   for (const c of cards) {
     if (overrides[c.id]) { images[c.id] = { url: overrides[c.id], override: true }; continue; }
     if (c.img) { images[c.id] = { url: c.img }; continue; }
-    images[c.id] = cache[c.id] !== undefined ? cache[c.id] : undefined; // undefined = en cours de chargement
+    images[c.id] = (cache[c.id] !== undefined && cache[c.id].sig === sig(c)) ? cache[c.id].data : undefined; // undefined = en cours de chargement (ou cache obsolète)
   }
   return { images, setOverride };
 }
 
 // ── Panneau "ajouter une image" ───────────────────────────────────────────────
 // Affiché quand une carte FR/JP/EN n'a pu être résolue automatiquement, ou quand
-// seul un repli EN a été trouvé pour une carte FR — conformément à la consigne :
-// FR d'abord, sinon demander une image à l'utilisateur, sinon EN en dernier recours.
+// seul un repli EN a été trouvé pour une carte FR/JP — conformément à la consigne :
+// langue native d'abord, sinon demander une image à l'utilisateur, sinon EN en dernier recours.
 
 function ImageHelp({ card, imgData, onSetOverride, color }) {
   const [url, setUrl] = useState("");
@@ -791,10 +804,10 @@ function ImageHelp({ card, imgData, onSetOverride, color }) {
   return (
     <div style={{ marginTop: 8, padding: "8px 10px", background: missing ? "rgba(248,113,113,0.06)" : "rgba(250,204,21,0.06)", border: `1px solid ${missing ? "rgba(248,113,113,0.25)" : "rgba(250,204,21,0.25)"}`, borderRadius: 8 }}>
       <div style={{ fontSize: 11, color: missing ? "#f87171" : "#facc15", fontWeight: 600, marginBottom: 6 }}>
-        {missing ? "📷 Image introuvable automatiquement" : "🇬🇧 Illustration EN affichée (FR introuvable)"}
+        {missing ? "📷 Image introuvable automatiquement" : `🇬🇧 Illustration EN affichée (${card.lang} introuvable)`}
       </div>
       <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>
-        Tu as une image {card.lang === "FR" ? "FR" : ""} ? Colle l'URL ci-dessous pour l'intégrer.
+        Tu as une image {card.lang !== "EN" ? card.lang : ""} ? Colle l'URL ci-dessous pour l'intégrer.
       </div>
       <div style={{ display: "flex", gap: 6 }}>
         <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://…" style={{ ...css.input, fontSize: 11, padding: "5px 8px" }} onClick={e => e.stopPropagation()} />
