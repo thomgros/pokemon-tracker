@@ -12,6 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Resolve real TCGdex set IDs by name
+        run: |
+          echo "=== FR sets list (searching for Mega Evolution era sets) ==="
+          curl -s --max-time 20 "https://api.tcgdex.net/v2/fr/sets" -o fr_sets.json
+          python3 -c "import json; sets=json.load(open('fr_sets.json')); needles=['chaos','perfect','méga','mega','faille','prisme','prismat','évo','evo','ascend','nihil','ninja','paldea','obsidienne','rivaux','destins']; [print(f\"{s.get('id')!r:20s} {s.get('name','')!r:50s} cardCount={s.get('cardCount')}\") for s in sets if any(n in s.get('name','').lower() for n in needles)]"
+          echo ""
+          echo "=== JA sets list (searching for Mega Evolution era / JP-exclusive sets) ==="
+          curl -s --max-time 20 "https://api.tcgdex.net/v2/ja/sets" -o ja_sets.json
+          python3 -c "import json; sets=json.load(open('ja_sets.json')); needles=['メガ','ナイト','零','エイト','黒い','古代','粘土','151','スカーレット']; [print(f\"{s.get('id')!r:20s} {s.get('name','')!r:30s} cardCount={s.get('cardCount')}\") for s in sets if any(n in s.get('name','') for n in needles)]"
+
       - name: Download TCGdex samples (JP + FR)
         run: |
           mkdir -p verify_tmp
