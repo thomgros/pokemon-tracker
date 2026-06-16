@@ -108,13 +108,16 @@ jobs:
           fetch ja SV SV4K 067 jp_SV4K_067_Iwaparesu
           fetch ja SV SV2P 065 jp_SV2P_065_Ikirinco
 
-          echo "=== FR samples ==="
-          fetch fr M  M4  107 fr_M4_107_Millie
-          fetch fr M  M1  155 fr_M1_155_MegaFlorizarre
-          fetch fr M  M3  031 fr_M3_031_MegaMelodelfe
-          fetch fr M  M2a 096 fr_M2a_096_Desseliande
-          fetch fr SV SV5 051 fr_SV5_051_Pikachu
-          fetch fr SV SV2 130 fr_SV2_130_Terraiste
+          echo "=== FR samples (confirmed real IDs) ==="
+          fetch fr M  me04   107 fr_me04_107_Millie
+          fetch fr M  me01   155 fr_me01_155_MegaFlorizarre
+          fetch fr M  me03   031 fr_me03_031_MegaMelodelfe
+          fetch fr M  me02.5 096 fr_me02pt5_096_Desseliande
+          fetch fr SV sv05   051 fr_sv05_051_Pikachu
+          fetch fr SV sv02   130 fr_sv02_130_Terraiste
+          fetch fr SV sv04   023 fr_sv04_023_Arboliva
+          fetch fr SV sv09   139 fr_sv09_139_Dogrino
+          fetch fr M  me03   062 fr_me03_062_Miaouss
 
           echo ""
           echo "=== Résultat ==="
