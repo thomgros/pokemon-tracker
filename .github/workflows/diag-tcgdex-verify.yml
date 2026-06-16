@@ -1,0 +1,70 @@
+name: Diagnostic - TCGdex Image Verify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download TCGdex samples (JP + FR)
+        run: |
+          mkdir -p verify_tmp
+
+          fetch() {
+            local lang=$1
+            local series=$2
+            local set=$3
+            local num=$4
+            local label=$5
+            local out="verify_tmp/${label}.webp"
+            for n in "$num" "$(printf '%03d' "$((10#$num))")"; do
+              url="https://assets.tcgdex.net/${lang}/${series}/${set}/${n}/high.webp"
+              http_code=$(curl -s -o "$out" -w "%{http_code}" -L --max-time 15 "$url")
+              size=$(stat -c%s "$out" 2>/dev/null || echo 0)
+              if [ "$http_code" = "200" ] && [ "$size" -gt 5000 ]; then
+                echo "✓ ${label} via ${url} (${size}b)"
+                return 0
+              fi
+              rm -f "$out"
+            done
+            echo "✗ ${label} — échec (lang=${lang} ${set}/${num})"
+          }
+
+          echo "=== JP samples ==="
+          fetch ja M  M2a  021 jp_M2a_021_HoOh
+          fetch ja M  M3   054 jp_M3_054_MegaArmure
+          fetch ja M  M4   063 jp_M4_063_MegaDragmara
+          fetch ja SV SV11B 159 jp_SV11B_159_Serperior
+          fetch ja SV SV4K 067 jp_SV4K_067_Iwaparesu
+          fetch ja SV SV2P 065 jp_SV2P_065_Ikirinco
+
+          echo "=== FR samples ==="
+          fetch fr M  M4  107 fr_M4_107_Millie
+          fetch fr M  M1  155 fr_M1_155_MegaFlorizarre
+          fetch fr M  M3  031 fr_M3_031_MegaMelodelfe
+          fetch fr M  M2a 096 fr_M2a_096_Desseliande
+          fetch fr SV SV5 051 fr_SV5_051_Pikachu
+          fetch fr SV SV2 130 fr_SV2_130_Terraiste
+
+          echo ""
+          echo "=== Résultat ==="
+          find verify_tmp -name "*.webp" | sort
+          echo "Total : $(find verify_tmp -name '*.webp' | wc -l) images"
+
+      - name: Commit samples
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add verify_tmp/
+          if git diff --cached --quiet; then
+            echo "Aucune image à committer."
+          else
+            git commit -m "diag: TCGdex JP/FR image verification samples"
+            git push
+          fi
