@@ -16,7 +16,8 @@ jobs:
         run: |
           mkdir -p verify_tmp
 
-          fetch() {
+          # Tier 1: CDN direct guess (assets.tcgdex.net/{lang}/{series}/{set}/{num}/high.webp)
+          fetch_cdn() {
             local lang=$1
             local series=$2
             local set=$3
@@ -28,12 +29,46 @@ jobs:
               http_code=$(curl -s -o "$out" -w "%{http_code}" -L --max-time 15 "$url")
               size=$(stat -c%s "$out" 2>/dev/null || echo 0)
               if [ "$http_code" = "200" ] && [ "$size" -gt 5000 ]; then
-                echo "✓ ${label} via ${url} (${size}b)"
+                echo "✓ ${label} via CDN direct: ${url} (${size}b)"
                 return 0
               fi
               rm -f "$out"
             done
-            echo "✗ ${label} — échec (lang=${lang} ${set}/${num})"
+            return 1
+          }
+
+          # Tier 2: TCGdex JSON API -> authoritative image base URL
+          fetch_api() {
+            local lang=$1
+            local set=$2
+            local num=$3
+            local label=$4
+            local out="verify_tmp/${label}.webp"
+            for n in "$num" "$(printf '%03d' "$((10#$num))")"; do
+              api_url="https://api.tcgdex.net/v2/${lang}/cards/${set}-${n}"
+              json=$(curl -s --max-time 15 "$api_url")
+              base=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('image',''))" 2>/dev/null)
+              if [ -n "$base" ]; then
+                img_url="${base}/high.webp"
+                http_code=$(curl -s -o "$out" -w "%{http_code}" -L --max-time 15 "$img_url")
+                size=$(stat -c%s "$out" 2>/dev/null || echo 0)
+                if [ "$http_code" = "200" ] && [ "$size" -gt 5000 ]; then
+                  echo "✓ ${label} via API: ${api_url} -> ${img_url} (${size}b)"
+                  return 0
+                fi
+                rm -f "$out"
+              else
+                echo "  (api ${api_url} -> aucune image, body: $(echo "$json" | head -c 200))"
+              fi
+            done
+            return 1
+          }
+
+          fetch() {
+            local lang=$1 series=$2 set=$3 num=$4 label=$5
+            if fetch_cdn "$lang" "$series" "$set" "$num" "$label"; then return 0; fi
+            if fetch_api "$lang" "$set" "$num" "$label"; then return 0; fi
+            echo "✗ ${label} — échec total (lang=${lang} ${set}/${num})"
           }
 
           echo "=== JP samples ==="
@@ -65,6 +100,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Aucune image à committer."
           else
-            git commit -m "diag: TCGdex JP/FR image verification samples"
+            git commit -m "diag: TCGdex JP/FR image verification samples (API fallback)"
             git push
           fi
