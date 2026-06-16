@@ -690,14 +690,25 @@ const LANG_TABS_CFG = [
   { id: "EN", icon: "🇬🇧", label: "Anglais",  color: "#4ade80" },
 ];
 
-// ── Chargement d'images — architecture simple ────────────────────────────────
-// Ordre : override utilisateur > img (URL confirmée) > TCGdex API (langue de la carte)
-// > TCGdex API en anglais (si introuvable dans la langue native) > pokemontcg.io (dernier recours, EN uniquement).
+// ── Chargement d'images — cascade multi-sources ──────────────────────────────
+// Pour une carte FR/JP, l'illustration native est cherchée dans l'ordre :
+//   1. CDN TCGdex direct (assets.tcgdex.net/{lang}/...) deviné depuis tcgdex="SETCODE-num"
+//   2. API TCGdex (langue de la carte) — renvoie le chemin exact même si le numéro diffère
+//   3. CDN LimitlessTCG (toutes variantes de rareté), même langue
+//   4. (JP) images hébergées dans le repo (workflow GitHub Actions) puis pokemon-card.com
+//      direct, puis Wayback Machine en dernier filet
+//   5. API TCGdex en anglais (repli) puis pokemontcg.io (dernier recours, EN uniquement)
+// Ces requêtes passent par une balise <img> (tryImg) plutôt que fetch() quand c'est possible :
+// ça évite les soucis de CORS/ad-blockers qui bloquent les appels fetch() vers des CDN tiers.
 // Toute image qui n'est pas dans la langue native de la carte est marquée fallbackEn :
 // l'UI affiche un badge "EN" + propose à l'utilisateur de coller une URL d'image native.
 // Si rien n'est trouvé : l'UI propose à l'utilisateur de coller une URL d'image (voir CardSlot / panneaux détail).
 
 const LANG_API_CODE = { FR: "fr", JP: "ja", EN: "en" };
+
+// Codes pokemon-card.com (site officiel JP) confirmés disponibles pour ces sets Mega/SV récents.
+const POKEMON_CARD_JP_SETS = ["M2a", "M3", "M4", "SV11B"];
+const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR", "MA"];
 
 // Signature des champs source d'une carte : si elle change (correction de tcgdex/ptcgioQ
 // suite à une erreur de langue détectée), le cache est automatiquement invalidé et l'image
@@ -705,7 +716,7 @@ const LANG_API_CODE = { FR: "fr", JP: "ja", EN: "en" };
 const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pt_img_cache_v1";
+  const CACHE_KEY = "pt_img_cache_v2";
   const OVR_KEY   = "pt_img_overrides";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
@@ -723,8 +734,9 @@ function useCardImages(cards) {
   }, []);
 
   // Une carte FR/JP dont la dernière résolution n'a donné qu'un repli EN (ou rien)
-  // n'est jamais considérée comme "fraîche" : TCGdex peut avoir ajouté l'illustration
-  // native depuis, donc on retente à chaque chargement jusqu'à ce qu'elle soit trouvée.
+  // n'est jamais considérée comme "fraîche" : une des sources peut avoir ajouté
+  // l'illustration native depuis, donc on retente à chaque chargement jusqu'à ce
+  // qu'elle soit trouvée.
   const isStale = (entry, c) => {
     if (!entry || entry.sig !== sig(c)) return true;
     if (c.lang !== "EN" && (!entry.data || entry.data.fallbackEn)) return true;
@@ -739,6 +751,17 @@ function useCardImages(cards) {
       const n = { ...p, [id]: { sig: signature, data } };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
       return n;
+    });
+
+    // Teste si une URL charge en tant qu'image (ne nécessite pas CORS, contourne
+    // les protections hotlink qui n'autorisent que les requêtes sans Referer).
+    const tryImg = (url, ms = 4000) => new Promise(res => {
+      const t = new Image();
+      t.referrerPolicy = "no-referrer";
+      const timer = setTimeout(() => { t.src = ""; res(false); }, ms);
+      t.onload  = () => { clearTimeout(timer); res(true); };
+      t.onerror = () => { clearTimeout(timer); res(false); };
+      t.src = url;
     });
 
     const tcgdexOne = async (lang, id) => {
@@ -766,13 +789,59 @@ function useCardImages(cards) {
       } catch { return null; }
     };
 
+    // Cascade pour l'illustration NATIVE (FR ou JP) d'une carte tcgdex="SETCODE-num".
+    // Retourne une URL dès qu'une source répond, sans appel réseau superflu.
+    const nativeLookup = async (card) => {
+      const [setCode, numRaw] = card.tcgdex.split("-");
+      const numPad = numRaw.padStart(3, "0");
+      const langCode = LANG_API_CODE[card.lang] || "en";
+      const series = setCode.startsWith("SV") ? "SV" : (setCode.startsWith("M") ? "M" : null);
+
+      // 1. CDN TCGdex direct (deviné)
+      if (series) {
+        for (const n of [numPad, numRaw]) {
+          const url = `https://assets.tcgdex.net/${langCode}/${series}/${setCode}/${n}/high.webp`;
+          if (await tryImg(url)) return url;
+        }
+      }
+
+      // 2. API TCGdex (langue native) — chemin exact même si le numéro local diffère
+      const apiUrl = await tcgdexLookup(langCode, card.tcgdex);
+      if (apiUrl) return apiUrl;
+
+      // 3. CDN LimitlessTCG, toutes variantes de rareté
+      const n = parseInt(numRaw, 10);
+      for (const v of LTCG_VARIANTS) {
+        const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${setCode}/${setCode}_${n}_${v}_${card.lang}_LG.png`;
+        if (await tryImg(url, 2000)) return url;
+      }
+
+      if (card.lang === "JP") {
+        // 4. Images hébergées dans le repo (workflow GitHub Actions)
+        if (POKEMON_CARD_JP_SETS.includes(setCode)) {
+          const repoUrl = `https://raw.githubusercontent.com/thomgros/pokemon-tracker/main/cards/${setCode}/${numPad}.jpg`;
+          if (await tryImg(repoUrl)) return repoUrl;
+
+          // 5. pokemon-card.com direct (site officiel JP), sans Referer
+          const base = `https://www.pokemon-card.com/assets/images/card_images/large/${setCode}/${numPad}.jpg`;
+          if (await tryImg(base)) return base;
+
+          // 6. Wayback Machine — dernier filet si pokemon-card.com bloque
+          const archiveUrl = `https://web.archive.org/web/2im_/${base}`;
+          if (await tryImg(archiveUrl, 6000)) return archiveUrl;
+        }
+      }
+
+      return null;
+    };
+
     (async () => {
       for (const card of toFetch) {
         if (!alive) return;
         let url = null, fallbackEn = false;
 
         if (card.tcgdex) {
-          url = await tcgdexLookup(LANG_API_CODE[card.lang] || "en", card.tcgdex);
+          url = await nativeLookup(card);
           if (!url && card.lang !== "EN") {
             url = await tcgdexLookup("en", card.tcgdex);
             if (url) fallbackEn = true;
@@ -1564,7 +1633,7 @@ function PokeTracker() {
           }
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => { localStorage.removeItem('pt_img_cache_v1'); window.location.reload(); }}
+          <button onClick={() => { localStorage.removeItem('pt_img_cache_v2'); window.location.reload(); }}
             title="Vider le cache des illustrations (les images que tu as fournies sont conservées) et recharger"
             style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
             ↺ Images
