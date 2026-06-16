@@ -64,13 +64,7 @@ jobs:
             fi
 
             # 4. Wayback Machine (archive.org)
-            wb_ts=$(curl -s "https://archive.org/wayback/available?url=${target}" | python3 -c "
-import json,sys
-try:
-  d=json.load(sys.stdin)
-  print(d.get('archived_snapshots',{}).get('closest',{}).get('timestamp',''))
-except: print('')
-")
+            wb_ts=$(curl -s "https://archive.org/wayback/available?url=${target}" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('archived_snapshots',{}).get('closest',{}).get('timestamp',''))" 2>/dev/null)
             if [ -n "$wb_ts" ]; then
               if try_url "https://web.archive.org/web/${wb_ts}im_/${target}" "wayback"; then
                 echo "✓ ${set}/${num} via wayback (${wb_ts})"; return 0
