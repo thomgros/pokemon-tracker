@@ -9,7 +9,7 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0a0a0f; }
+  body { background: linear-gradient(160deg, #050b18 0%, #0c1c38 35%, #15305c 65%, #0a1830 100%); }
   ::-webkit-scrollbar { width: 3px; height: 3px; }
   ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
   input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
@@ -30,6 +30,7 @@ const USD_TO_EUR = 0.92;
 
 const T = {
   bg: "#0a0a0f",
+  bgGradient: "linear-gradient(160deg, #050b18 0%, #0c1c38 35%, #15305c 65%, #0a1830 100%)",
   surface: "#12121a",
   surfaceHover: "#1a1a26",
   border: "rgba(255,255,255,0.07)",
@@ -1546,7 +1547,7 @@ function PokeTracker() {
   ];
 
   return (
-    <div style={{ padding: "20px 16px", maxWidth: 700, margin: "0 auto", fontFamily: "'DM Sans', 'Inter', sans-serif", background: T.bg, minHeight: "100vh", color: T.text }}>
+    <div style={{ padding: "20px 16px", maxWidth: 700, margin: "0 auto", fontFamily: "'DM Sans', 'Inter', sans-serif", background: T.bgGradient, backgroundAttachment: "fixed", minHeight: "100vh", color: T.text }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
@@ -1684,7 +1685,7 @@ function PokeTracker() {
       </div>
 
       {/* ── Navigation fixe bas ── */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,15,0.97)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(8,16,30,0.92)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
         <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", justifyContent: "space-around", padding: "0 8px" }}>
           {NAV.map(t => (
             <button key={t.id} onClick={() => { setSub(null); setTab(t.id); }} style={{
