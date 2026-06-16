@@ -1461,9 +1461,11 @@ function RessourcesTab() {
 
 function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
   const tiles = [
-    { id: "owned",      label: "Ma collection",        icon: "📦", desc: "Statuts & valeur investie" },
+    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs & statuts collection", nav: true },
     { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix" },
+    { id: "watch",      label: "À surveiller",          icon: "⭐", desc: "Liste de chasse & prix live eBay" },
     { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading" },
+    { id: "calendrier", label: "Calendrier sorties",    icon: "📅", desc: "Prochains sets & ETB", nav: true },
   ];
   return (
     <div>
@@ -1486,17 +1488,12 @@ function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
       <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Accès rapide</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
         {tiles.map(t => (
-          <div key={t.id} onClick={() => onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
+          <div key={t.id} onClick={() => t.nav ? onNavTab(t.id) : onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
             <span style={{ fontSize: 22 }}>{t.icon}</span>
             <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{t.label}</span>
             <span style={{ fontSize: 10, color: T.textMuted }}>{t.desc}</span>
           </div>
         ))}
-        <div onClick={() => onNavTab("calendrier")} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
-          <span style={{ fontSize: 22 }}>📅</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>Calendrier sorties</span>
-          <span style={{ fontSize: 10, color: T.textMuted }}>Prochains sets & ETB</span>
-        </div>
       </div>
     </div>
   );
@@ -1533,12 +1530,11 @@ function PokeTracker() {
 
   const NAV = [
     { id: "accueil",    label: "Accueil",    icon: "🏠" },
-    { id: "classeur",   label: "Classeurs",  icon: "📒" },
-    { id: "suivi",      label: "Suivi",      icon: "⭐" },
+    { id: "chasse",     label: "Chasse",     icon: "📦" },
     { id: "calendrier", label: "Calendrier", icon: "📅" },
   ];
 
-  const SUB_TITLES = { owned: "Ma collection", cours: "Cartes gradées", ressources: "Outils & ressources" };
+  const SUB_TITLES = { cours: "Cartes gradées", watch: "À surveiller", ressources: "Outils & ressources" };
 
   const statItems = [
     { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
@@ -1580,30 +1576,6 @@ function PokeTracker() {
 
       {/* Spacer nav fixe */}
       <div style={{ height: 70 }} />
-
-      {sub === "owned" && (
-        <div>
-          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
-            <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>{totalOwned.toFixed(2)}€</div>
-          </div>
-          {showAddOwned && <AddOwnedForm onAdd={addOwned} onClose={() => setShowAddOwned(false)} />}
-          {!showAddOwned && <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setShowAddOwned(true)} style={css.btn("primary")}>+ Ajouter</button></div>}
-          {["enchère", "transit", "grading", "à grader", "collection", "sealed"].map(status => {
-            const cards = ownedList.filter(c => c.status === status);
-            if (!cards.length) return null;
-            const sc = STATUS_CONFIG[status];
-            return (
-              <div key={status} style={{ marginBottom: 18 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: sc.color, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  {sc.label} <span style={{ opacity: 0.5 }}>({cards.length})</span>
-                </div>
-                {cards.map(c => <OwnedCard key={c.id} card={c} onDelete={delOwned} />)}
-              </div>
-            );
-          })}
-        </div>
-      )}
 
       {sub === "cours" && <CoursTab ownedList={ownedList} />}
 
@@ -1651,11 +1623,36 @@ function PokeTracker() {
         </div>
       )}
 
-      {/* ── CLASSEUR ── */}
-      {!sub && tab === "classeur" && <ClasseurTab />}
+      {/* ── CHASSE (ma collection : statuts + classeurs) ── */}
+      {!sub && tab === "chasse" && (
+        <div>
+          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
+            <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>{totalOwned.toFixed(2)}€</div>
+          </div>
+          {showAddOwned && <AddOwnedForm onAdd={addOwned} onClose={() => setShowAddOwned(false)} />}
+          {!showAddOwned && <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setShowAddOwned(true)} style={css.btn("primary")}>+ Ajouter</button></div>}
+          {["enchère", "transit", "grading", "à grader", "collection", "sealed"].map(status => {
+            const cards = ownedList.filter(c => c.status === status);
+            if (!cards.length) return null;
+            const sc = STATUS_CONFIG[status];
+            return (
+              <div key={status} style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: sc.color, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  {sc.label} <span style={{ opacity: 0.5 }}>({cards.length})</span>
+                </div>
+                {cards.map(c => <OwnedCard key={c.id} card={c} onDelete={delOwned} />)}
+              </div>
+            );
+          })}
 
-      {/* ── SUIVI (à surveiller) ── */}
-      {!sub && tab === "suivi" && (
+          <div style={{ fontSize: 10, color: T.textMuted, margin: "20px 0 10px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Classeurs</div>
+          <ClasseurTab />
+        </div>
+      )}
+
+      {/* ── À SURVEILLER (liste de chasse, cartes pas encore possédées) ── */}
+      {sub === "watch" && (
         <div>
           <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
             <input placeholder="🔍 Rechercher une carte…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...css.input, flex: 1, minWidth: 120, borderRadius: 20 }} />
