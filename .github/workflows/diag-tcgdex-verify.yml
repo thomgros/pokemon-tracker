@@ -28,6 +28,19 @@ jobs:
           ls -la fr_cards.json
           python3 -c "import json; cards=json.load(open('fr_cards.json')); targets=['Millie','Mélodelfe','Florizarre','Desséliande','Pikachu','Zacian','Yveltal','Fragrain','Terraiste']; [print(f\"{c.get('id')!r:20s} {c.get('name','')!r:40s} localId={c.get('localId')!r}\") for c in cards if any(t in c.get('name','') for t in targets)]"
 
+          echo ""
+          echo "=== Direct ID confirmation: sv04-023 (Arboliva), sv09-139 (Dogrino), me03-062 (Miaouss/Meowth) ==="
+          for cid in sv04-023 sv09-139 me03-062; do
+            echo "-- fr/cards/${cid} --"
+            curl -s --max-time 15 "https://api.tcgdex.net/v2/fr/cards/${cid}" -o /tmp/r.json; python3 -c "import json; d=json.load(open('/tmp/r.json')); print('name=',d.get('name'),'image=',d.get('image'))" 2>/dev/null || (echo "  (error/404) body:"; cat /tmp/r.json | head -c 200)
+          done
+          echo "-- en/cards/me03-062 --"
+          curl -s --max-time 15 "https://api.tcgdex.net/v2/en/cards/me03-062" -o /tmp/r2.json; python3 -c "import json; d=json.load(open('/tmp/r2.json')); print('name=',d.get('name'),'image=',d.get('image'))" 2>/dev/null || (echo "  (error/404) body:"; cat /tmp/r2.json | head -c 200)
+
+          echo ""
+          echo "=== FR card list: searching for MEP promo cards by name (Feunnec, Tyrunt, Zygarde) ==="
+          python3 -c "import json; cards=json.load(open('fr_cards.json')); targets=['Feunnec','Tyrunt','Zygarde']; [print(f\"{c.get('id')!r:20s} {c.get('name','')!r:40s} localId={c.get('localId')!r}\") for c in cards if any(t in c.get('name','') for t in targets)]"
+
       - name: Download TCGdex samples (JP + FR)
         run: |
           mkdir -p verify_tmp
