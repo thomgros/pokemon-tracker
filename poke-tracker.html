@@ -722,8 +722,17 @@ function useCardImages(cards) {
     });
   }, []);
 
+  // Une carte FR/JP dont la dernière résolution n'a donné qu'un repli EN (ou rien)
+  // n'est jamais considérée comme "fraîche" : TCGdex peut avoir ajouté l'illustration
+  // native depuis, donc on retente à chaque chargement jusqu'à ce qu'elle soit trouvée.
+  const isStale = (entry, c) => {
+    if (!entry || entry.sig !== sig(c)) return true;
+    if (c.lang !== "EN" && (!entry.data || entry.data.fallbackEn)) return true;
+    return false;
+  };
+
   useEffect(() => {
-    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && (!cache[c.id] || cache[c.id].sig !== sig(c)));
+    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && isStale(cache[c.id], c));
     if (!toFetch.length) return;
     let alive = true;
     const save = (id, signature, data) => setCache(p => {
