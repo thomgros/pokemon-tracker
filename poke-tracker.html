@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Poké Tracker</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+  input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
+  select option { background: #12121a; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useCallback } = React;
+
+// ── Config ───────────────────────────────────────────────────────────────────
+
+const EBAY_APP_ID = "thomasgr-pokemont-PRD-66c21b7a2-5816b693";
+const USD_TO_EUR = 0.92;
+
+// ── Design tokens ─────────────────────────────────────────────────────────────
+
+const T = {
+  bg: "#0a0a0f",
+  surface: "#12121a",
+  surfaceHover: "#1a1a26",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e8f0",
+  textSub: "#8888a8",
+  textMuted: "#555570",
+  accent: "#7c6cfc",
+  accentGlow: "rgba(124,108,252,0.25)",
+};
+
+const css = {
+  pill: (color, bg, border) => ({
+    display: "inline-flex", alignItems: "center", padding: "2px 9px",
+    borderRadius: 20, fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
+    color, background: bg, border: `1px solid ${border}`,
+  }),
+  card: {
+    background: T.surface,
+    border: `1px solid ${T.border}`,
+    borderRadius: 12,
+    padding: "12px 14px",
+    marginBottom: 6,
+    transition: "border-color 0.15s, background 0.15s",
+  },
+  input: {
+    padding: "7px 11px",
+    borderRadius: 8,
+    border: `1px solid ${T.border}`,
+    background: "rgba(255,255,255,0.04)",
+    color: T.text,
+    fontSize: 13,
+    width: "100%",
+    outline: "none",
+    fontFamily: "inherit",
+    transition: "border-color 0.15s",
+  },
+  label: {
+    fontSize: 10, color: T.textMuted, marginBottom: 4, display: "block",
+    letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600,
+  },
+  btn: (variant = "ghost") => ({
+    padding: variant === "primary" ? "8px 16px" : "6px 12px",
+    borderRadius: 8,
+    border: variant === "primary" ? `1px solid ${T.accent}` : `1px solid ${T.border}`,
+    background: variant === "primary" ? T.accentGlow : "transparent",
+    color: variant === "primary" ? T.accent : T.textSub,
+    fontSize: 12, fontWeight: 500, cursor: "pointer",
+    fontFamily: "inherit", transition: "all 0.15s",
+  }),
+  link: {
+    fontSize: 12, color: T.accent, textDecoration: "none", fontWeight: 500,
+    letterSpacing: "0.01em",
+  },
+};
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const PRIORITY_CONFIG = {
+  1: { label: "P1", color: "#ef4444", bg: "rgba(239,68,68,0.1)",   border: "rgba(239,68,68,0.3)" },
+  2: { label: "P2", color: "#f97316", bg: "rgba(249,115,22,0.1)",  border: "rgba(249,115,22,0.3)" },
+  3: { label: "P3", color: "#eab308", bg: "rgba(234,179,8,0.1)",   border: "rgba(234,179,8,0.3)" },
+  4: { label: "P4", color: "#22c55e", bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)" },
+  5: { label: "Coll", color: "#a855f7", bg: "rgba(168,85,247,0.1)", border: "rgba(168,85,247,0.3)" },
+};
+
+const TYPE_CONFIG = {
+  vintage:   { label: "Vintage",          color: "#f59e0b" },
+  modern:    { label: "Modern",           color: "#60a5fa" },
+  collector: { label: "Collection",       color: "#f472b6" },
+  anniv30:   { label: "30e Anniversaire", color: "#c084fc" },
+};
+
+const STATUS_CONFIG = {
+  grading:    { label: "En grading PSA",      color: "#f97316", bg: "rgba(249,115,22,0.1)",  border: "rgba(249,115,22,0.3)" },
+  "à grader": { label: "À envoyer grading",   color: "#c084fc", bg: "rgba(192,132,252,0.1)", border: "rgba(192,132,252,0.3)" },
+  graded:     { label: "Gradé PSA",           color: "#4ade80", bg: "rgba(74,222,128,0.1)",  border: "rgba(74,222,128,0.3)" },
+  transit:    { label: "En transit",           color: "#facc15", bg: "rgba(250,204,21,0.1)",  border: "rgba(250,204,21,0.3)" },
+  collection: { label: "Collection",           color: "#38bdf8", bg: "rgba(56,189,248,0.1)",  border: "rgba(56,189,248,0.3)" },
+  sealed:     { label: "Scellé",               color: "#a78bfa", bg: "rgba(167,139,250,0.1)", border: "rgba(167,139,250,0.3)" },
+  "enchère":  { label: "Enchère active",       color: "#f87171", bg: "rgba(248,113,113,0.1)", border: "rgba(248,113,113,0.3)" },
+};
+
+const LANG_FLAG = { EN: "🇬🇧", JP: "🇯🇵", FR: "🇫🇷" };
+
+const DEFAULT_WATCH = [
+  { id: 1,  name: "Charizard",               ebayQuery: "Charizard 4/102 Base Set Unlimited Near Mint",                           set: "Base Expansion Pack",    number: "4/102",   maxPrice: 800,  priority: 1, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base1/4_hires.png" },
+  { id: 2,  name: "Dark Charizard 1st Ed",    ebayQuery: "Dark Charizard 4/82 Team Rocket 1st Edition Near Mint",                 set: "Team Rocket",            number: "4/82",    maxPrice: 650,  priority: 2, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base5/4_hires.png" },
+  { id: 3,  name: "Dracaufeu ex Alt Art",     ebayQuery: "Charizard ex 199/165 Pokemon 151 Near Mint",                            set: "Pokémon Card 151",       number: "MEW 199", maxPrice: 550,  priority: 2, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/sv3pt5/199_hires.png" },
+  { id: 4,  name: "Charizard VMAX Rainbow",   ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint",           set: "Champion's Path",        number: "74/73",   maxPrice: 380,  priority: 2, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/shp/74_hires.png" },
+  { id: 7,  name: "Gengar VMAX Alt Art",      ebayQuery: "Gengar VMAX 271/264 Fusion Strike Alt Art Near Mint",                   set: "Fusion Strike",          number: "271/264", maxPrice: 650,  priority: 3, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/swsh8/271_hires.png" },
+  { id: 8,  name: "Umbreon VMAX Alt Art",     ebayQuery: "Umbreon VMAX Evolving Skies Alt Art Near Mint",                         set: "Evolving Skies",         number: "215/203", maxPrice: 550,  priority: 3, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/swsh7/215_hires.png" },
+  { id: 9,  name: "Sylveon ex SIR",           ebayQuery: "Sylveon ex SIR 156 Prismatic Evolutions Near Mint",                     set: "Évolutions Prismatiques",number: "PRE 156", maxPrice: 380,  priority: 3, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/sv8pt5/156_hires.png" },
+  { id: 10, name: "Mewtwo 10/102",            ebayQuery: "Mewtwo 10/102 Base Set Unlimited Near Mint",                            set: "Base Expansion Pack",    number: "10/102",  maxPrice: 160,  priority: 3, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base1/10_hires.png" },
+  { id: 14, name: "Chi-Yu ex SIR",           ebayQuery: "Chi-Yu ex 259/193 Paldea Evolved Near Mint",                            set: "Paldea Evolved",         number: "259/193", maxPrice: 75,   priority: 3, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/sv2/259_hires.png" },
+  { id: 15, name: "Altaria ex SIR",          ebayQuery: "Altaria ex 253/182 Paradox Rift Near Mint",                               set: "Paradox Rift",           number: "253/182", maxPrice: 80,   priority: 3, lang: "EN", type: "modern", img: "https://images.pokemontcg.io/sv4/253_hires.png" },
+  { id: 11, name: "Rayquaza Gold Star",       ebayQuery: "Rayquaza Gold Star 107/97 EX Deoxys Near Mint",                         set: "EX Deoxys",              number: "107/97",  maxPrice: 1500, priority: 4, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/ex8/107_hires.png" },
+  { id: 12, name: "Mega Lopunny + Jigglypuff GX", ebayQuery: "Mega Lopunny Jigglypuff GX 226/236 Cosmic Eclipse Alt Art Near Mint", set: "Cosmic Eclipse",      number: "226/236", maxPrice: 160,  priority: 5, lang: "EN", type: "collector", img: "https://images.pokemontcg.io/sm12/226_hires.png" },
+  { id: 13, name: "Jigglypuff Shiny Rare JP",       ebayQuery: "Jigglypuff 306/190 SV4a Shiny Treasure ex Japanese Near Mint",              set: "Shiny Treasure ex",   number: "306/190", maxPrice: 45,  priority: 5, lang: "JP", type: "collector", tcgdex: "SV4a-306" },
+  // ── 30e Anniversaire ──────────────────────────────────────────────────────
+  { id: 16, name: "Darkrai & Cresselia LEGEND",    ebayQuery: "Darkrai Cresselia Legend 99/102 100/102 Triumphant Near Mint",                set: "Triumphant",          number: "99-100/102", maxPrice: 85,  priority: 2, lang: "EN", type: "anniv30", img: "https://images.pokemontcg.io/hgss4/99_hires.png" },
+  { id: 17, name: "Palkia Lv.X",                   ebayQuery: "Palkia Lv.X 126/106 Great Encounters Near Mint",                             set: "Great Encounters",    number: "126/106", maxPrice: 65,  priority: 3, lang: "EN", type: "anniv30", img: "https://images.pokemontcg.io/dp4/126_hires.png" },
+];
+
+const DEFAULT_OWNED = [
+  // En grading PSA — envoi PokéLoutre 11 mai
+  { id: "o1",  name: "Dracaufeu VMAX Rainbow 074/073", price: 220,    status: "grading",    set: "Champion's Path",       lang: "FR", note: "Valeur déclarée 220€",                              ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint" },
+  { id: "o2",  name: "Rosa's Encouragement 123/088",   price: 72,     status: "grading",    set: "Perfect Order",         lang: "FR", note: "Valeur déclarée 72€",                               ebayQuery: "Rosa 123/088 Perfect Order Near Mint" },
+  { id: "o3",  name: "Rosa's Encouragement 115/080",   price: 100,    status: "grading",    set: "M3: Nihil Zero",        lang: "JP", note: "Valeur déclarée 100€",                              ebayQuery: "Rosa 115/080 Nihil Zero Japanese Near Mint" },
+  // En grading PSA — envoi PokéLoutre 13 juin ✅ (batch 2)
+  { id: "o4",  name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin",             ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
+  { id: "o10", name: "Flareon ex SIR PRE 146/131",     price: 149.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin", ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Near Mint" },
+  { id: "o19", name: "Pikachu & Zekrom-GX 33/181",     price: 35,     status: "grading",    set: "Team Up",               lang: "EN", note: "TAG TEAM · PSA 10 estimé · envoyé PokéLoutre 13 juin",               ebayQuery: "Pikachu Zekrom GX 33/181 Team Up Near Mint" },
+  { id: "o20", name: "Méga-Dracolosse ex 232/193",      price: 0,      status: "grading",    set: "M2α Ascended Heroes",   lang: "JP", note: "Secret rare M2α · envoyé PokéLoutre 13 juin",                          ebayQuery: "" },
+  { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "collection", set: "CRI Chaos Rising",      lang: "FR", note: "IR mid-tier (~14$ raw) · PSA 10 ne rentabilise pas · garder brut",               ebayQuery: "" },
+  { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "transit",    set: "Neo Genesis",           lang: "EN", note: "Acheté · en transit · à grader dès réception · PSA 7-8 estimé · holo propre, 2 pts blancs coin BG", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
+  // Envoi grading séparé
+  { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
+  // Collection physique
+  { id: "o6",  name: "Snorlax JU 11/64",               price: 40,     status: "collection", set: "Jungle",                lang: "EN", note: "Holo propre, micro-usures coins — collection vintage", ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
+  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 200,    status: "graded",     set: "151 SV2a",              lang: "JP", note: "Gradé PSA 9 ✓ · Acheté 217,50 USD (~200€) eBay · cert #1538817247 · reçu 4 juin", ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
+  { id: "o8",  name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                        ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
+];
+
+// ── localStorage ──────────────────────────────────────────────────────────────
+
+function useStorage(key, fallback) {
+  const [val, setVal] = useState(() => {
+    try {
+      const ls = localStorage.getItem(key);
+      if (!ls) return fallback;
+      const stored = JSON.parse(ls);
+      if (!Array.isArray(stored) || stored.length === 0) return fallback;
+      const storedIds = new Set(stored.map(i => i.id));
+      const newDefaults = fallback.filter(i => !storedIds.has(i.id));
+      return [...stored, ...newDefaults];
+    } catch {
+      try { localStorage.removeItem(key); } catch {}
+      return fallback;
+    }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  }, [key, val]);
+  return [val, setVal, () => {
+    try { localStorage.removeItem(key); } catch {}
+    setVal(fallback);
+  }];
+}
+
+function useLs(key, fallback) {
+  const [val, setVal] = useState(() => {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+  });
+  useEffect(() => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }, [key, val]);
+  return [val, setVal];
+}
+
+// ── eBay API ──────────────────────────────────────────────────────────────────
+
+async function fetchEbayPrices(query) {
+  try {
+    const url = `https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findCompletedItems&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=${EBAY_APP_ID}&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords=${encodeURIComponent(query)}&itemFilter(0).name=SoldItemsOnly&itemFilter(0).value=true&itemFilter(1).name=Condition&itemFilter(1).value=3000&sortOrder=EndTimeSoonest&paginationInput.entriesPerPage=5`;
+    const res = await fetch(url);
+    if (!res.ok) return { corsBlocked: true };
+    const data = await res.json();
+    const items = data?.findCompletedItemsResponse?.[0]?.searchResult?.[0]?.item;
+    if (!items?.length) return null;
+    const prices = items.map(i => parseFloat(i.sellingStatus?.[0]?.currentPrice?.[0]?.__value__)).filter(p => p > 0);
+    if (!prices.length) return null;
+    const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+    return {
+      avg: avg.toFixed(0),
+      avgEur: Math.round(avg * USD_TO_EUR),
+      min: Math.min(...prices).toFixed(0),
+      minEur: Math.round(Math.min(...prices) * USD_TO_EUR),
+      max: Math.max(...prices).toFixed(0),
+      maxEur: Math.round(Math.max(...prices) * USD_TO_EUR),
+      count: prices.length,
+      ts: Date.now(),
+    };
+  } catch (e) {
+    return { corsBlocked: true };
+  }
+}
+
+const toEur = usd => Math.round(parseFloat(usd) * USD_TO_EUR);
+const fmt   = (n, d = 0) => Number(n).toFixed(d);
+const relTime = ts => {
+  if (!ts) return "";
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return "à l'instant";
+  if (m < 60) return `il y a ${m}min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `il y a ${h}h`;
+  return `il y a ${Math.floor(h / 24)}j`;
+};
+
+// ── CardRow ───────────────────────────────────────────────────────────────────
+
+function CardRow({ card, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const [price, setPrice] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+  const tc = TYPE_CONFIG[card.type];
+  const pc = PRIORITY_CONFIG[card.priority];
+
+  const load = useCallback(async () => {
+    if (loaded) return;
+    setLoading(true);
+    setPrice(await fetchEbayPrices(card.ebayQuery));
+    setLoading(false);
+    setLoaded(true);
+  }, [card.ebayQuery, loaded]);
+
+  useEffect(() => { if (open && !loaded) load(); }, [open, loaded, load]);
+
+  const avgEur = price && !price.corsBlocked ? toEur(price.avg) : null;
+  const isGood = avgEur !== null && avgEur < card.maxPrice;
+
+  return (
+    <div
+      onClick={() => setOpen(v => !v)}
+      style={{ ...css.card, borderLeft: `3px solid ${tc.color}`, cursor: "pointer", ...(open ? { background: T.surfaceHover, borderColor: T.borderMid } : {}) }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span style={css.pill(pc.color, pc.bg, pc.border)}>{pc.label}</span>
+        <span style={{ fontSize: 10, color: tc.color, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>{tc.label}</span>
+        <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: T.text, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {LANG_FLAG[card.lang]} {card.name}
+        </span>
+        <span style={{ fontSize: 11, color: T.textMuted }}>max {card.maxPrice}€</span>
+        {price && !price.corsBlocked && (
+          <span style={{ fontSize: 13, fontWeight: 600, color: isGood ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>
+            ~{avgEur}€ {isGood ? "✓" : "↑"}
+          </span>
+        )}
+        <span style={{ fontSize: 10, color: T.textMuted }}>{open ? "▲" : "▼"}</span>
+      </div>
+
+      {open && (
+        <div onClick={e => e.stopPropagation()} style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+            {card.img && !imgErr && <img src={card.img} alt={card.name} onError={() => setImgErr(true)} style={{ width: 90, borderRadius: 8, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }} />}
+            <div style={{ flex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+            <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
+              <div style={css.label}>Set</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.set}</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
+              <div style={css.label}>Numéro</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.number}</div>
+            </div>
+          </div>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 8, padding: 12, marginBottom: 10 }}>
+            <div style={{ ...css.label, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+              Prix eBay — ventes finalisées NM
+            </div>
+            {loading && <div style={{ fontSize: 12, color: T.textSub }}>Chargement…</div>}
+            {!loading && price?.corsBlocked && <div style={{ fontSize: 12, color: "#f97316" }}>Requête bloquée (CORS) — consulte les liens ci-dessous.</div>}
+            {!loading && !price && loaded && <div style={{ fontSize: 12, color: T.textSub }}>Aucun résultat</div>}
+            {!loaded && !loading && (
+              <button onClick={e => { e.stopPropagation(); load(); }} style={css.btn()}>Charger le prix live</button>
+            )}
+            {price && !price.corsBlocked && (
+              <>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                  <span style={{ fontSize: 24, fontWeight: 700, color: isGood ? "#4ade80" : "#f87171", fontVariantNumeric: "tabular-nums" }}>~{avgEur}€</span>
+                  <span style={{ fontSize: 12, color: T.textSub }}>(~{price.avg}$)</span>
+                </div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4 }}>
+                  Min {toEur(price.min)}€ · Max {toEur(price.max)}€ · {price.count} ventes
+                </div>
+                {isGood && (
+                  <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 6, fontSize: 12, color: "#4ade80" }}>
+                    Sous budget — opportunité d'achat
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <a href={`https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(card.ebayQuery)}&LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>eBay vendus</a>
+            <span style={{ color: T.textMuted }}>·</span>
+            <a href={`https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(card.ebayQuery)}&LH_ItemCondition=3000`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>eBay acheter</a>
+            <span style={{ color: T.textMuted }}>·</span>
+            <a href={`https://www.cardmarket.com/fr/Pokemon/Products/Search?searchString=${encodeURIComponent(card.name)}&minCondition=2`} target="_blank" rel="noopener noreferrer" style={css.link} onClick={e => e.stopPropagation()}>CardMarket</a>
+            <span style={{ flex: 1 }} />
+            <button onClick={() => onDelete(card.id)} style={{ fontSize: 11, color: "#f87171", background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>Supprimer</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── AddCardForm ────────────────────────────────────────────────────────────────
+
+function AddCardForm({ onAdd, onClose }) {
+  const [f, setF] = useState({ name: "", set: "", number: "", ebayQuery: "", maxPrice: "", priority: "3", lang: "EN", type: "modern" });
+  const upd = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const submit = () => {
+    if (!f.name || !f.maxPrice) return;
+    onAdd({ ...f, id: Date.now(), maxPrice: parseFloat(f.maxPrice), priority: parseInt(f.priority) });
+    onClose();
+  };
+  return (
+    <div style={{ ...css.card, border: `1px solid ${T.accent}`, marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>Nouvelle carte à surveiller</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Nom *</label>
+          <input style={css.input} value={f.name} onChange={e => upd("name", e.target.value)} placeholder="ex: Charizard ex SAR" />
+        </div>
+        <div><label style={css.label}>Set</label><input style={css.input} value={f.set} onChange={e => upd("set", e.target.value)} /></div>
+        <div><label style={css.label}>Numéro</label><input style={css.input} value={f.number} onChange={e => upd("number", e.target.value)} /></div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Requête eBay</label>
+          <input style={css.input} value={f.ebayQuery} onChange={e => upd("ebayQuery", e.target.value)} placeholder="Charizard 4/102 Base Set Near Mint" />
+        </div>
+        <div><label style={css.label}>Budget max (€) *</label><input style={css.input} type="number" value={f.maxPrice} onChange={e => upd("maxPrice", e.target.value)} /></div>
+        <div>
+          <label style={css.label}>Priorité</label>
+          <select style={css.input} value={f.priority} onChange={e => upd("priority", e.target.value)}>
+            <option value="1">P1 — Urgent</option><option value="2">P2 — Haute</option>
+            <option value="3">P3 — Normale</option><option value="4">P4 — Basse</option><option value="5">Collection</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Langue</label>
+          <select style={css.input} value={f.lang} onChange={e => upd("lang", e.target.value)}>
+            <option value="EN">EN</option><option value="JP">JP</option><option value="FR">FR</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Type</label>
+          <select style={css.input} value={f.type} onChange={e => upd("type", e.target.value)}>
+            <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button onClick={onClose} style={css.btn()}>Annuler</button>
+        <button onClick={submit} style={css.btn("primary")}>Ajouter</button>
+      </div>
+    </div>
+  );
+}
+
+// ── AddOwnedForm ───────────────────────────────────────────────────────────────
+
+function AddOwnedForm({ onAdd, onClose }) {
+  const [f, setF] = useState({ name: "", set: "", price: "", status: "collection", lang: "EN", note: "", ebayQuery: "" });
+  const upd = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const submit = () => {
+    if (!f.name) return;
+    onAdd({ ...f, id: "o" + Date.now(), price: parseFloat(f.price) || 0 });
+    onClose();
+  };
+  return (
+    <div style={{ ...css.card, border: `1px solid ${T.accent}`, marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>Ajouter à la collection</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Nom *</label>
+          <input style={css.input} value={f.name} onChange={e => upd("name", e.target.value)} placeholder="Évoli ex SIR 167/131" />
+        </div>
+        <div><label style={css.label}>Set</label><input style={css.input} value={f.set} onChange={e => upd("set", e.target.value)} /></div>
+        <div><label style={css.label}>Prix payé (€)</label><input style={css.input} type="number" value={f.price} onChange={e => upd("price", e.target.value)} /></div>
+        <div>
+          <label style={css.label}>Statut</label>
+          <select style={css.input} value={f.status} onChange={e => upd("status", e.target.value)}>
+            <option value="collection">Collection</option><option value="à grader">À envoyer grading</option>
+            <option value="grading">Grading PSA</option><option value="graded">Gradé PSA ✓</option><option value="transit">En transit</option>
+            <option value="sealed">Scellé</option><option value="enchère">Enchère</option>
+          </select>
+        </div>
+        <div>
+          <label style={css.label}>Langue</label>
+          <select style={css.input} value={f.lang} onChange={e => upd("lang", e.target.value)}>
+            <option value="EN">EN</option><option value="JP">JP</option><option value="FR">FR</option>
+          </select>
+        </div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Requête eBay (cours live)</label>
+          <input style={css.input} value={f.ebayQuery} onChange={e => upd("ebayQuery", e.target.value)} placeholder="ex: Charizard VMAX 74/73 Near Mint" />
+        </div>
+        <div style={{ gridColumn: "1/-1" }}>
+          <label style={css.label}>Note</label>
+          <input style={css.input} value={f.note} onChange={e => upd("note", e.target.value)} />
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button onClick={onClose} style={css.btn()}>Annuler</button>
+        <button onClick={submit} style={css.btn("primary")}>Ajouter</button>
+      </div>
+    </div>
+  );
+}
+
+// ── OwnedCard ─────────────────────────────────────────────────────────────────
+
+function OwnedCard({ card, onDelete }) {
+  const sc = STATUS_CONFIG[card.status] || STATUS_CONFIG.collection;
+  return (
+    <div style={{ ...css.card, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {LANG_FLAG[card.lang]} {card.name}
+        </div>
+        {card.set && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{card.set}</div>}
+        {card.note && <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, fontStyle: "italic" }}>{card.note}</div>}
+      </div>
+      <div style={{ textAlign: "right", flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
+        {card.price > 0 && <div style={{ fontSize: 14, fontWeight: 600, color: T.text, fontVariantNumeric: "tabular-nums" }}>{card.price}€</div>}
+        <span style={css.pill(sc.color, sc.bg, sc.border)}>{sc.label}</span>
+      </div>
+      <button onClick={() => onDelete(card.id)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px", flexShrink: 0 }}
+        onMouseEnter={e => e.target.style.color = "#f87171"}
+        onMouseLeave={e => e.target.style.color = T.textMuted}
+      >✕</button>
+    </div>
+  );
+}
+
+// ── SvgLineChart ──────────────────────────────────────────────────────────────
+
+function SvgLineChart({ data, lines }) {
+  const W = 320, H = 160, PAD = { top: 10, right: 10, bottom: 24, left: 44 };
+  const IW = W - PAD.left - PAD.right;
+  const IH = H - PAD.top - PAD.bottom;
+  const [hover, setHover] = useState(null);
+
+  const allVals = lines.flatMap(l => data.map(d => d[l.key]));
+  const minV = Math.min(...allVals);
+  const maxV = Math.max(...allVals);
+  const range = maxV - minV || 1;
+
+  const xPos = i => PAD.left + (i / (data.length - 1)) * IW;
+  const yPos = v => PAD.top + IH - ((v - minV) / range) * IH;
+
+  const pathD = (key) =>
+    data.map((d, i) => `${i === 0 ? "M" : "L"}${xPos(i).toFixed(1)},${yPos(d[key]).toFixed(1)}`).join(" ");
+
+  const yTicks = [minV, minV + range * 0.5, maxV].map(v => Math.round(v));
+
+  return (
+    <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 12, padding: "12px 0 8px", marginBottom: 24, position: "relative" }}>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}
+        onMouseLeave={() => setHover(null)}>
+        {/* Grid */}
+        {yTicks.map((v, i) => (
+          <g key={i}>
+            <line x1={PAD.left} x2={W - PAD.right} y1={yPos(v)} y2={yPos(v)} stroke="rgba(255,255,255,0.05)" strokeDasharray="3,3" />
+            <text x={PAD.left - 6} y={yPos(v) + 4} textAnchor="end" fontSize={9} fill={T.textMuted}>{v}€</text>
+          </g>
+        ))}
+        {/* X labels */}
+        {data.map((d, i) => (
+          <text key={i} x={xPos(i)} y={H - 4} textAnchor="middle" fontSize={9} fill={T.textMuted}>{d.date}</text>
+        ))}
+        {/* Lines */}
+        {lines.map(l => (
+          <path key={l.key} d={pathD(l.key)} fill="none" stroke={l.color} strokeWidth={2} strokeLinejoin="round" />
+        ))}
+        {/* Dots + hover zones */}
+        {data.map((d, i) => (
+          <g key={i} onMouseEnter={() => setHover(i)} style={{ cursor: "crosshair" }}>
+            <rect x={xPos(i) - 16} y={PAD.top} width={32} height={IH} fill="transparent" />
+            {lines.map(l => (
+              <circle key={l.key} cx={xPos(i)} cy={yPos(d[l.key])} r={hover === i ? 5 : 3} fill={l.color} />
+            ))}
+          </g>
+        ))}
+        {/* Hover vertical line */}
+        {hover !== null && (
+          <line x1={xPos(hover)} x2={xPos(hover)} y1={PAD.top} y2={PAD.top + IH} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+        )}
+      </svg>
+      {/* Tooltip */}
+      {hover !== null && (
+        <div style={{ position: "absolute", top: 10, right: 14, background: T.surface, border: `1px solid ${T.borderMid}`, borderRadius: 8, padding: "6px 10px", fontSize: 11, pointerEvents: "none" }}>
+          <div style={{ color: T.text, fontWeight: 600, marginBottom: 4 }}>{data[hover].date}</div>
+          {lines.map(l => (
+            <div key={l.key} style={{ color: l.color, fontVariantNumeric: "tabular-nums" }}>{l.label} : {data[hover][l.key]}€</div>
+          ))}
+        </div>
+      )}
+      {/* Legend */}
+      {lines.length > 1 && (
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 4 }}>
+          {lines.map(l => (
+            <div key={l.key} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: l.color }}>
+              <div style={{ width: 16, height: 2, background: l.color, borderRadius: 1 }} />
+              {l.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CoursTab / Classeur Grading ───────────────────────────────────────────────
+
+const GRADING_HISTORY = {
+  "o1":  { h:[{date:"Sep 24",nm:180,psa9:280,psa10:600},{date:"Nov 24",nm:195,psa9:300,psa10:640},{date:"Jan 25",nm:200,psa9:310,psa10:670},{date:"Mar 25",nm:210,psa9:320,psa10:700},{date:"Mai 25",nm:215,psa9:328,psa10:720},{date:"Juil 25",nm:220,psa9:335,psa10:740},{date:"Sep 25",nm:222,psa9:340,psa10:750},{date:"Nov 25",nm:225,psa9:345,psa10:760},{date:"Jan 26",nm:228,psa9:348,psa10:770},{date:"Mar 26",nm:229,psa9:350,psa10:775},{date:"Mai 26",nm:230,psa9:352,psa10:780}] },
+  "o2":  { h:[{date:"Jan 26",nm:60,psa9:95,psa10:200},{date:"Fév 26",nm:63,psa9:98,psa10:210},{date:"Mar 26",nm:65,psa9:100,psa10:215},{date:"Avr 26",nm:68,psa9:104,psa10:222},{date:"Mai 26",nm:70,psa9:108,psa10:228}] },
+  "o3":  { h:[{date:"Jan 26",nm:82,psa9:135,psa10:280},{date:"Fév 26",nm:85,psa9:140,psa10:290},{date:"Mar 26",nm:88,psa9:144,psa10:300},{date:"Avr 26",nm:90,psa9:148,psa10:308},{date:"Mai 26",nm:92,psa9:150,psa10:315}] },
+  "o19": { h:[{date:"Juin 26",nm:30,psa9:55,psa10:130}] },
+  "o20": { h:[{date:"Juin 26",nm:60,psa9:110,psa10:280}] },
+  "o4":  { h:[{date:"Jan 25",nm:175,psa9:240,psa10:530},{date:"Mar 25",nm:165,psa9:228,psa10:505},{date:"Mai 25",nm:155,psa9:215,psa10:478},{date:"Juil 25",nm:148,psa9:205,psa10:458},{date:"Sep 25",nm:143,psa9:198,psa10:443},{date:"Nov 25",nm:138,psa9:192,psa10:430},{date:"Jan 26",nm:135,psa9:188,psa10:420},{date:"Mar 26",nm:132,psa9:186,psa10:415},{date:"Mai 26",nm:130,psa9:184,psa10:410}] },
+  "o5":  { h:[{date:"Jan 24",nm:35,psa9:70,psa10:160},{date:"Juil 24",nm:32,psa9:64,psa10:148},{date:"Jan 25",nm:30,psa9:60,psa10:138},{date:"Juil 25",nm:27,psa9:54,psa10:124},{date:"Jan 26",nm:26,psa9:50,psa10:115},{date:"Mar 26",nm:26,psa9:48,psa10:112},{date:"Mai 26",nm:25,psa9:47,psa10:108}] },
+  "o10": { h:[{date:"Jan 25",nm:110,psa9:162,psa10:345},{date:"Mar 25",nm:118,psa9:172,psa10:368},{date:"Mai 25",nm:128,psa9:184,psa10:395},{date:"Juil 25",nm:135,psa9:192,psa10:415},{date:"Sep 25",nm:140,psa9:200,psa10:432},{date:"Nov 25",nm:144,psa9:205,psa10:445},{date:"Jan 26",nm:147,psa9:210,psa10:455},{date:"Mar 26",nm:149,psa9:213,psa10:463},{date:"Mai 26",nm:150,psa9:215,psa10:470}] },
+  "o16": { h:[{date:"Jan 26",nm:650,psa9:1600,psa10:5800},{date:"Mar 26",nm:700,psa9:1800,psa10:6200},{date:"Jun 26",nm:750,psa9:1950,psa10:6500}] },
+  "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
+};
+
+// img = URL directe confirmée · tcgdex = "SETCODE-num" pour API TCGdex · ptcgioQ = fallback pokemontcg.io
+const GRADING_META = {
+  "o1":  { img:"https://images.pokemontcg.io/shp/74_hires.png",    grade:"PSA 10" },
+  "o2":  { tcgdex:"M3-123",                                        grade:"PSA 9-10",  ptcgioQ:'set.id:me3 number:123' },
+  "o3":  { tcgdex:"M3-115",                                        grade:"PSA 9-10",  ptcgioQ:'set.id:me3 number:115' },
+  "o4":  { img:"https://images.pokemontcg.io/sv8pt5/167_hires.png",grade:"PSA 10" },
+  "o5":  { img:"https://images.pokemontcg.io/sv3pt5/205_hires.png",grade:"PSA 9" },
+  "o10": { img:"https://images.pokemontcg.io/sv8pt5/146_hires.png",grade:"PSA 10" },
+  "o7":  { tcgdex:"SV2a-205",                                      grade:"PSA 9 ✓",   ptcgioQ:'set.id:sv2a number:205' },
+  "o15": { tcgdex:"M4-91",                                         grade:"collection", ptcgioQ:'set.id:me4 number:91' },
+  "o16": { img:"https://images.pokemontcg.io/neo1/9_hires.png",    grade:"PSA 7-8" },
+  "o19": { img:"https://images.pokemontcg.io/sm9/33_hires.png",    grade:"grading" },
+  "o20": { tcgdex:"M2a-232",                                       grade:"grading",   ptcgioQ:'set.id:me2pt5 number:232' },
+};
+
+// ── Classeur ──────────────────────────────────────────────────────────────────
+// img = URL directe confirmée (JP/EN vintage/SV EN) · tcgdex = "SETCODE-num" (résolu via API TCGdex dans la langue
+// de la carte, avec repli EN si carte FR introuvable en FR) · ptcgioQ = dernier recours pokemontcg.io
+
+const CLASSEUR_CARDS = [
+  // ── 🇫🇷 Chaos Ascendant — ME04 / CLN ──────────────────────────────────────
+  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   tcgdex:"M4-107", ptcgioQ:'set.id:me4 number:107' },
+  { id:"c57", name:"Crocorible ex",      fullName:"Crocorible ex 055/086",      set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    tcgdex:"M4-55",  ptcgioQ:'set.id:me4 number:55' },
+  { id:"c58", name:"Tauros",             fullName:"Tauros 096/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~4€",    tcgdex:"M4-96",  ptcgioQ:'set.id:me4 number:96' },
+  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~6€",    tcgdex:"MEP-80", ptcgioQ:'set.id:mef number:80' },
+  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"M4-68",  ptcgioQ:'set.id:me4 number:68' },
+  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"M4-95",  ptcgioQ:'set.id:me4 number:95' },
+  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"M4-42",  ptcgioQ:'set.id:me4 number:42' },
+  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"M4-29",  ptcgioQ:'set.id:me4 number:29' },
+  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    tcgdex:"M4-32",  ptcgioQ:'set.id:me4 number:32' },
+  // ── 🇫🇷 Méga-Évolution — ME01 / MEG ────────────────────────────────────────
+  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   tcgdex:"M1-155", ptcgioQ:'set.id:me1 number:155' },
+  { id:"c09", name:"Ptyranidur promo",    fullName:"Ptyranidur promo MEP 070",    set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~4€",    tcgdex:"MEP-70", ptcgioQ:'set.id:mef number:70' },
+  // ── 🇫🇷 Perfect Order — ME03 / POR ───────────────────────────────────────
+  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"POR · Perfect Order",      lang:"FR", value:"~10€",   tcgdex:"M3-31",  ptcgioQ:'set.id:me3 number:31' },
+  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    tcgdex:"M3-62",  ptcgioQ:'set.id:me3 number:62' },
+  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"M3-81",  ptcgioQ:'set.id:me3 number:81' },
+  { id:"c60", name:"Illumis",             fullName:"Illumis 111/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"M3-111", ptcgioQ:'set.id:me3 number:111' },
+  { id:"c61", name:"Psystigri",           fullName:"Psystigri 095/088",           set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"M3-95",  ptcgioQ:'set.id:me3 number:95' },
+  // ── 🇫🇷 Ascended Heroes — ASC FR ──────────────────────────────────────────
+  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    tcgdex:"M2a-96", ptcgioQ:'set.id:me2pt5 number:96' },
+  // ── 🇫🇷 Phantasmal Flames — ME02 / PFL ───────────────────────────────────
+  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",   tcgdex:"M2-45",  ptcgioQ:'set.id:me2 number:45' },
+  // ── 🇫🇷 Temporal Forces — SV5 / TEF ──────────────────────────────────────
+  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    tcgdex:"SV5-51", ptcgioQ:'set.id:sv5 number:51' },
+  // ── 🇯🇵 M2α — Ascended Heroes ────────────────────────────────────────────
+  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", tcgdex:"M2a-21",  ptcgioQ:'name:"Ho-Oh ex" set.id:me2pt5' },
+  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    tcgdex:"M2a-145", ptcgioQ:'name:"Terapagos ex" set.id:me2pt5' },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-194", ptcgioQ:'set.id:me2pt5 number:194' },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-207", ptcgioQ:'set.id:me2pt5 number:207' },
+  // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
+  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   tcgdex:"M3-54",  ptcgioQ:'set.id:me3 number:55' },
+  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-16",  ptcgioQ:'set.id:me3 number:16' },
+  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-61",  ptcgioQ:'set.id:me3 number:62' },
+  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-103", ptcgioQ:'set.id:me3 number:81' },
+  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-84",  ptcgioQ:'set.id:me3 number:24' },
+  { id:"c26", name:"Ratatac",             fullName:"Ratatac 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-92",  ptcgioQ:'set.id:me3 number:61' },
+  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-81",  ptcgioQ:'set.id:me3 number:89' },
+  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-21",  ptcgioQ:'set.id:me3 number:21' },
+  // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
+  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", tcgdex:"M4-63",  ptcgioQ:'set.id:me4 number:65' },
+  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    tcgdex:"M4-113", ptcgioQ:'name:"Prism Tower" set.id:me4' },
+  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-107", ptcgioQ:'name:"Tool Scrapper" set.id:me4' },
+  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-71",  ptcgioQ:'set.id:me4 number:73' },
+  // ── 🇯🇵 sv11B — Black Bolt JP ─────────────────────────────────────────────
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   tcgdex:"SV11B-159", ptcgioQ:'set.id:sv11b number:159' },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-69",  ptcgioQ:'set.id:sv11b number:69' },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-151", ptcgioQ:'set.id:sv11b number:151' },
+  // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-67", ptcgioQ:'set.id:sv4k number:67' },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-69", ptcgioQ:'set.id:sv4k number:69' },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-77", ptcgioQ:'set.id:sv4k number:77' },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    tcgdex:"SV4K-52", ptcgioQ:'set.id:sv4k number:52' },
+  // ── 🇯🇵 sv2P — Clay Burst ─────────────────────────────────────────────────
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    tcgdex:"SV2P-65", ptcgioQ:'set.id:sv2p number:65' },
+  // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
+  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
+  // ── 🇬🇧 Ascended Heroes / Perfect Order EN ───────────────────────────────
+  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 116/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", tcgdex:"M2a-116", ptcgioQ:'set.id:me2pt5 number:116' },
+  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"M3-62",   ptcgioQ:'set.id:me3 number:62' },
+  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 012/088",        set:"POR · Perfect Order",      lang:"EN", value:"~8€ ⭐", tcgdex:"M3-12",   ptcgioQ:'set.id:me3 number:12' },
+  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"M3-16",   ptcgioQ:'set.id:me3 number:16' },
+  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"M3-24",   ptcgioQ:'set.id:me3 number:24' },
+  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"M3-115",  ptcgioQ:'set.id:me3 number:115' },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    tcgdex:"M3-89",   ptcgioQ:'name:"Spewpa" set.id:me3 number:89' },
+  { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"M3-96",   ptcgioQ:'set.id:me3 number:96' },
+  { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   tcgdex:"M2a-237", ptcgioQ:'set.id:me2pt5 number:237' },
+  // ── 🇬🇧 Prismatic Evolutions — PRE EN ────────────────────────────────────
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv8pt5/5_hires.png" },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/sv8pt5/81_hires.png" },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/sv8pt5/20_hires.png" },
+  { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv8pt5/119_hires.png" },
+  // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo XY70",           set:"XY · Promos EN",           lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/xyp/XY70_hires.png" },
+
+  // ── 🇫🇷 Nouvelles cartes FR ──────────────────────────────────────────────
+  { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/089",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    tcgdex:"M3-105", ptcgioQ:'set.id:me3 number:105' },
+  { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"M4-35",  ptcgioQ:'set.id:me4 number:35' },
+  { id:"c65", name:"Nostenfer",              fullName:"Nostenfer 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    tcgdex:"M4-73",  ptcgioQ:'set.id:me4 number:73' },
+  { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   tcgdex:"M4-22",  ptcgioQ:'set.id:me4 number:22' },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 117/088",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    tcgdex:"M3-117", ptcgioQ:'set.id:me3 number:117' },
+  { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    tcgdex:"M4-91",  ptcgioQ:'set.id:me4 number:91' },
+  { id:"c69", name:"Fragrain",              fullName:"Fragrain 183/217",            set:"ASC FR",                    lang:"FR", value:"~2€",    tcgdex:"M2a-183",ptcgioQ:'set.id:me2pt5 number:183' },
+  { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    tcgdex:"M4-65",  ptcgioQ:'set.id:me4 number:65' },
+  { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  tcgdex:"SV2-130",ptcgioQ:'set.id:sv2 number:130' },
+  { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    tcgdex:"SV3-22", ptcgioQ:'set.id:sv3 number:22' },
+  { id:"c73", name:"Méga-Zygarde ex",        fullName:"Méga-Zygarde ex 007",         set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~15€",   tcgdex:"MEP-7",  ptcgioQ:'set.id:mef number:7' },
+  { id:"c74", name:"Performance de Strykna", fullName:"Performance de Strykna 041/086",set:"CLN · Chaos Ascendant",  lang:"FR", value:"~3€",    tcgdex:"M4-41",  ptcgioQ:'set.id:me4 number:41' },
+  { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/182",         set:"PAR · Destins de Paldea",   lang:"FR", value:"~3€",    tcgdex:"SV4-23", ptcgioQ:'set.id:sv4 number:23' },
+  { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   tcgdex:"SV3-210",ptcgioQ:'set.id:sv3 number:210' },
+  { id:"c77", name:"Dogrino ex de Pepper",   fullName:"Dogrino ex de Pepper 139/182",set:"DRI · Rivaux Émergents",    lang:"FR", value:"~5€",    tcgdex:"SV9-139",ptcgioQ:'set.id:sv9 number:139' },
+  { id:"c78", name:"Méga-Néméliős ex",       fullName:"Méga-Néméliős ex 075/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~10€",   tcgdex:"M4-75",  ptcgioQ:'set.id:me4 number:75' },
+
+  // ── 🇬🇧 Nouvelles cartes EN ───────────────────────────────────────────────
+  { id:"c79", name:"Tauros",                 fullName:"Tauros",                      set:"EN",                        lang:"EN", value:"~3€",    ptcgioQ:'name:Tauros' },
+  { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex",                 set:"EN",                        lang:"EN", value:"~8€",    ptcgioQ:'name:"Beedrill ex"' },
+  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CLN · Chaos Ascendant EN",  lang:"EN", value:"~5€",    tcgdex:"M4-15",  ptcgioQ:'set.id:me4 number:15' },
+  { id:"c82", name:"Xerneas SIR",           fullName:"Xerneas 097/086",             set:"Journey Together",          lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv9/97_hires.png" },
+
+  // ── 🇯🇵 Nouvelles cartes JP ───────────────────────────────────────────────
+  { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   tcgdex:"M2a-36",  ptcgioQ:'set.id:me2pt5 number:36' },
+];
+
+const BINDER_PAGE_SIZE = 9;
+
+const LANG_TABS_CFG = [
+  { id: "FR", icon: "🇫🇷", label: "Français", color: "#60a5fa" },
+  { id: "JP", icon: "🇯🇵", label: "Japonais", color: "#f87171" },
+  { id: "EN", icon: "🇬🇧", label: "Anglais",  color: "#4ade80" },
+];
+
+// ── Chargement d'images — architecture simple ────────────────────────────────
+// Ordre : override utilisateur > img (URL confirmée) > TCGdex API (langue de la carte)
+// > TCGdex API en anglais (uniquement si carte FR introuvable en FR) > pokemontcg.io (dernier recours)
+// Si rien n'est trouvé : l'UI propose à l'utilisateur de coller une URL d'image (voir CardSlot / panneaux détail).
+
+const LANG_API_CODE = { FR: "fr", JP: "ja", EN: "en" };
+
+function useCardImages(cards) {
+  const CACHE_KEY = "pt_img_cache_v1";
+  const OVR_KEY   = "pt_img_overrides";
+  const [cache, setCache] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
+  });
+  const [overrides, setOverrides] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(OVR_KEY) || "{}"); } catch { return {}; }
+  });
+
+  const setOverride = useCallback((id, url) => {
+    setOverrides(prev => {
+      const next = { ...prev, [id]: url };
+      try { localStorage.setItem(OVR_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && cache[c.id] === undefined);
+    if (!toFetch.length) return;
+    let alive = true;
+    const save = (id, result) => setCache(p => {
+      const n = { ...p, [id]: result };
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
+      return n;
+    });
+
+    const tcgdexOne = async (lang, id) => {
+      try {
+        const r = await fetch(`https://api.tcgdex.net/v2/${lang}/cards/${id}`);
+        if (!r.ok) return null;
+        const d = await r.json();
+        return d?.image ? `${d.image}/high.webp` : null;
+      } catch { return null; }
+    };
+    const tcgdexLookup = async (lang, tcgdex) => {
+      const [setCode, num] = tcgdex.split("-");
+      for (const n of [num, num.padStart(3, "0")]) {
+        const url = await tcgdexOne(lang, `${setCode}-${n}`);
+        if (url) return url;
+      }
+      return null;
+    };
+    const ptcgio = async (q) => {
+      try {
+        const r = await fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=1&select=images`);
+        if (!r.ok) return null;
+        const d = await r.json();
+        return d?.data?.[0]?.images?.large ?? null;
+      } catch { return null; }
+    };
+
+    (async () => {
+      for (const card of toFetch) {
+        if (!alive) return;
+        let url = null, fallbackEn = false;
+
+        if (card.tcgdex) {
+          url = await tcgdexLookup(LANG_API_CODE[card.lang] || "en", card.tcgdex);
+          if (!url && card.lang === "FR") {
+            url = await tcgdexLookup("en", card.tcgdex);
+            if (url) fallbackEn = true;
+          }
+        }
+        if (!url && card.ptcgioQ) url = await ptcgio(card.ptcgioQ);
+
+        save(card.id, url ? { url, fallbackEn } : null);
+        if (url) await new Promise(r => setTimeout(r, 120));
+      }
+    })();
+    return () => { alive = false; };
+  }, [cards.map(c => c.id).join(",")]);
+
+  const images = {};
+  for (const c of cards) {
+    if (overrides[c.id]) { images[c.id] = { url: overrides[c.id], override: true }; continue; }
+    if (c.img) { images[c.id] = { url: c.img }; continue; }
+    images[c.id] = cache[c.id] !== undefined ? cache[c.id] : undefined; // undefined = en cours de chargement
+  }
+  return { images, setOverride };
+}
+
+// ── Panneau "ajouter une image" ───────────────────────────────────────────────
+// Affiché quand une carte FR/JP/EN n'a pu être résolue automatiquement, ou quand
+// seul un repli EN a été trouvé pour une carte FR — conformément à la consigne :
+// FR d'abord, sinon demander une image à l'utilisateur, sinon EN en dernier recours.
+
+function ImageHelp({ card, imgData, onSetOverride, color }) {
+  const [url, setUrl] = useState("");
+  const missing = imgData === null;
+  const isEnFallback = imgData?.fallbackEn;
+  if (!missing && !isEnFallback) return null;
+  return (
+    <div style={{ marginTop: 8, padding: "8px 10px", background: missing ? "rgba(248,113,113,0.06)" : "rgba(250,204,21,0.06)", border: `1px solid ${missing ? "rgba(248,113,113,0.25)" : "rgba(250,204,21,0.25)"}`, borderRadius: 8 }}>
+      <div style={{ fontSize: 11, color: missing ? "#f87171" : "#facc15", fontWeight: 600, marginBottom: 6 }}>
+        {missing ? "📷 Image introuvable automatiquement" : "🇬🇧 Illustration EN affichée (FR introuvable)"}
+      </div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>
+        Tu as une image {card.lang === "FR" ? "FR" : ""} ? Colle l'URL ci-dessous pour l'intégrer.
+      </div>
+      <div style={{ display: "flex", gap: 6 }}>
+        <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://…" style={{ ...css.input, fontSize: 11, padding: "5px 8px" }} onClick={e => e.stopPropagation()} />
+        <button onClick={e => { e.stopPropagation(); if (url.trim()) { onSetOverride(card.id, url.trim()); setUrl(""); } }} style={{ ...css.btn("primary"), padding: "5px 10px", fontSize: 11 }}>OK</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Slot individuel ───────────────────────────────────────────────────────────
+
+function CardSlot({ card, imgData, selected, color, onClick }) {
+  const [err, setErr] = useState(false);
+  const loading = card && imgData === undefined;
+  const missing = card && imgData === null;
+  const url = imgData?.url;
+  const showImg = url && !err;
+  return (
+    <div onClick={onClick} style={{
+      aspectRatio: "5/7", borderRadius: 7, overflow: "hidden",
+      background: card ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.15)",
+      border: card
+        ? `2px solid ${selected ? T.accent : color + "44"}`
+        : "2px dashed rgba(255,255,255,0.06)",
+      cursor: card ? "pointer" : "default",
+      boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7)" : "none",
+      transform: selected ? "scale(1.06)" : "scale(1)",
+      transition: "transform 0.15s, border-color 0.15s",
+      position: "relative", display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      {card && showImg && (
+        <img src={url} alt={card.name}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          onError={() => setErr(true)}
+        />
+      )}
+      {card && showImg && imgData?.fallbackEn && (
+        <div style={{ position: "absolute", top: 3, right: 3, background: "rgba(250,204,21,0.9)", color: "#000", fontSize: 7, fontWeight: 700, borderRadius: 4, padding: "1px 4px", zIndex: 2 }}>EN</div>
+      )}
+      {card && !showImg && (
+        <div style={{ padding: 4, textAlign: "center", zIndex: 1 }}>
+          {loading
+            ? <div style={{ fontSize: 16, opacity: 0.2 }}>⏳</div>
+            : missing
+              ? <div style={{ fontSize: 16, opacity: 0.3 }}>📷</div>
+              : <>
+                <div style={{ fontSize: 9, color: T.textSub, fontWeight: 600, lineHeight: 1.3, wordBreak: "break-word" }}>{card.name}</div>
+                <div style={{ fontSize: 7, color: T.textMuted, marginTop: 2 }}>{card.set.split(" · ")[0]}</div>
+              </>
+          }
+        </div>
+      )}
+      {!card && <div style={{ fontSize: 18, opacity: 0.07, color: "#fff" }}>◇</div>}
+    </div>
+  );
+}
+
+// ── Classeur d'une langue ─────────────────────────────────────────────────────
+
+function BinderView({ cards, color }) {
+  const [page, setPage]         = useState(0);
+  const [selected, setSelected] = useState(null);
+  const { images, setOverride } = useCardImages(cards);
+
+  const totalPages = Math.max(1, Math.ceil(cards.length / BINDER_PAGE_SIZE));
+  const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => cards[page * BINDER_PAGE_SIZE + i] ?? null);
+  const pageStart  = page * BINDER_PAGE_SIZE + 1;
+  const pageEnd    = Math.min((page + 1) * BINDER_PAGE_SIZE, cards.length);
+
+  return (
+    <div>
+      {/* Classeur */}
+      <div style={{
+        borderRadius: 14, overflow: "hidden",
+        boxShadow: `0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px ${color}22`,
+        display: "flex", marginBottom: 12,
+      }}>
+        {/* Spine anneaux */}
+        <div style={{
+          width: 28, flexShrink: 0,
+          background: "linear-gradient(to right, #0c0703, #1c0f07, #231206)",
+          display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center",
+          padding: "10px 0",
+          borderRight: "1px solid rgba(255,255,255,0.04)",
+        }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{
+              width: 15, height: 15, borderRadius: "50%",
+              background: "linear-gradient(135deg, #c0c0c0 0%, #808080 40%, #404040 70%, #a0a0a0 100%)",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.25)",
+              border: "1px solid #1a1a1a",
+            }} />
+          ))}
+        </div>
+
+        {/* Page */}
+        <div style={{
+          flex: 1,
+          background: "linear-gradient(160deg, #1d1208 0%, #261506 60%, #1a1005 100%)",
+          padding: "12px 12px 12px 8px",
+        }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: 7 }}>
+            {pageCards.map((card, i) => {
+              const imgData = card ? (card.img ? { url: card.img } : images[card.id]) : undefined;
+              return (
+                <CardSlot key={i}
+                  card={card} imgData={imgData}
+                  selected={selected?.id === card?.id} color={color}
+                  onClick={() => card && setSelected(selected?.id === card.id ? null : card)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Info carte sélectionnée */}
+      {selected && (
+        <div style={{ ...css.card, border: `1px solid ${color}55`, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            {images[selected.id]?.url && (
+              <img src={selected.img || images[selected.id].url} alt={selected.fullName}
+                style={{ width: 52, height: 73, objectFit: "cover", borderRadius: 5, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
+                onError={e => e.target.style.display = "none"}
+              />
+            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{LANG_FLAG[selected.lang]} {selected.fullName}</div>
+              <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
+              {selected.value && <div style={{ fontSize: 12, color: "#4ade80", fontWeight: 600, marginTop: 4 }}>{selected.value}</div>}
+            </div>
+            <button onClick={() => setSelected(null)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>✕</button>
+          </div>
+          {!selected.img && <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />}
+        </div>
+      )}
+
+      {/* Pagination */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 4 }}>
+        <button onClick={() => { setPage(p => Math.max(0, p - 1)); setSelected(null); }}
+          disabled={page === 0}
+          style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "5px 12px" }}>←</button>
+        <span style={{ fontSize: 11, color: T.textMuted }}>
+          {cards.length > 0 ? `${pageStart}–${pageEnd} / ${cards.length} cartes` : "Vide"}
+        </span>
+        <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
+          disabled={page === totalPages - 1}
+          style={{ ...css.btn(), opacity: page === totalPages - 1 ? 0.3 : 1, padding: "5px 12px" }}>→</button>
+      </div>
+    </div>
+  );
+}
+
+// ── ClasseurTab — 3 classeurs par langue ──────────────────────────────────────
+
+function ClasseurTab() {
+  const [lang, setLang] = useState("FR");
+  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang);
+  const cur   = LANG_TABS_CFG.find(t => t.id === lang);
+
+  return (
+    <div>
+      {/* Sélecteur de classeur */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+        {LANG_TABS_CFG.map(t => {
+          const count  = CLASSEUR_CARDS.filter(c => c.lang === t.id).length;
+          const active = lang === t.id;
+          return (
+            <button key={t.id} onClick={() => setLang(t.id)} style={{
+              flex: 1, padding: "8px 4px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+              background: active ? `${t.color}18` : "transparent",
+              color: active ? t.color : T.textMuted,
+              border: `1px solid ${active ? t.color + "55" : T.border}`,
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+            }}>
+              <span style={{ fontSize: 20 }}>{t.icon}</span>
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, letterSpacing: "0.02em" }}>{t.label}</span>
+              <span style={{ fontSize: 9, opacity: 0.6 }}>{count} cartes</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <BinderView key={lang} cards={cards} color={cur.color} />
+
+      <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center", marginTop: 2 }}>
+        Images : TCGdex (langue native) · pokemontcg.io · cliquer pour détails
+      </div>
+    </div>
+  );
+}
+
+function CoursTab({ ownedList }) {
+  const [lang, setLang]         = useState("FR");
+  const [selected, setSelected] = useState(null);
+  const [grade, setGrade]       = useState("psa10");
+  const [livePrices, setLivePrices] = useLs("pt_cours_live", {});
+  const [loadingId, setLoadingId]   = useState(null);
+
+  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded" || c.status === "transit");
+  const langCards    = gradingCards.filter(c => c.lang === lang);
+
+  // Adapter le format pour useCardImages
+  const imgCards = langCards.map(c => ({
+    id: c.id, name: c.name, fullName: c.name, lang: c.lang || "",
+    img:    GRADING_META[c.id]?.img    || "",
+    tcgdex: GRADING_META[c.id]?.tcgdex || "",
+    ptcgioQ:GRADING_META[c.id]?.ptcgioQ|| "",
+  }));
+  const { images: imgCache, setOverride } = useCardImages(imgCards);
+
+  const histData = selected ? GRADING_HISTORY[selected.id]?.h : null;
+  const meta     = selected ? GRADING_META[selected.id]   : null;
+  const curColor = LANG_TABS_CFG.find(t => t.id === lang).color;
+
+  const linesCfg = [
+    { key:"nm",    color:"#60a5fa", label:"NM brute" },
+    { key:"psa9",  color:"#fb923c", label:"PSA 9" },
+    { key:"psa10", color:"#4ade80", label:"PSA 10" },
+  ];
+
+  const loadLive = async (card) => {
+    if (!card.ebayQuery || loadingId) return;
+    setLoadingId(card.id);
+    const d = await fetchEbayPrices(card.ebayQuery);
+    if (d && !d.corsBlocked) setLivePrices(p => ({ ...p, [card.id]: d }));
+    setLoadingId(null);
+  };
+
+  // Valeur PSA estimée totale (toutes langues)
+  const totalPaid = gradingCards.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
+  const totalEst  = gradingCards.reduce((s, c) => {
+    const h = GRADING_HISTORY[c.id]?.h;
+    if (!h) return s;
+    const last = h[h.length - 1];
+    const g    = (GRADING_META[c.id]?.grade || "").includes("10") ? "psa10" : "psa9";
+    return s + (last[g] || 0);
+  }, 0);
+
+  const BINDER_SIZE = 9;
+  const pageCards   = Array.from({ length: BINDER_SIZE }, (_, i) => langCards[i] ?? null);
+
+  return (
+    <div>
+      {/* Résumé portfolio grading */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:14 }}>
+        <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${T.border}`, borderRadius:10, padding:"10px 12px" }}>
+          <div style={{ fontSize:9, color:T.textMuted, textTransform:"uppercase", marginBottom:2 }}>Investi grading</div>
+          <div style={{ fontSize:18, fontWeight:700, color:T.textSub }}>{fmt(totalPaid, 0)}€</div>
+          <div style={{ fontSize:9, color:T.textMuted, marginTop:1 }}>{gradingCards.length} cartes</div>
+        </div>
+        <div style={{ background:"rgba(74,222,128,0.06)", border:"1px solid rgba(74,222,128,0.2)", borderRadius:10, padding:"10px 12px" }}>
+          <div style={{ fontSize:9, color:T.textMuted, textTransform:"uppercase", marginBottom:2 }}>Valeur PSA estimée</div>
+          <div style={{ fontSize:18, fontWeight:700, color:"#4ade80" }}>{totalEst > 0 ? `~${Math.round(totalEst)}€` : "—"}</div>
+          <div style={{ fontSize:9, color:"#4ade80", opacity:0.6, marginTop:1 }}>
+            {totalEst > 0 && totalPaid > 0 ? `×${(totalEst/totalPaid).toFixed(1)} multiplier` : ""}
+          </div>
+        </div>
+      </div>
+
+      {/* Onglets langue */}
+      <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+        {LANG_TABS_CFG.map(t => {
+          const cnt    = gradingCards.filter(c => c.lang === t.id).length;
+          const active = lang === t.id;
+          return (
+            <button key={t.id} onClick={() => { setLang(t.id); setSelected(null); }} style={{
+              flex:1, padding:"8px 4px", borderRadius:10, cursor:"pointer", fontFamily:"inherit",
+              background: active ? `${t.color}18` : "transparent",
+              color: active ? t.color : T.textMuted,
+              border:`1px solid ${active ? t.color + "55" : T.border}`,
+              display:"flex", flexDirection:"column", alignItems:"center", gap:2,
+            }}>
+              <span style={{ fontSize:20 }}>{t.icon}</span>
+              <span style={{ fontSize:10, fontWeight: active ? 700 : 400 }}>{t.label}</span>
+              <span style={{ fontSize:9, opacity:0.6 }}>{cnt} carte{cnt!==1?"s":""}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Classeur grading */}
+      <div style={{ borderRadius:14, overflow:"hidden", boxShadow:`0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px ${curColor}22`, display:"flex", marginBottom:12 }}>
+        {/* Spine */}
+        <div style={{ width:28, flexShrink:0, background:"linear-gradient(to right,#0c0703,#1c0f07,#231206)", display:"flex", flexDirection:"column", justifyContent:"space-evenly", alignItems:"center", padding:"10px 0", borderRight:"1px solid rgba(255,255,255,0.04)" }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{ width:15, height:15, borderRadius:"50%", background:"linear-gradient(135deg,#c0c0c0 0%,#808080 40%,#404040 70%,#a0a0a0 100%)", boxShadow:"0 2px 5px rgba(0,0,0,0.9),inset 0 1px 2px rgba(255,255,255,0.25)", border:"1px solid #1a1a1a" }} />
+          ))}
+        </div>
+        {/* Grille */}
+        <div style={{ flex:1, background:"linear-gradient(160deg,#1d1208 0%,#261506 60%,#1a1005 100%)", padding:"12px 12px 12px 8px" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gridTemplateRows:"repeat(3,1fr)", gap:7 }}>
+            {pageCards.map((card, i) => {
+              const imgData  = card ? imgCache[card.id] : undefined;
+              const url      = imgData?.url;
+              const loading  = card && imgData === undefined;
+              const isSel    = selected?.id === card?.id;
+              const sGraded  = card?.status === "graded";
+              const sBadge   = card?.status === "grading";
+              const bdrCol   = sGraded ? "#4ade80" : sBadge ? "#60a5fa" : "#fb923c";
+              return (
+                <div key={i} onClick={() => card && setSelected(isSel ? null : card)} style={{
+                  aspectRatio:"5/7", borderRadius:7, overflow:"hidden",
+                  background: card ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.15)",
+                  border: card ? `2px solid ${isSel ? T.accent : bdrCol + "55"}` : "2px dashed rgba(255,255,255,0.06)",
+                  cursor: card ? "pointer" : "default",
+                  boxShadow: card ? "0 4px 12px rgba(0,0,0,0.7)" : "none",
+                  transform: isSel ? "scale(1.06)" : "scale(1)",
+                  transition:"transform 0.15s,border-color 0.15s",
+                  position:"relative", display:"flex", alignItems:"center", justifyContent:"center",
+                }}>
+                  {card && url && (
+                    <img src={url} alt={card.name}
+                      style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }}
+                      onError={e => e.target.style.display="none"}
+                    />
+                  )}
+                  {card && !url && (
+                    <div style={{ padding:4, textAlign:"center", zIndex:1 }}>
+                      {loading
+                        ? <div style={{ fontSize:16, opacity:0.2 }}>⏳</div>
+                        : imgData === null
+                          ? <div style={{ fontSize:16, opacity:0.3 }}>📷</div>
+                          : <>
+                              <div style={{ fontSize:8, color:T.textSub, fontWeight:600, lineHeight:1.3, wordBreak:"break-word" }}>{card.name}</div>
+                              <div style={{ fontSize:7, color:T.textMuted, marginTop:2 }}>{card.set}</div>
+                            </>
+                      }
+                    </div>
+                  )}
+                  {/* Badge statut */}
+                  {card && (
+                    <div style={{
+                      position:"absolute", bottom:3, left:"50%", transform:"translateX(-50%)",
+                      background: sGraded ? "rgba(74,222,128,0.88)" : sBadge ? "rgba(96,165,250,0.88)" : "rgba(251,146,60,0.88)",
+                      borderRadius:4, padding:"1px 5px", fontSize:7, fontWeight:700, color:"#000",
+                      whiteSpace:"nowrap", zIndex:2, letterSpacing:"0.03em",
+                    }}>
+                      {sGraded ? `✓ ${GRADING_META[card.id]?.grade || "PSA"}` : sBadge ? "⏳ PSA" : "📬 À envoyer"}
+                    </div>
+                  )}
+                  {!card && <div style={{ fontSize:18, opacity:0.07, color:"#fff" }}>◇</div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ textAlign:"center", fontSize:10, color:T.textMuted, marginBottom:14 }}>
+        {langCards.length} carte{langCards.length!==1?"s":""} · cliquer pour prix PSA
+      </div>
+
+      {/* Panneau détail carte sélectionnée */}
+      {selected && (
+        <div style={{ ...css.card, border:`1px solid ${curColor}55`, marginBottom:8 }}>
+          {/* Header */}
+          <div style={{ display:"flex", gap:12, alignItems:"flex-start", marginBottom:14 }}>
+            {imgCache[selected.id]?.url && (
+              <img src={imgCache[selected.id].url} alt={selected.name}
+                style={{ width:64, height:90, objectFit:"cover", borderRadius:7, flexShrink:0, boxShadow:"0 6px 20px rgba(0,0,0,0.6)" }}
+                onError={e => e.target.style.display="none"}
+              />
+            )}
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{LANG_FLAG[selected.lang]} {selected.name}</div>
+              <div style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{selected.set}</div>
+              {/* Statut badge */}
+              <div style={{ marginTop:6, display:"inline-flex", alignItems:"center", gap:5,
+                background: selected.status === "graded" ? "rgba(74,222,128,0.12)" : selected.status === "grading" ? "rgba(96,165,250,0.12)" : "rgba(251,146,60,0.12)",
+                border:`1px solid ${selected.status === "graded" ? "#4ade8044" : selected.status === "grading" ? "#60a5fa44" : "#fb923c44"}`,
+                borderRadius:6, padding:"3px 8px" }}>
+                <span style={{ fontSize:10, fontWeight:600, color: selected.status === "graded" ? "#4ade80" : selected.status === "grading" ? "#60a5fa" : "#fb923c" }}>
+                  {selected.status === "graded" ? "✅ Gradé PSA" : selected.status === "grading" ? "⏳ En cours de grading PSA" : "📬 À envoyer au grading"}
+                </span>
+              </div>
+              {meta?.grade && (
+                <div style={{ marginTop:5, fontSize:10, color:"#4ade80", fontWeight:600 }}>
+                  Grade attendu : {meta.grade}
+                </div>
+              )}
+              {selected.note && (
+                <div style={{ marginTop:4, fontSize:10, color:T.textMuted, lineHeight:1.5 }}>{selected.note}</div>
+              )}
+            </div>
+            <button onClick={() => setSelected(null)} style={{ fontSize:11, color:T.textMuted, background:"none", border:"none", cursor:"pointer", padding:"2px 6px", flexShrink:0 }}>✕</button>
+          </div>
+
+          {!meta?.img && <ImageHelp card={selected} imgData={imgCache[selected.id]} onSetOverride={setOverride} color={curColor} />}
+
+          {histData ? (
+            <>
+              {/* Sélecteur grade */}
+              <div style={{ display:"flex", gap:4, marginBottom:12, marginTop:12 }}>
+                {linesCfg.map(l => (
+                  <button key={l.key} onClick={() => setGrade(l.key)} style={{
+                    flex:1, fontSize:11, padding:"4px 4px", borderRadius:6, cursor:"pointer",
+                    fontFamily:"inherit", fontWeight: grade === l.key ? 700 : 400,
+                    background: grade === l.key ? `${l.color}18` : "transparent",
+                    color: grade === l.key ? l.color : T.textMuted,
+                    border:`1px solid ${grade === l.key ? l.color + "55" : T.border}`,
+                  }}>{l.label}</button>
+                ))}
+              </div>
+
+              {/* Valeurs actuelles */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:14 }}>
+                {linesCfg.map(l => {
+                  const last = histData[histData.length - 1];
+                  const prev = histData.length > 1 ? histData[histData.length - 2] : last;
+                  const diff = last[l.key] - prev[l.key];
+                  return (
+                    <div key={l.key} style={{ background:`${l.color}10`, border:`1px solid ${l.color}30`, borderRadius:8, padding:"8px 6px", textAlign:"center", outline: grade === l.key ? `2px solid ${l.color}55` : "none" }}>
+                      <div style={{ fontSize:15, fontWeight:700, color:l.color }}>{last[l.key]}€</div>
+                      <div style={{ fontSize:8, color:l.color, opacity:0.7, marginTop:1, textTransform:"uppercase" }}>{l.label}</div>
+                      <div style={{ fontSize:10, color: diff >= 0 ? "#4ade80" : "#f87171", marginTop:2, fontWeight:600 }}>
+                        {diff >= 0 ? "+" : ""}{diff}€
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Graphique */}
+              <SvgLineChart data={histData} lines={grade === "all" ? linesCfg : linesCfg.filter(l => l.key === grade)} />
+
+              {/* Cours eBay live */}
+              {selected.ebayQuery && (
+                <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                  {livePrices[selected.id] && (
+                    <div style={{ flex:1, fontSize:11, color:T.textMuted }}>
+                      eBay NM : <span style={{ color:"#4ade80", fontWeight:600 }}>~{livePrices[selected.id].avgEur}€</span>
+                      <span style={{ opacity:0.5, marginLeft:4 }}>· {relTime(livePrices[selected.id].ts)}</span>
+                      <span style={{ opacity:0.4, marginLeft:4 }}>(min {livePrices[selected.id].minEur}€ / max {livePrices[selected.id].maxEur}€)</span>
+                    </div>
+                  )}
+                  <button onClick={() => loadLive(selected)} disabled={loadingId === selected.id}
+                    style={{ ...css.btn(), padding:"4px 12px", fontSize:10, opacity: loadingId === selected.id ? 0.5 : 1 }}>
+                    {loadingId === selected.id ? "⏳…" : "⚡ Cours eBay"}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign:"center", padding:"20px 10px", color:T.textMuted, fontSize:11, lineHeight:1.6 }}>
+              {selected.status === "à grader"
+                ? "📬 En attente d'envoi. Les données de prix s'afficheront après réception du grade PSA."
+                : "⏳ Carte en cours de grading. Résultat attendu prochainement."}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CalendrierTab ────────────────────────────────────────────────────────────
+
+function CalendrierTab() {
+  const today = new Date();
+  const sets = [
+    { date: "2026-01-17", code: "PRE",  en: "Prismatic Evolutions",              fr: "Évolutions Prismatiques",         etb: "ETB Évolutions Prismatiques",           status: "past",     chase: "Sylveon ex SIR, Évoli ex SIR, Flareon ex SIR" },
+    { date: "2026-01-30", code: "ME2.5",en: "Mega Evolution – Ascended Heroes",  fr: "Méga-Évolution – Héros Transcendants", etb: "ETB Héros Transcendants (20 fév.)", status: "past",     chase: "Méga-Dracolosse ex, Pokémon Téracristallisés" },
+    { date: "2026-03-27", code: "ME03", en: "Mega Evolution – Perfect Order",    fr: "Méga-Évolution – Équilibre Parfait",   etb: "ETB Équilibre Parfait (promo Papilusion)",status: "past", chase: "Méga-Zygarde ex, Méga-Staross ex, Méga-Mélodelfe ex" },
+    { date: "2026-03-30", code: "FP1",  en: "First Partner Illustration Collection – Series 1", fr: "First Partner Série 1 — Kanto, Sinnoh, Alola", etb: "Coffret ~15$ · 3 promos IR + 2 boosters", status: "past", chase: "Starters Kanto, Sinnoh, Alola en Illustration Rare" },
+    { date: "2026-05-22", code: "ME04", en: "Mega Evolution – Chaos Rising",     fr: "Méga-Évolution – Chaos Ascendant", etb: "ETB Chaos Ascendant (promo Feunnec)", status: "soon",     chase: "Méga-Amphinobi ex Hyper Rare, SIR Supporters Z-A" },
+    { date: "2026-06-19", code: "FP2",  en: "First Partner Illustration Collection – Series 2", fr: "First Partner Série 2 — Johto, Unova, Galar", etb: "Coffret ~15$ · 3 promos IR + 2 boosters (Héricendre, Scorbunny…)", status: "soon", chase: "Germignon, Héricendre, Kaiminus, Vipélierre, Gruikui, Moustillon, Ouistempo, Flambino, Larméléon" },
+    { date: "2026-07-17", code: "ME05", en: "Mega Evolution – Pitch Black",      fr: "Méga-Évolution – Nuit Noire",      etb: "ETB Nuit Noire (annoncé)",            status: "upcoming", chase: "Méga-Darkrai ex, Méga-Zeraora ex, Méga-Lugulabre ex" },
+    { date: "2026-09-01", code: "FP3",  en: "First Partner Illustration Collection – Series 3", fr: "First Partner Série 3 — Hoenn, Kalos, Paldea", etb: "Coffret ~15$ · 3 promos IR + 2 boosters (à confirmer)", status: "upcoming", chase: "Poussifeu, Arcko, Gobou, Marisson, Feunnec, Grenousse, Brindibou, Flamiaou, Otaquin" },
+    { date: "2026-09-18", code: "30TH", en: "30th Anniversary Celebration",      fr: "Célébration 30 ans Pokémon",       etb: "ETB 30 ans (à confirmer)",            status: "upcoming", chase: "Cartes collector anniversaire, promos spéciales" },
+  ];
+  const statusCfg = {
+    past:     { color: T.textMuted, bg: "rgba(255,255,255,0.03)", border: T.border, dot: T.textMuted },
+    soon:     { color: "#facc15",   bg: "rgba(250,204,21,0.08)",  border: "rgba(250,204,21,0.3)",  dot: "#facc15" },
+    upcoming: { color: "#60a5fa",   bg: "rgba(96,165,250,0.08)",  border: "rgba(96,165,250,0.2)",  dot: "#60a5fa" },
+  };
+  const formatDate = d => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const daysUntil  = d => Math.ceil((new Date(d) - today) / 86400000);
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 14 }}>Ère Méga-Évolution · 2026 · 30e anniversaire du JCC</div>
+      {sets.map((s, i) => {
+        const sc   = statusCfg[s.status];
+        const days = daysUntil(s.date);
+        return (
+          <div key={i} style={{ ...css.card, background: sc.bg, border: `1px solid ${sc.border}`, marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: sc.dot, flexShrink: 0, marginTop: 5 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
+                  <div>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: sc.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.code}</span>
+                    <span style={{ fontSize: 10, color: T.textMuted, marginLeft: 8 }}>{formatDate(s.date)}</span>
+                  </div>
+                  <span style={{ ...css.pill(sc.color, sc.bg, sc.border), fontSize: 9 }}>
+                    {s.status === "past" ? "Sorti" : days <= 0 ? "Cette semaine" : `J-${days}`}
+                  </span>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginTop: 3 }}>{s.fr}</div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1, fontStyle: "italic" }}>{s.en}</div>
+                <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <span style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0 }}>ETB</span>
+                    <span style={{ fontSize: 11, color: T.textSub }}>{s.etb}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <span style={{ fontSize: 9, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0 }}>Chase</span>
+                    <span style={{ fontSize: 11, color: T.accent }}>{s.chase}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ fontSize: 10, color: T.textMuted, marginTop: 8, textAlign: "center" }}>
+        Sources : pokemon.com · pokeindex.fr · lorenzone.fr
+      </div>
+    </div>
+  );
+}
+
+// ── RessourcesTab ─────────────────────────────────────────────────────────────
+
+function RessourcesTab() {
+  return (
+    <div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Acheter ETB/Display EN · livraison France</div>
+
+      <div style={{ fontSize: 10, color: "#4ade80", fontWeight: 600, margin: "4px 0 6px", letterSpacing: "0.05em" }}>● CHAOS RISING — dispo maintenant</div>
+      {[
+        { name: "CardsRfun.de",       desc: "Meilleure option EU — livraison France ✅",        url: "https://www.cardsrfun.de",               badge: "🟢 Dispo", badgeColor: "#4ade80" },
+        { name: "Pokémon Center UK",  desc: "ETB exclusif PC (promo stampée)",                  url: "https://www.pokemoncenter.com/en-gb",    badge: "Exclu PC", badgeColor: "#60a5fa" },
+        { name: "Amazon.fr",          desc: 'Cherche "Chaos Rising Elite Trainer Box"',         url: "https://www.amazon.fr/s?k=chaos+rising+elite+trainer+box", badge: null, badgeColor: null },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: "#facc15", fontWeight: 600, margin: "10px 0 6px", letterSpacing: "0.05em" }}>● PITCH BLACK — 17 juillet · précos pas encore ouvertes</div>
+      {[
+        { name: "Pokémon Center UK",  desc: "Activer alerte 'Notify me' — dès ouverture préco", url: "https://www.pokemoncenter.com/en-gb",    badge: "⏳ Bientôt", badgeColor: "#facc15" },
+        { name: "Evol Vault",         desc: "Guide achat Pitch Black + alertes drop UK détaillées", url: "https://evoltvault.com",             badge: null, badgeColor: null },
+        { name: "PokeBeach",          desc: "Suivre pour l'annonce des précos",                  url: "https://twitter.com/pokebeach",          badge: "🔔 Suivre", badgeColor: "#60a5fa" },
+      ].map((r, i) => (
+        <div key={`pb${i}`} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Apps & Sites</div>
+      {[
+        { name: "Goldin",         desc: "Maison de vente aux enchères premium — grandes pièces",  url: "https://goldin.co", color: "#f87171", badge: "Enchères", badgeColor: "#f87171" },
+        { name: "CardsRfun.de",   desc: "Marketplace Pokemon EU — achat/vente singles + loteries", url: "https://www.cardsrfun.de", color: "#4ade80", badge: null, badgeColor: null },
+        { name: "CardMarket",     desc: "Singles Europe — prix de marché FR",                     url: "https://www.cardmarket.com/fr/Pokemon", color: "#60a5fa", badge: null, badgeColor: null },
+        { name: "eBay (vendus)",  desc: "Ventes finalisées = vrais prix de référence",            url: "https://www.ebay.fr/sch/i.html?LH_Complete=1&LH_Sold=1&LH_ItemCondition=3000&_nkw=pokemon+near+mint", color: "#60a5fa", badge: null, badgeColor: null },
+        { name: "Coded Yellow",   desc: "Dates de sorties TCG 2026 — calendrier EN/JP",           url: "https://www.codedyellow.com", color: "#facc15", badge: null, badgeColor: null },
+        { name: "Eyevo",          desc: "Scanner de cartes — app mobile",                         url: null, color: "#a78bfa", badge: null, badgeColor: null },
+        { name: "Cardzia",        desc: "Prix marché FR — app mobile",                            url: null, color: "#a78bfa", badge: null, badgeColor: null },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.color, flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+                 : <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0 }}>App</span>}
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Alertes Précos & Restocks</div>
+      {[
+        { name: "@pokenotify",    desc: "191K abonnés — alertes TCG mondiales, restocks, drops en temps réel",  url: "https://www.instagram.com/pokenotify",   badge: "Instagram", badgeColor: "#e879f9" },
+        { name: "Poke Alerts",    desc: "Surveille 100+ retailers — alertes instantanées + giveaways hebdo",    url: "https://www.poke-alerts.com",            badge: "100+ sites", badgeColor: "#60a5fa" },
+        { name: "r/pokemontcg",   desc: "Communauté — annonces précos et drops en live",                        url: "https://www.reddit.com/r/pokemontcg",    badge: null, badgeColor: null },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Loteries & Giveaways</div>
+      {[
+        { name: "Poke Alerts Discord", desc: "Giveaways exclusifs chaque semaine — ETB, SPC scellés",          url: "https://www.poke-alerts.com",            badge: "🎁 Hebdo", badgeColor: "#4ade80" },
+        { name: "CardsRfun.de",        desc: "Loteries régulières sur leur site — cartes et produits scellés", url: "https://www.cardsrfun.de",               badge: "🎰 Loterie", badgeColor: "#fb923c" },
+      ].map((r, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{r.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{r.desc}</div>
+          </div>
+          {r.badge && <span style={{ fontSize: 9, color: r.badgeColor, background: `${r.badgeColor}18`, border: `1px solid ${r.badgeColor}44`, borderRadius: 6, padding: "2px 7px", flexShrink: 0, fontWeight: 600 }}>{r.badge}</span>}
+          <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Ouvrir →</a>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Grading PSA</div>
+      <div style={{ ...css.card, border: "1px solid rgba(251,146,60,0.3)", background: "rgba(251,146,60,0.05)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>PokéLoutre</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>Envoi groupé le 15 de chaque mois</div>
+            <div style={{ fontSize: 11, color: "#fb923c", marginTop: 4, fontWeight: 500 }}>Prochain envoi : 15 juin</div>
+          </div>
+          <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c", flexShrink: 0 }}>pokeloutre.fr →</a>
+        </div>
+      </div>
+
+      <div style={{ fontSize: 10, color: T.textMuted, margin: "16px 0 8px", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Boutiques Paris</div>
+      {[
+        { name: "Fuji Store",         addr: "6 Rue Rampon, 75011", tel: "09 55 62 24 56", maps: "https://maps.google.com/?q=Fuji+Store+6+Rue+Rampon+Paris", zone: "République" },
+        { name: "Joe La Carte",       addr: "Paris",               tel: null,             maps: "https://maps.google.com/?q=Joe+La+Carte+Paris+Pokemon",    zone: "Paris" },
+        { name: "Cards and Games",    addr: "Paris",               tel: null,             maps: "https://maps.google.com/?q=Cards+and+Games+Paris",         zone: "Paris" },
+        { name: "UltraJeux Bastille", addr: "Paris 11e",           tel: null,             maps: "https://maps.google.com/?q=UltraJeux+Bastille+Paris",      zone: "Bastille" },
+      ].map((b, i) => (
+        <div key={i} style={{ ...css.card, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{b.name}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{b.addr}{b.tel ? ` · ${b.tel}` : ""}</div>
+          </div>
+          <span style={{ fontSize: 10, color: T.textMuted, flexShrink: 0, padding: "2px 7px", border: `1px solid ${T.border}`, borderRadius: 6 }}>{b.zone}</span>
+          <a href={b.maps} target="_blank" rel="noopener noreferrer" style={{ ...css.link, fontSize: 11, flexShrink: 0 }}>Maps →</a>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── App ────────────────────────────────────────────────────────────────────────
+
+function PokeTracker() {
+  const [watchList, setWatchList, resetWatch] = useStorage("pt_watch", DEFAULT_WATCH);
+  const [ownedList, setOwnedList, resetOwned] = useStorage("pt_owned_v5", DEFAULT_OWNED);
+  const [tab, setTab]             = useState("watch");
+  const [filterP, setFilterP]     = useState("all");
+  const [filterT, setFilterT]     = useState("all");
+  const [search, setSearch]       = useState("");
+  const [showAddWatch, setShowAddWatch] = useState(false);
+  const [showAddOwned, setShowAddOwned] = useState(false);
+
+  const totalOwned    = ownedList.filter(c => c.price > 0).reduce((s, c) => s + c.price, 0);
+  const gradingCount  = ownedList.filter(c => c.status === "grading").length;
+  const transitCount  = ownedList.filter(c => c.status === "transit").length;
+
+  const filtered = watchList.filter(c => {
+    if (filterP !== "all" && c.priority !== parseInt(filterP)) return false;
+    if (filterT !== "all" && c.type !== filterT) return false;
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const addWatch = c => setWatchList(p => [...p, c]);
+  const delWatch = id => setWatchList(p => p.filter(c => c.id !== id));
+  const addOwned = c => setOwnedList(p => [...p, c]);
+  const delOwned = id => setOwnedList(p => p.filter(c => c.id !== id));
+
+  const NAV = [
+    { id: "watch",      label: "Surveiller", icon: "🔍" },
+    { id: "owned",      label: "Collection", icon: "📦" },
+    { id: "classeur",   label: "Classeur",   icon: "📒" },
+    { id: "urgent",     label: "Urgent",     icon: "⚡" },
+    { id: "cours",      label: "Cours",      icon: "📈" },
+    { id: "calendrier", label: "Calendrier", icon: "📅" },
+    { id: "ressources", label: "Outils",     icon: "🛠️" },
+  ];
+
+  const statItems = [
+    { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
+    { label: "Investi",      val: `${Math.round(totalOwned)}€`, color: "#4ade80", bg: "rgba(74,222,128,0.08)", border: "rgba(74,222,128,0.2)" },
+    { label: "En grading",   val: gradingCount, color: "#fb923c", bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.2)" },
+    { label: "En transit",   val: transitCount, color: "#facc15", bg: "rgba(250,204,21,0.08)", border: "rgba(250,204,21,0.2)" },
+  ];
+
+  return (
+    <div style={{ padding: "20px 16px", maxWidth: 700, margin: "0 auto", fontFamily: "'DM Sans', 'Inter', sans-serif", background: T.bg, minHeight: "100vh", color: T.text }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 20, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>Poké Tracker</div>
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => { localStorage.removeItem('pt_img_cache_v1'); window.location.reload(); }}
+            title="Vider le cache des illustrations (les images que tu as fournies sont conservées) et recharger"
+            style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
+            ↺ Images
+          </button>
+          <button onClick={() => { if (window.confirm("Réinitialiser toutes les données aux valeurs par défaut ?")) { resetWatch(); resetOwned(); try { localStorage.removeItem("pt_cours_live"); } catch {} } }}
+            style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
+            ↺ Reset
+          </button>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 8px #4ade80" }} />
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
+        {statItems.map((st, i) => (
+          <div key={i} style={{ background: st.bg, border: `1px solid ${st.border}`, borderRadius: 10, padding: "10px", textAlign: "center" }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{st.val}</div>
+            <div style={{ fontSize: 10, color: st.color, opacity: 0.7, marginTop: 4, letterSpacing: "0.04em", textTransform: "uppercase" }}>{st.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Alert */}
+      <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
+        <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
+        <span style={{ color: "#fca5a5" }}>
+          {gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA · 2 envois PokéLoutre (11 mai + 13 juin ✅)
+        </span>
+      </div>
+
+      {/* Spacer nav fixe */}
+      <div style={{ height: 70 }} />
+
+      {/* ── WATCH ── */}
+      {tab === "watch" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            <input placeholder="Rechercher…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...css.input, flex: 1, minWidth: 120 }} />
+            <select value={filterP} onChange={e => setFilterP(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Toutes priorités</option>
+              <option value="1">P1</option><option value="2">P2</option><option value="3">P3</option>
+              <option value="4">P4</option><option value="5">Collection</option>
+            </select>
+            <select value={filterT} onChange={e => setFilterT(e.target.value)} style={{ ...css.input, width: "auto", flex: "0 0 auto" }}>
+              <option value="all">Tous types</option>
+              <option value="vintage">Vintage</option><option value="modern">Modern</option><option value="collector">Collection</option><option value="anniv30">30e Anniversaire</option>
+            </select>
+          </div>
+          {showAddWatch && <AddCardForm onAdd={addWatch} onClose={() => setShowAddWatch(false)} />}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · cliquer pour prix live</span>
+            {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
+          </div>
+          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+        </div>
+      )}
+
+      {/* ── OWNED ── */}
+      {tab === "owned" && (
+        <div>
+          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
+            <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>{totalOwned.toFixed(2)}€</div>
+          </div>
+          {showAddOwned && <AddOwnedForm onAdd={addOwned} onClose={() => setShowAddOwned(false)} />}
+          {!showAddOwned && <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setShowAddOwned(true)} style={css.btn("primary")}>+ Ajouter</button></div>}
+          {["enchère", "transit", "grading", "à grader", "collection", "sealed"].map(status => {
+            const cards = ownedList.filter(c => c.status === status);
+            if (!cards.length) return null;
+            const sc = STATUS_CONFIG[status];
+            return (
+              <div key={status} style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: sc.color, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  {sc.label} <span style={{ opacity: 0.5 }}>({cards.length})</span>
+                </div>
+                {cards.map(c => <OwnedCard key={c.id} card={c} onDelete={delOwned} />)}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── URGENT ── */}
+      {tab === "urgent" && (
+        <div>
+          <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 11 mai ✅</div>
+            <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
+              Dracaufeu VMAX Rainbow · 2× Rosa's Encouragement · Mew ex · en cours de grading PSA chez PokéLoutre
+            </div>
+            <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
+          </div>
+          <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 13 juin ✅</div>
+            <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
+              Évoli ex SIR 167/131 PRE · Flareon ex SIR 146/131 PRE · Pikachu &amp; Zekrom-GX 33/181 EN · Méga-Dracolosse ex 229/193 JP M2α · en grading PSA chez PokéLoutre
+            </div>
+            <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
+          </div>
+
+          <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#4ade80", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>✅ Reçu — Très bonne affaire</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: T.text }}>Mew ex SAR PSA 9 JP 205/165</div>
+            <div style={{ display: "flex", gap: 16, margin: "8px 0", alignItems: "baseline" }}>
+              <div>
+                <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payé</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#4ade80", fontVariantNumeric: "tabular-nums" }}>256€</div>
+              </div>
+              <div style={{ color: T.textMuted }}>→</div>
+              <div>
+                <div style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Valeur réelle</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: T.text, fontVariantNumeric: "tabular-nums" }}>~818€</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 12, color: "#86efac" }}>Plus-value latente : ~562€</div>
+          </div>
+
+          <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Priorité 1 — à trouver</div>
+          {watchList.filter(c => c.priority === 1).map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+        </div>
+      )}
+
+      {/* ── CLASSEUR ── */}
+      {tab === "classeur" && <ClasseurTab />}
+
+      {/* ── COURS ── */}
+      {tab === "cours" && <CoursTab ownedList={ownedList} />}
+
+      {/* ── CALENDRIER ── */}
+      {tab === "calendrier" && <CalendrierTab />}
+
+      {/* ── RESSOURCES ── */}
+      {tab === "ressources" && <RessourcesTab />}
+
+      <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em", marginBottom: 80 }}>
+        eBay Finding API · TCGdex · ventes USD · données sauvegardées localement
+      </div>
+
+      {/* ── Navigation fixe bas ── */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,15,0.97)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", overflowX: "auto", WebkitOverflowScrolling: "touch", padding: "0 8px" }}>
+          {NAV.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: "10px 14px 12px",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+              fontFamily: "inherit", flexShrink: 0,
+              borderTop: tab === t.id ? `2px solid ${T.accent}` : "2px solid transparent",
+              transition: "all 0.15s",
+            }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>{t.icon}</span>
+              <span style={{ fontSize: 10, fontWeight: tab === t.id ? 600 : 400, color: tab === t.id ? T.accent : T.textMuted, whiteSpace: "nowrap" }}>{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<PokeTracker />);
+</script>
+</body>
+</html>
