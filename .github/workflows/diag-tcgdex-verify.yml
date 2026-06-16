@@ -22,6 +22,12 @@ jobs:
           curl -s --max-time 20 "https://api.tcgdex.net/v2/ja/sets" -o ja_sets.json
           python3 -c "import json; sets=json.load(open('ja_sets.json')); needles=['メガ','ナイト','零','エイト','黒い','古代','粘土','151','スカーレット']; [print(f\"{s.get('id')!r:20s} {s.get('name','')!r:30s} cardCount={s.get('cardCount')}\") for s in sets if any(n in s.get('name','') for n in needles)]"
 
+          echo ""
+          echo "=== FR full card list: searching by exact card name for the 4 unresolved sets ==="
+          curl -s --max-time 60 "https://api.tcgdex.net/v2/fr/cards" -o fr_cards.json
+          ls -la fr_cards.json
+          python3 -c "import json; cards=json.load(open('fr_cards.json')); targets=['Millie','Mélodelfe','Florizarre','Desséliande','Pikachu','Zacian','Yveltal','Fragrain','Terraiste']; [print(f\"{c.get('id')!r:20s} {c.get('name','')!r:40s} localId={c.get('localId')!r}\") for c in cards if any(t in c.get('name','') for t in targets)]"
+
       - name: Download TCGdex samples (JP + FR)
         run: |
           mkdir -p verify_tmp
