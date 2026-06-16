@@ -1459,13 +1459,13 @@ function RessourcesTab() {
 
 // ── AccueilTab ────────────────────────────────────────────────────────────────
 
-function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
+function AccueilTab({ statItems, gradingCount, onOpen }) {
   const tiles = [
-    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs & statuts collection", nav: true },
+    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs & statuts collection" },
     { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix" },
     { id: "watch",      label: "À surveiller",          icon: "⭐", desc: "Liste de chasse & prix live eBay" },
     { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading" },
-    { id: "calendrier", label: "Calendrier sorties",    icon: "📅", desc: "Prochains sets & ETB", nav: true },
+    { id: "calendrier", label: "Calendrier sorties",    icon: "📅", desc: "Prochains sets & ETB" },
   ];
   return (
     <div>
@@ -1488,7 +1488,7 @@ function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
       <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Accès rapide</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
         {tiles.map(t => (
-          <div key={t.id} onClick={() => t.nav ? onNavTab(t.id) : onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
+          <div key={t.id} onClick={() => onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
             <span style={{ fontSize: 22 }}>{t.icon}</span>
             <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{t.label}</span>
             <span style={{ fontSize: 10, color: T.textMuted }}>{t.desc}</span>
@@ -1504,8 +1504,7 @@ function AccueilTab({ statItems, gradingCount, onOpen, onNavTab }) {
 function PokeTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pt_watch", DEFAULT_WATCH);
   const [ownedList, setOwnedList, resetOwned] = useStorage("pt_owned_v5", DEFAULT_OWNED);
-  const [tab, setTab]             = useState("accueil");
-  const [sub, setSub]             = useState(null); // "owned" | "cours" | "ressources"
+  const [sub, setSub]             = useState(null); // "chasse" | "cours" | "watch" | "ressources" | "calendrier"
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
   const [search, setSearch]       = useState("");
@@ -1528,13 +1527,7 @@ function PokeTracker() {
   const addOwned = c => setOwnedList(p => [...p, c]);
   const delOwned = id => setOwnedList(p => p.filter(c => c.id !== id));
 
-  const NAV = [
-    { id: "accueil",    label: "Accueil",    icon: "🏠" },
-    { id: "chasse",     label: "Chasse",     icon: "📦" },
-    { id: "calendrier", label: "Calendrier", icon: "📅" },
-  ];
-
-  const SUB_TITLES = { cours: "Cartes gradées", watch: "À surveiller", ressources: "Outils & ressources" };
+  const SUB_TITLES = { chasse: "Ma collection", cours: "Cartes gradées", watch: "À surveiller", ressources: "Outils & ressources", calendrier: "Calendrier sorties" };
 
   const statItems = [
     { label: "À surveiller", val: watchList.length, color: "#60a5fa", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
@@ -1574,16 +1567,15 @@ function PokeTracker() {
         </div>
       </div>
 
-      {/* Spacer nav fixe */}
-      <div style={{ height: 70 }} />
-
       {sub === "cours" && <CoursTab ownedList={ownedList} />}
 
       {sub === "ressources" && <RessourcesTab />}
 
-      {!sub && tab === "accueil" && (
+      {sub === "calendrier" && <CalendrierTab />}
+
+      {!sub && (
         <div>
-          <AccueilTab statItems={statItems} gradingCount={gradingCount} onOpen={setSub} onNavTab={setTab} />
+          <AccueilTab statItems={statItems} gradingCount={gradingCount} onOpen={setSub} />
 
           <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Envois grading en cours</div>
           <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
@@ -1624,7 +1616,7 @@ function PokeTracker() {
       )}
 
       {/* ── CHASSE (ma collection : statuts + classeurs) ── */}
-      {!sub && tab === "chasse" && (
+      {sub === "chasse" && (
         <div>
           <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: "14px 16px", marginBottom: 14 }}>
             <div style={{ fontSize: 10, color: "#4ade80", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>Total investi</div>
@@ -1675,30 +1667,8 @@ function PokeTracker() {
         </div>
       )}
 
-      {/* ── CALENDRIER ── */}
-      {!sub && tab === "calendrier" && <CalendrierTab />}
-
-      <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em", marginBottom: 80 }}>
+      <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em" }}>
         eBay Finding API · TCGdex · ventes USD · données sauvegardées localement
-      </div>
-
-      {/* ── Navigation fixe bas ── */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(8,16,30,0.92)", backdropFilter: "blur(12px)", borderTop: `1px solid ${T.border}`, zIndex: 100 }}>
-        <div style={{ maxWidth: 700, margin: "0 auto", display: "flex", justifyContent: "space-around", padding: "0 8px" }}>
-          {NAV.map(t => (
-            <button key={t.id} onClick={() => { setSub(null); setTab(t.id); }} style={{
-              background: "none", border: "none", cursor: "pointer",
-              padding: "10px 14px 12px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-              fontFamily: "inherit", flex: 1,
-              borderTop: !sub && tab === t.id ? `2px solid ${T.accent}` : "2px solid transparent",
-              transition: "all 0.15s",
-            }}>
-              <span style={{ fontSize: 18, lineHeight: 1 }}>{t.icon}</span>
-              <span style={{ fontSize: 10, fontWeight: !sub && tab === t.id ? 600 : 400, color: !sub && tab === t.id ? T.accent : T.textMuted, whiteSpace: "nowrap" }}>{t.label}</span>
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
