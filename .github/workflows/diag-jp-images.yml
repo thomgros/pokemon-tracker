@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Test all image sources for 4 missing JP cards
         run: |
+          set +e
           check_url() {
             local url=$1 label=$2
             http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
