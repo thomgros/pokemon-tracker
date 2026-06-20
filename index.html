@@ -120,7 +120,6 @@ const DEFAULT_WATCH = [
   { id: 2,  name: "Dark Charizard 1st Ed",    ebayQuery: "Dark Charizard 4/82 Team Rocket 1st Edition Near Mint",                 set: "Team Rocket",            number: "4/82",    maxPrice: 650,  priority: 2, lang: "EN", type: "vintage" },
   { id: 3,  name: "Dracaufeu ex Alt Art",     ebayQuery: "Charizard ex 199/165 Pokemon 151 Near Mint",                            set: "Pokémon Card 151",       number: "MEW 199", maxPrice: 550,  priority: 2, lang: "EN", type: "modern" },
   { id: 4,  name: "Charizard VMAX Rainbow",   ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint",           set: "Champion's Path",        number: "74/73",   maxPrice: 380,  priority: 2, lang: "EN", type: "modern" },
-  { id: 5,  name: "Lugia Holo Unlimited",     ebayQuery: "Lugia 9/111 Neo Genesis Unlimited Near Mint",                           set: "Neo Genesis",            number: "9/111",   maxPrice: 500,  priority: 3, lang: "EN", type: "vintage" },
   { id: 7,  name: "Gengar VMAX Alt Art",      ebayQuery: "Gengar VMAX 271/264 Fusion Strike Alt Art Near Mint",                   set: "Fusion Strike",          number: "271/264", maxPrice: 650,  priority: 3, lang: "EN", type: "modern" },
   { id: 8,  name: "Umbreon VMAX Alt Art",     ebayQuery: "Umbreon VMAX Evolving Skies Alt Art Near Mint",                         set: "Evolving Skies",         number: "215/203", maxPrice: 550,  priority: 3, lang: "EN", type: "modern" },
   { id: 9,  name: "Sylveon ex SIR",           ebayQuery: "Sylveon ex SIR 156 Prismatic Evolutions Near Mint",                     set: "Évolutions Prismatiques",number: "PRE 156", maxPrice: 380,  priority: 3, lang: "EN", type: "modern" },
@@ -140,20 +139,18 @@ const DEFAULT_OWNED = [
   { id: "o1",  name: "Dracaufeu VMAX Rainbow 074/073", price: 220,    status: "grading",    set: "Champion's Path",       lang: "FR", note: "Valeur déclarée 220€",                              ebayQuery: "Charizard VMAX 74/73 Champion's Path Rainbow Rare Near Mint" },
   { id: "o2",  name: "Rosa's Encouragement 123/088",   price: 72,     status: "grading",    set: "Perfect Order",         lang: "FR", note: "Valeur déclarée 72€",                               ebayQuery: "Rosa 123/088 Perfect Order Near Mint" },
   { id: "o3",  name: "Rosa's Encouragement 115/080",   price: 100,    status: "grading",    set: "M3: Nihil Zero",        lang: "JP", note: "Valeur déclarée 100€",                              ebayQuery: "Rosa 115/080 Nihil Zero Japanese Near Mint" },
-  // À envoyer grading — prochain envoi 15 juin
-  { id: "o4",  name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€",             ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
-  { id: "o10", name: "Flareon ex SIR PRE 146/131",     price: 149.99, status: "à grader",   set: "Prismatic Evolutions",  lang: "EN", note: "Pas encore reçue · PSA 10 très probable ⭐⭐ · ~400-500€", ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Near Mint" },
-  { id: "o11", name: "Méga-Amphinobi ex 022/086",      price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA 8-9 · défaut fabrication coin BG",              ebayQuery: "" },
-  { id: "o12", name: "Méga-Dratatin ex 232/193",       price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 10 candidat ⭐ · tous coins parfaits",          ebayQuery: "" },
-  { id: "o13", name: "Méga-Yukimenoko ex 036/193",     price: 0,      status: "à grader",   set: "M2α Ascended Heroes",   lang: "JP", note: "PSA 9 probable · coins propres",                    ebayQuery: "" },
-  { id: "o14", name: "Méga-Néméliős ex 015/086",       price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA 10 candidat ⭐⭐ · coins parfaits",              ebayQuery: "" },
-  { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "à grader",   set: "CRI Chaos Rising",      lang: "FR", note: "PSA candidat",                                      ebayQuery: "" },
-  { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "PSA 7-8 estimé · holo propre (printlines ok), 2 pts blancs coin BG · catalyseur 30e Anniversaire ⭐", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
+  // En grading PSA — envoi PokéLoutre 13 juin ✅ (batch 2)
+  { id: "o4",  name: "Évoli ex SIR PRE 167/131",       price: 139.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin",             ebayQuery: "Eevee ex SIR 167/131 Prismatic Evolutions Near Mint" },
+  { id: "o10", name: "Flareon ex SIR PRE 146/131",     price: 149.99, status: "grading",    set: "Prismatic Evolutions",  lang: "EN", note: "PSA 10 très probable ⭐⭐ · ~400-500€ · envoyé PokéLoutre 13 juin", ebayQuery: "Flareon ex 146/131 Prismatic Evolutions Near Mint" },
+  { id: "o19", name: "Pikachu & Zekrom-GX 33/181",     price: 35,     status: "grading",    set: "Team Up",               lang: "EN", note: "TAG TEAM · PSA 10 estimé · envoyé PokéLoutre 13 juin",               ebayQuery: "Pikachu Zekrom GX 33/181 Team Up Near Mint" },
+  { id: "o20", name: "Méga-Dracolosse ex 232/193",      price: 0,      status: "grading",    set: "M2α Ascended Heroes",   lang: "JP", note: "Secret rare M2α · envoyé PokéLoutre 13 juin",                          ebayQuery: "" },
+  { id: "o15", name: "Xerneas 091/086",                price: 0,      status: "collection", set: "CRI Chaos Rising",      lang: "FR", note: "IR mid-tier (~14$ raw) · PSA 10 ne rentabilise pas · garder brut",               ebayQuery: "" },
+  { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "transit",    set: "Neo Genesis",           lang: "EN", note: "Acheté · en transit · à grader dès réception · PSA 7-8 estimé · holo propre, 2 pts blancs coin BG", ebayQuery: "Lugia 9/111 Neo Genesis Holo Near Mint" },
   // Envoi grading séparé
   { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
   // Collection physique
   { id: "o6",  name: "Snorlax JU 11/64",               price: 40,     status: "collection", set: "Jungle",                lang: "EN", note: "Holo propre, micro-usures coins — collection vintage", ebayQuery: "Snorlax 11/64 Jungle Near Mint" },
-  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 256,    status: "graded",     set: "151 SV2a",              lang: "JP", note: "Gradé PSA 9 ✓ · Acheté 256€ · valeur réelle ~818€",   ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
+  { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 200,    status: "graded",     set: "151 SV2a",              lang: "JP", note: "Gradé PSA 9 ✓ · Acheté 217,50 USD (~200€) eBay · cert #1538817247 · reçu 4 juin", ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
   { id: "o8",  name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                        ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
 ];
 
@@ -231,6 +228,26 @@ const relTime = ts => {
   return `il y a ${Math.floor(h / 24)}j`;
 };
 
+// ── Images directes pour la liste Surveiller (évite fetch/CORS) ──────────────
+const WATCH_IMGS = {
+  1:  "https://images.pokemontcg.io/base1/4_hires.png",
+  2:  "https://images.pokemontcg.io/base5/4_hires.png",
+  3:  "https://images.pokemontcg.io/sv3pt5/199_hires.png",
+  4:  "https://images.pokemontcg.io/shp/74_hires.png",
+  5:  "https://images.pokemontcg.io/neo1/9_hires.png",
+  7:  "https://images.pokemontcg.io/swsh8/271_hires.png",
+  8:  "https://images.pokemontcg.io/swsh7/215_hires.png",
+  9:  "https://images.pokemontcg.io/sv8pt5/156_hires.png",
+  10: "https://images.pokemontcg.io/base1/10_hires.png",
+  11: "https://images.pokemontcg.io/ex8/107_hires.png",
+  12: "https://images.pokemontcg.io/sm12/226_hires.png",
+  13: "https://assets.tcgdex.net/ja/SV/SV4a/306/high.webp",
+  14: "https://images.pokemontcg.io/sv2/259_hires.png",
+  15: "https://images.pokemontcg.io/sv4/253_hires.png",
+  16: "https://images.pokemontcg.io/hgss4/99_hires.png",
+  17: "https://images.pokemontcg.io/dp4/126_hires.png",
+};
+
 // ── CardRow ───────────────────────────────────────────────────────────────────
 
 function CardRow({ card, onDelete }) {
@@ -238,6 +255,7 @@ function CardRow({ card, onDelete }) {
   const [price, setPrice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [cardImg, setCardImg] = useState(null);
   const tc = TYPE_CONFIG[card.type];
   const pc = PRIORITY_CONFIG[card.priority];
 
@@ -250,6 +268,16 @@ function CardRow({ card, onDelete }) {
   }, [card.ebayQuery, loaded]);
 
   useEffect(() => { if (open && !loaded) load(); }, [open, loaded, load]);
+
+  useEffect(() => {
+    if (!open || cardImg !== null) return;
+    const url = WATCH_IMGS[card.id];
+    if (!url) { setCardImg(""); return; }
+    const img = new Image();
+    img.onload  = () => setCardImg(url);
+    img.onerror = () => setCardImg("");
+    img.src = url;
+  }, [open, cardImg, card.id]);
 
   const avgEur = price && !price.corsBlocked ? toEur(price.avg) : null;
   const isGood = avgEur !== null && avgEur < card.maxPrice;
@@ -276,6 +304,9 @@ function CardRow({ card, onDelete }) {
 
       {open && (
         <div onClick={e => e.stopPropagation()} style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+            {cardImg && <img src={cardImg} alt={card.name} style={{ width: 90, borderRadius: 8, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }} />}
+            <div style={{ flex: 1 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
               <div style={css.label}>Set</div>
@@ -284,6 +315,8 @@ function CardRow({ card, onDelete }) {
             <div style={{ background: "rgba(255,255,255,0.03)", padding: "8px 12px", borderRadius: 8, border: `1px solid ${T.border}` }}>
               <div style={css.label}>Numéro</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{card.number}</div>
+            </div>
+          </div>
             </div>
           </div>
 
@@ -544,12 +577,11 @@ const GRADING_HISTORY = {
   "o1":  { h:[{date:"Sep 24",nm:180,psa9:280,psa10:600},{date:"Nov 24",nm:195,psa9:300,psa10:640},{date:"Jan 25",nm:200,psa9:310,psa10:670},{date:"Mar 25",nm:210,psa9:320,psa10:700},{date:"Mai 25",nm:215,psa9:328,psa10:720},{date:"Juil 25",nm:220,psa9:335,psa10:740},{date:"Sep 25",nm:222,psa9:340,psa10:750},{date:"Nov 25",nm:225,psa9:345,psa10:760},{date:"Jan 26",nm:228,psa9:348,psa10:770},{date:"Mar 26",nm:229,psa9:350,psa10:775},{date:"Mai 26",nm:230,psa9:352,psa10:780}] },
   "o2":  { h:[{date:"Jan 26",nm:60,psa9:95,psa10:200},{date:"Fév 26",nm:63,psa9:98,psa10:210},{date:"Mar 26",nm:65,psa9:100,psa10:215},{date:"Avr 26",nm:68,psa9:104,psa10:222},{date:"Mai 26",nm:70,psa9:108,psa10:228}] },
   "o3":  { h:[{date:"Jan 26",nm:82,psa9:135,psa10:280},{date:"Fév 26",nm:85,psa9:140,psa10:290},{date:"Mar 26",nm:88,psa9:144,psa10:300},{date:"Avr 26",nm:90,psa9:148,psa10:308},{date:"Mai 26",nm:92,psa9:150,psa10:315}] },
+  "o19": { h:[{date:"Juin 26",nm:30,psa9:55,psa10:130}] },
+  "o20": { h:[{date:"Juin 26",nm:60,psa9:110,psa10:280}] },
   "o4":  { h:[{date:"Jan 25",nm:175,psa9:240,psa10:530},{date:"Mar 25",nm:165,psa9:228,psa10:505},{date:"Mai 25",nm:155,psa9:215,psa10:478},{date:"Juil 25",nm:148,psa9:205,psa10:458},{date:"Sep 25",nm:143,psa9:198,psa10:443},{date:"Nov 25",nm:138,psa9:192,psa10:430},{date:"Jan 26",nm:135,psa9:188,psa10:420},{date:"Mar 26",nm:132,psa9:186,psa10:415},{date:"Mai 26",nm:130,psa9:184,psa10:410}] },
   "o5":  { h:[{date:"Jan 24",nm:35,psa9:70,psa10:160},{date:"Juil 24",nm:32,psa9:64,psa10:148},{date:"Jan 25",nm:30,psa9:60,psa10:138},{date:"Juil 25",nm:27,psa9:54,psa10:124},{date:"Jan 26",nm:26,psa9:50,psa10:115},{date:"Mar 26",nm:26,psa9:48,psa10:112},{date:"Mai 26",nm:25,psa9:47,psa10:108}] },
   "o10": { h:[{date:"Jan 25",nm:110,psa9:162,psa10:345},{date:"Mar 25",nm:118,psa9:172,psa10:368},{date:"Mai 25",nm:128,psa9:184,psa10:395},{date:"Juil 25",nm:135,psa9:192,psa10:415},{date:"Sep 25",nm:140,psa9:200,psa10:432},{date:"Nov 25",nm:144,psa9:205,psa10:445},{date:"Jan 26",nm:147,psa9:210,psa10:455},{date:"Mar 26",nm:149,psa9:213,psa10:463},{date:"Mai 26",nm:150,psa9:215,psa10:470}] },
-  "o11": { h:[{date:"Jan 26",nm:15,psa9:30,psa10:68},{date:"Fév 26",nm:15,psa9:30,psa10:70},{date:"Mar 26",nm:16,psa9:32,psa10:73},{date:"Avr 26",nm:16,psa9:32,psa10:75},{date:"Mai 26",nm:17,psa9:34,psa10:78}] },
-  "o12": { h:[{date:"Jan 26",nm:45,psa9:82,psa10:185},{date:"Fév 26",nm:46,psa9:84,psa10:190},{date:"Mar 26",nm:48,psa9:87,psa10:197},{date:"Avr 26",nm:49,psa9:89,psa10:201},{date:"Mai 26",nm:50,psa9:91,psa10:205}] },
-  "o13": { h:[{date:"Jan 26",nm:28,psa9:55,psa10:122},{date:"Fév 26",nm:29,psa9:56,psa10:125},{date:"Mar 26",nm:30,psa9:58,psa10:128},{date:"Avr 26",nm:31,psa9:59,psa10:132},{date:"Mai 26",nm:32,psa9:61,psa10:136}] },
   "o16": { h:[{date:"Jan 26",nm:650,psa9:1600,psa10:5800},{date:"Mar 26",nm:700,psa9:1800,psa10:6200},{date:"Jun 26",nm:750,psa9:1950,psa10:6500}] },
   "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
 };
@@ -561,13 +593,11 @@ const GRADING_META = {
   "o4":  { apiQ:'set.name:"Prismatic Evolutions" number:167',  grade:"PSA 10" },
   "o5":  { apiQ:'name:"Mew ex" number:205',                    grade:"PSA 9" },
   "o10": { apiQ:'set.name:"Prismatic Evolutions" number:146',  grade:"PSA 10" },
-  "o11": { apiQ:'set.id:me4 number:22',                        grade:"PSA 8-9" },
-  "o12": { apiQ:'name:"Mega Dragonite ex" set.id:me2pt5',       grade:"PSA 10", jpImg:'https://assets.tcgdex.net/ja/M/M2a/232/high.webp' },
-  "o13": { apiQ:'set.id:me2pt5 number:47',                     grade:"PSA 9",  jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
-  "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓" },
-  "o14": { apiQ:'set.id:me4 number:15',                        grade:"à grader" },
-  "o15": { apiQ:'set.id:me4 number:91',                        grade:"à grader" },
+  "o7":  { apiQ:'set.id:sv2a number:205',                      grade:"PSA 9 ✓", jpImg:'https://assets.tcgdex.net/ja/SV/SV2a/205/high.webp' },
+  "o15": { apiQ:'set.id:me4 number:91',                        grade:"collection" },
   "o16": { apiQ:'name:Lugia set.name:"Neo Genesis" number:9',  grade:"PSA 7-8" },
+  "o19": { apiQ:'set.id:sm9 number:33',                        grade:"grading" },
+  "o20": { apiQ:'set.id:me2pt5 number:232',                    grade:"grading", jpImg:'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M2a/M2a_232_MA_JP_LG.png' },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
@@ -639,7 +669,7 @@ const CLASSEUR_CARDS = [
   { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me3 number:16' },
   { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:24' },
   { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:115' },
-  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'set.id:me3 number:89' },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    img:"", apiQ:'name:"Spewpa" set.id:me3 number:89' },
   { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    img:"", apiQ:'set.id:me3 number:96' },
   // ── 🇬🇧 Ascended Heroes — ASC EN (217 cards) ─────────────────────────────
   { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   img:"", apiQ:'set.id:me2pt5 number:237' },
@@ -648,8 +678,35 @@ const CLASSEUR_CARDS = [
   { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"", apiQ:'set.id:sv8pt5 number:81' },
   { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"", apiQ:'set.id:sv8pt5 number:20' },
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
-  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Promos EN",          lang:"EN", value:"~2€",    img:"", apiQ:'name:"Tyrunt" number:70' },
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo XY70",           set:"XY · Promos EN",           lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/xyp/XY70_hires.png", apiQ:'name:"Tyrunt" number:XY70' },
   { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"", apiQ:'set.id:sv8pt5 number:119' },
+
+  // ── 🇫🇷 Nouvelles cartes FR ──────────────────────────────────────────────────
+  { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/089",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me3 number:105' },
+  { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me4 number:35' },
+  { id:"c65", name:"Nostenfer",              fullName:"Nostenfer 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:73' },
+  { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:me4 number:22' },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 117/088",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    img:"", apiQ:'set.id:me3 number:117' },
+  { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:91' },
+  { id:"c69", name:"Fragrain",              fullName:"Fragrain 183/217",            set:"ASC FR",                    lang:"FR", value:"~2€",    img:"", apiQ:'set.id:me2pt5 number:183' },
+  { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 065/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    img:"", apiQ:'set.id:me4 number:65' },
+  { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  img:"", apiQ:'set.id:sv2 number:130' },
+  { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv3 number:22' },
+  { id:"c73", name:"Méga-Zygarde ex",        fullName:"Méga-Zygarde ex 007",         set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~15€",   img:"", apiQ:'set.id:mef number:7' },
+  { id:"c74", name:"Performance de Strykna", fullName:"Performance de Strykna 041/086",set:"CLN · Chaos Ascendant",  lang:"FR", value:"~3€",    img:"", apiQ:'set.id:me4 number:41' },
+  { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/182",         set:"PAR · Destins de Paldea",   lang:"FR", value:"~3€",    img:"", apiQ:'set.id:sv4 number:23' },
+  { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   img:"", apiQ:'set.id:sv3 number:210' },
+  { id:"c77", name:"Dogrino ex de Pepper",   fullName:"Dogrino ex de Pepper 139/182",set:"DRI · Rivaux Émergents",    lang:"FR", value:"~5€",    img:"", apiQ:'set.id:sv9 number:139' },
+  { id:"c78", name:"Méga-Néméliős ex",       fullName:"Méga-Néméliős ex 075/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~10€",   img:"", apiQ:'set.id:me4 number:75' },
+
+  // ── 🇬🇧 Nouvelles cartes EN ──────────────────────────────────────────────────
+  { id:"c79", name:"Tauros",                 fullName:"Tauros",                      set:"EN",                        lang:"EN", value:"~3€",    img:"", apiQ:'name:Tauros' },
+  { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex",                 set:"EN",                        lang:"EN", value:"~8€",    img:"", apiQ:'name:"Beedrill ex"' },
+  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CLN · Chaos Ascendant EN",  lang:"EN", value:"~5€",    img:"", apiQ:'set.id:me4 number:15' },
+  { id:"c82", name:"Xerneas SIR",           fullName:"Xerneas 097/086",             set:"Journey Together",          lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv9/97_hires.png", apiQ:'set.id:sv9 number:97' },
+
+  // ── 🇯🇵 Nouvelles cartes JP ──────────────────────────────────────────────────
+  { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   img:"", apiQ:'set.id:me2pt5 number:36', jpImg:'https://assets.tcgdex.net/ja/M/M2a/036/high.webp' },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -663,7 +720,7 @@ const LANG_TABS_CFG = [
 // ── Chargement d'images via pokemontcg.io ────────────────────────────────────
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pk_img_v25";
+  const CACHE_KEY = "pk_img_v37";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -675,7 +732,7 @@ function useCardImages(cards) {
     const save = (id, img) => setCache(p => {
       const n = { ...p, [id]: img };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(n)); } catch {}
-        try { ['v22','v23','v24'].forEach(v => localStorage.removeItem(`pk_img_${v}`)); } catch {}
+        try { ['v22','v23','v24','v36'].forEach(v => localStorage.removeItem(`pk_img_${v}`)); } catch {}
       return n;
     });
 
@@ -703,12 +760,47 @@ function useCardImages(cards) {
             const numPad = m[2].padStart(3, '0');   // "55" → "055"
             const numRaw = parseInt(m[2]).toString(); // "055" → "55" (sécurité)
 
-            // 1a. TCGdex ME series FR — essaie avec et sans padding
-            const meMap = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
-            if (meMap[m[1]]) {
+            // 1a. TCGdex ME series FR — même structure de chemin que JP (M/M4/, M/MEP/, etc.)
+            const tcgdexMeMap = {'me1':'M1','me2':'M2','me3':'M3','me4':'M4','me2pt5':'M2a','mef':'MEP'};
+            if (tcgdexMeMap[m[1]]) {
+              const setCode = tcgdexMeMap[m[1]];
               for (const n of [numPad, numRaw]) {
-                const url = `https://assets.tcgdex.net/fr/me/${meMap[m[1]]}/${n}/high.webp`;
+                const url = `https://assets.tcgdex.net/fr/M/${setCode}/${n}/high.webp`;
                 if (await tryImg(url)) { save(card.id, url); continue outer; }
+              }
+              // 1a1. TCGdex API FR — retourne l'URL exacte sans deviner
+              try {
+                const r = await fetch(`https://api.tcgdex.net/v2/fr/cards/${setCode}-${numPad}`);
+                if (r.ok) {
+                  const d = await r.json();
+                  if (d?.image) {
+                    const apiUrl = `${d.image}/high.webp`;
+                    if (await tryImg(apiUrl)) { save(card.id, apiUrl); continue outer; }
+                  }
+                }
+              } catch {}
+            }
+
+            // 1a2. TCGdex ME series FR — variantes alternatives de chemin CDN
+            const meMapLC = {'me1':'me01','me2':'me02','me3':'me03','me4':'me04','me2pt5':'me02.5','mef':'mep'};
+            const meMapUP = {'me1':'ME1','me2':'ME2','me3':'ME3','me4':'ME4','me2pt5':'ME2.5','mef':'MEP'};
+            for (const [map, prefix] of [[meMapLC,'me'],[meMapUP,'ME']]) {
+              if (map[m[1]]) {
+                for (const n of [numPad, numRaw]) {
+                  const url = `https://assets.tcgdex.net/fr/${prefix}/${map[m[1]]}/${n}/high.webp`;
+                  if (await tryImg(url)) { save(card.id, url); continue outer; }
+                }
+              }
+            }
+
+            // 1a3. LimitlessTCG CDN FR — pour sets ME
+            const ltcgMeMap = { me1:'M1', me2:'M2', me2pt5:'M2a', me3:'M3', me4:'M4', mef:'MEP' };
+            if (ltcgMeMap[m[1]]) {
+              const ltcgSet = ltcgMeMap[m[1]];
+              const n = parseInt(m[2]);
+              for (const v of ['P', 'R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR', 'UR', 'HR']) {
+                const url = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${ltcgSet}/${ltcgSet}_${n}_${v}_FR_LG.png`;
+                if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
               }
             }
 
@@ -787,7 +879,7 @@ function useCardImages(cards) {
           }
 
           // 3.5. LimitlessTCG CDN — format confirmé : tpc/{SET}/{SET}_{num}_{variant}_JP_LG.png
-          const ltcgMap = { me2pt5:'M2a', me3:'M3', me4:'M4', sv11b:'SV11B', sv4k:'SV4K', sv2p:'SV2P' };
+          const ltcgMap = { me2pt5:'M2a', me3:'M3', me4:'M4', sv11b:'SV11B', sv4k:'SV4K', sv2p:'SV2P', sv2a:'SV2a' };
           if (setId && ltcgMap[setId] && num) {
             const ltcgSet = ltcgMap[setId];
             const n = parseInt(num, 10);
@@ -795,7 +887,7 @@ function useCardImages(cards) {
             const ltcgSets = setId === 'me2pt5' ? [ltcgSet, 'M2.5'] : [ltcgSet];
             for (const s of ltcgSets) {
               const base = `https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${s}/${s}_${n}`;
-              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR']) {
+              for (const v of ['R', 'RR', 'AR', 'SAR', 'SR', 'SIR', 'IR', 'MA']) {
                 const url = `${base}_${v}_JP_LG.png`;
                 if (await tryImg(url, 2000)) { save(card.id, url); continue outer; }
               }
@@ -840,7 +932,7 @@ function useCardImages(cards) {
         const cdnM = card.apiQ?.match(/set\.id:(\S+)\s+number:(\d+)/);
         if (cdnM) {
           const setId = cdnM[1], num = parseInt(cdnM[2]);
-          if (!['me2pt5','me3','me4','mef','sv11b','sv4k','sv2p'].includes(setId)) {
+          if (!['me1','me2','me2pt5','me3','me4','mef','sv11b','sv4k','sv2p'].includes(setId)) {
             save(card.id, `https://images.pokemontcg.io/${setId}/${num}_hires.png`);
             continue;
           }
@@ -1054,7 +1146,7 @@ function CoursTab({ ownedList }) {
   const [livePrices, setLivePrices] = useLs("pk_cours_live", {});
   const [loadingId, setLoadingId]   = useState(null);
 
-  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded");
+  const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded" || c.status === "transit");
   const langCards    = gradingCards.filter(c => c.lang === lang);
 
   // Adapter le format pour useCardImages
@@ -1502,7 +1594,7 @@ function RessourcesTab() {
 
 function PokemonTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pk_watch", DEFAULT_WATCH);
-  const [ownedList, setOwnedList, resetOwned] = useStorage("pk_owned", DEFAULT_OWNED);
+  const [ownedList, setOwnedList, resetOwned] = useStorage("pk_owned_v5", DEFAULT_OWNED);
   const [tab, setTab]             = useState("watch");
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
@@ -1580,7 +1672,7 @@ function PokemonTracker() {
       <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
         <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
         <span style={{ color: "#fca5a5" }}>
-          {gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA (envoi 11 mai) · prochain envoi PokéLoutre 15 juin
+          {gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA · 2 envois PokéLoutre (11 mai + 13 juin ✅)
         </span>
       </div>
 
@@ -1642,7 +1734,14 @@ function PokemonTracker() {
           <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 11 mai ✅</div>
             <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
-              {gradingCount} cartes en grading PSA chez PokéLoutre (Dracaufeu VMAX Rainbow + 2× Rosa's Encouragement + Mew ex) · prochain envoi 15 juin : Lugia Neo Genesis + autres
+              Dracaufeu VMAX Rainbow · 2× Rosa's Encouragement · Mew ex · en cours de grading PSA chez PokéLoutre
+            </div>
+            <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
+          </div>
+          <div style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.3)", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fb923c", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>Envoi grading — 13 juin ✅</div>
+            <div style={{ fontSize: 13, color: "#fed7aa", marginBottom: 12 }}>
+              Évoli ex SIR 167/131 PRE · Flareon ex SIR 146/131 PRE · Pikachu &amp; Zekrom-GX 33/181 EN · Méga-Dracolosse ex 229/193 JP M2α · en grading PSA chez PokéLoutre
             </div>
             <a href="https://pokeloutre.fr" target="_blank" rel="noopener noreferrer" style={{ ...css.link, color: "#fb923c" }}>pokeloutre.fr →</a>
           </div>
