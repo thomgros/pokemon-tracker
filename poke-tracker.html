@@ -965,10 +965,19 @@ function BinderView({ cards, color }) {
   const [selected, setSelected] = useState(null);
   const { images, setOverride } = useCardImages(cards);
 
-  const totalPages = Math.max(1, Math.ceil(cards.length / BINDER_PAGE_SIZE));
-  const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => cards[page * BINDER_PAGE_SIZE + i] ?? null);
-  const pageStart  = page * BINDER_PAGE_SIZE + 1;
-  const pageEnd    = Math.min((page + 1) * BINDER_PAGE_SIZE, cards.length);
+  const parseVal = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
+  const grouped = {};
+  cards.forEach(c => { (grouped[c.set] = grouped[c.set] || []).push(c); });
+  const setPages = Object.entries(grouped)
+    .map(([setName, setCards]) => ({
+      setName,
+      cards: setCards.sort((a, b) => parseVal(b.value) - parseVal(a.value)),
+    }))
+    .sort((a, b) => parseVal(b.cards[0]?.value) - parseVal(a.cards[0]?.value));
+
+  const totalPages = Math.max(1, setPages.length);
+  const curPage    = setPages[Math.min(page, totalPages - 1)] || { setName: "", cards: [] };
+  const pageCards  = Array.from({ length: BINDER_PAGE_SIZE }, (_, i) => curPage.cards[i] ?? null);
 
   return (
     <div>
@@ -1043,8 +1052,8 @@ function BinderView({ cards, color }) {
         <button onClick={() => { setPage(p => Math.max(0, p - 1)); setSelected(null); }}
           disabled={page === 0}
           style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "5px 12px" }}>←</button>
-        <span style={{ fontSize: 11, color: T.textMuted }}>
-          {cards.length > 0 ? `${pageStart}–${pageEnd} / ${cards.length} cartes` : "Vide"}
+        <span style={{ fontSize: 11, color: T.textMuted, textAlign: "center" }}>
+          {setPages.length > 0 ? <><div style={{ fontWeight: 600, color: color }}>{curPage.setName}</div><div>{curPage.cards.length} carte{curPage.cards.length > 1 ? "s" : ""} · {page + 1}/{totalPages}</div></> : "Vide"}
         </span>
         <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
           disabled={page === totalPages - 1}
@@ -1058,11 +1067,7 @@ function BinderView({ cards, color }) {
 
 function ClasseurTab() {
   const [lang, setLang] = useState("FR");
-  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang)
-    .sort((a, b) => {
-      const v = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
-      return v(b.value) - v(a.value);
-    });
+  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang);
   const cur   = LANG_TABS_CFG.find(t => t.id === lang);
 
   return (
