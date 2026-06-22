@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Test React</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { background: #0a0a2e; color: white; font-size: 30px; text-align: center; font-family: sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<p id="fallback" style="padding-top:100px;">Si tu vois ce texte en blanc sur fond bleu, le CSS marche. React charge...</p>
+<script type="text/babel" data-presets="react">
+const App = () => {
+  return <div style={{paddingTop:150}}><h1>React fonctionne !</h1><p>Babel + JSX OK</p></div>;
+};
+document.getElementById("fallback").remove();
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
