@@ -1058,7 +1058,11 @@ function BinderView({ cards, color }) {
 
 function ClasseurTab() {
   const [lang, setLang] = useState("FR");
-  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang);
+  const cards = CLASSEUR_CARDS.filter(c => c.lang === lang)
+    .sort((a, b) => {
+      const v = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
+      return v(b.value) - v(a.value);
+    });
   const cur   = LANG_TABS_CFG.find(t => t.id === lang);
 
   return (
