@@ -1,0 +1,82 @@
+name: Diagnostic - FR MEP Promo Images
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test image sources for 6 FR MEP promo cards
+        run: |
+          set +e
+          check_url() {
+            local url=$1 label=$2
+            http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
+            if [ "$http" = "200" ]; then
+              size=$(curl -s -o /tmp/img -L --max-time 10 "$url" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+              if [ "$size" -gt 3000 ]; then
+                echo "  ✓ $label ($size b) $url"
+                return 0
+              fi
+            fi
+            return 1
+          }
+
+          cards="7:Mega-Zygarde-ex 80:Feunnec 70:Ptyranidur 46:Germignon 47:Hericendre 48:Kaiminus"
+
+          for card in $cards; do
+            IFS=: read num name <<< "$card"
+            pad=$(printf '%03d' "$num")
+            echo ""
+            echo "=== $name (mep-$num) ==="
+
+            echo "-- TCGdex CDN (fr) --"
+            check_url "https://assets.tcgdex.net/fr/M/mep/${pad}/high.webp" "cdn-pad"
+            check_url "https://assets.tcgdex.net/fr/M/mep/${num}/high.webp" "cdn-raw"
+            check_url "https://assets.tcgdex.net/fr/MEF/mep/${pad}/high.webp" "cdn-mef-pad"
+
+            echo "-- TCGdex API (fr) --"
+            for n in "$num" "$pad"; do
+              json=$(curl -s --max-time 10 "https://api.tcgdex.net/v2/fr/cards/mep-${n}")
+              img=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('image',''))" 2>/dev/null)
+              if [ -n "$img" ]; then
+                echo "  API mep-${n}: image=$img"
+                check_url "${img}/high.webp" "api-img"
+              else
+                card_name=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('name','(none)'))" 2>/dev/null)
+                echo "  API mep-${n}: name=$card_name, no image"
+              fi
+            done
+
+            echo "-- TCGdex API (en) --"
+            for n in "$num" "$pad"; do
+              json=$(curl -s --max-time 10 "https://api.tcgdex.net/v2/en/cards/mep-${n}")
+              img=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('image',''))" 2>/dev/null)
+              if [ -n "$img" ]; then
+                echo "  EN API mep-${n}: image=$img"
+                check_url "${img}/high.webp" "en-api-img"
+                break
+              fi
+            done
+
+            echo "-- LimitlessTCG CDN --"
+            for setcode in MEP MEF mep mef; do
+              for v in R RR SR P IR; do
+                for lang in EN FR; do
+                  if check_url "https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/${setcode}/${setcode}_${num}_${v}_${lang}_LG.png" "ltcg-${setcode}-${v}-${lang}"; then
+                    break 3
+                  fi
+                done
+              done
+            done
+
+            echo "-- pokemontcg.io API --"
+            json=$(curl -s --max-time 15 "https://api.pokemontcg.io/v2/cards?q=set.id:mef%20number:${num}&pageSize=1&select=images,name" 2>/dev/null)
+            img=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); imgs=d.get('data',[]); print(imgs[0]['images']['large'] if imgs and 'images' in imgs[0] else '(none)')" 2>/dev/null)
+            echo "  ptcgio: $img"
+            if [ "$img" != "(none)" ] && [ -n "$img" ]; then
+              check_url "$img" "ptcgio"
+            fi
+          done
+
+          echo ""
+          echo "=== DONE ==="
