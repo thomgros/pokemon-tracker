@@ -1,0 +1,103 @@
+name: Diagnostic - Dracaufeu VMAX FR image
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find FR image for Dracaufeu VMAX Rainbow 074/073
+        run: |
+          set +e
+          check_url() {
+            local url=$1 label=$2
+            http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
+            if [ "$http" = "200" ]; then
+              size=$(curl -s -o /tmp/img -L --max-time 10 "$url" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+              if [ "$size" -gt 3000 ]; then
+                echo "  ✓ $label ($size b) $url"
+                return 0
+              else
+                echo "  ✗ $label (too small: $size b) $url"
+              fi
+            else
+              echo "  ✗ $label (HTTP $http) $url"
+            fi
+            return 1
+          }
+
+          echo "=== Pokedexia CDN patterns ==="
+          for setpath in "swsh/la-voie-du-maitre" "swsh/champions-path" "swsh/champion-s-path" "eb/la-voie-du-maitre" "eb/eb3-5"; do
+            for code in "CPA-074" "SWSH35-074" "CPA-74" "SWSH35-74"; do
+              for suffix in "high" "v2-high" "low" "v2-low"; do
+                check_url "https://cdn.pokedexia.com/cards/${setpath}/cards/${code}-${suffix}.webp" "${setpath}/${code}-${suffix}"
+              done
+            done
+          done
+
+          echo ""
+          echo "=== Pokedexia page scrape ==="
+          for slug in "dracaufeu-vmax-cpa-074" "charizard-vmax-cpa-074" "dracaufeu-vmax-swsh35-074" "dracaufeu-vmax-swsh35-74"; do
+            html=$(curl -s -L --max-time 10 "https://pokedexia.com/fr/cartes-pokemon/extensions/la-voie-du-maitre/${slug}")
+            img=$(echo "$html" | grep -oP 'https://cdn\.pokedexia\.com[^"]+' | head -1)
+            if [ -n "$img" ]; then
+              echo "  $slug: $img"
+              check_url "$img" "$slug"
+            else
+              echo "  $slug: no image (${#html} chars)"
+            fi
+          done
+
+          echo ""
+          echo "=== PkmCards.fr ==="
+          html=$(curl -s -L --max-time 15 "https://www.pkmcards.fr/cards/cpa-fr-074-epee-et-bouclier-la-voie-du-maitre-dracaufeu-vmax")
+          imgs=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|favicon\|banner' | head -10)
+          echo "$imgs"
+          ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+          [ -n "$ogimg" ] && echo "  og:image: $ogimg"
+
+          echo ""
+          echo "=== BlueUmbreon ==="
+          html=$(curl -s -L --max-time 15 "https://www.blueumbreon.com/en/pokemon-cards/champion-s-path/charizard-vmax/074/073/")
+          imgs=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|favicon\|banner' | head -10)
+          echo "$imgs"
+          ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+          [ -n "$ogimg" ] && echo "  og:image: $ogimg"
+
+          echo ""
+          echo "=== DexoCard ==="
+          html=$(curl -s -L --max-time 15 "https://www.dexocard.com/card/la-voie-du-maitre/dracaufeu-vmax/swsh35-74")
+          imgs=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|favicon\|banner' | head -10)
+          echo "$imgs"
+          ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+          [ -n "$ogimg" ] && echo "  og:image: $ogimg"
+
+          echo ""
+          echo "=== Coleka ==="
+          html=$(curl -s -L --max-time 15 "https://www.coleka.com/en/trading-cards/pokemon-cards/pokemon-sword-shield/champion-s-path/dracaufeu-vmax_i788299")
+          imgs=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|favicon\|banner' | head -10)
+          echo "$imgs"
+          ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+          [ -n "$ogimg" ] && echo "  og:image: $ogimg"
+
+          echo ""
+          echo "=== TCGdex API — look for Champion's Path set ==="
+          # Try different set IDs
+          for sid in swsh35 swsh3.5 CPA cpa eb35 eb3.5; do
+            json=$(curl -s --max-time 10 "https://api.tcgdex.net/v2/fr/sets/${sid}" 2>/dev/null)
+            name=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(f\"{d.get('name','')} ({d.get('id','')}) - {d.get('cardCount',{}).get('total',0)} cards\")" 2>/dev/null)
+            [ -n "$name" ] && echo "  $sid: $name"
+          done
+          # Also try card lookups
+          for cid in swsh35-74 CPA-74 cpa-74 eb35-74 swsh3.5-74; do
+            json=$(curl -s --max-time 10 "https://api.tcgdex.net/v2/fr/cards/${cid}" 2>/dev/null)
+            result=$(echo "$json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(f\"name={d.get('name','')} img={d.get('image','')}\")" 2>/dev/null)
+            [ -n "$result" ] && echo "  $cid: $result"
+          done
+
+          echo ""
+          echo "=== Verify current pokemontcg.io URL ==="
+          check_url "https://images.pokemontcg.io/swsh35/74_hires.png" "pokemontcg-swsh35-74-hires"
+          check_url "https://images.pokemontcg.io/swsh35/74.png" "pokemontcg-swsh35-74"
+
+          echo ""
+          echo "=== DONE ==="
