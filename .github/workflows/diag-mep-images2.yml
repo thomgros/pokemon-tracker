@@ -1,0 +1,131 @@
+name: Diagnostic - FR MEP Images v2
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find MEP card images from multiple sources
+        run: |
+          set +e
+
+          echo "=== Official Pokemon.com card pages ==="
+          for num in 7 46 47 48 70 80; do
+            echo ""
+            echo "--- MEP $num ---"
+            # Fetch the official card page and extract image
+            html=$(curl -s -L --max-time 15 "https://www.pokemon.com/us/pokemon-tcg/pokemon-cards/series/mep/${num}/")
+            img=$(echo "$html" | grep -oP 'https://images\.pokemon\.com[^"]+' | head -1)
+            if [ -n "$img" ]; then
+              echo "  pokemon.com image: $img"
+              http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$img")
+              echo "  status: $http"
+            else
+              echo "  pokemon.com: no image found in HTML"
+              # Show page title to confirm we got the right page
+              title=$(echo "$html" | grep -oP '<title>[^<]+' | head -1)
+              echo "  page: $title"
+            fi
+          done
+
+          echo ""
+          echo "=== PkmnCards.com ==="
+          cards_pkmn="fennekin-mega-evolution-promos-mep-080 tyrunt-mega-evolution-promos-mep-070 chikorita-mega-evolution-promos-mep-046 cyndaquil-mega-evolution-promos-mep-047 totodile-mega-evolution-promos-mep-048 m-zygarde-ex-mega-evolution-promos-mep-007"
+          for slug in $cards_pkmn; do
+            echo ""
+            echo "--- $slug ---"
+            html=$(curl -s -L --max-time 15 "https://pkmncards.com/card/${slug}/")
+            # Try multiple image extraction patterns
+            img=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -i -E 'card|scan|pkmn|pokemon' | head -3)
+            if [ -n "$img" ]; then
+              echo "  images found:"
+              echo "$img" | while read u; do
+                http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$u")
+                echo "    $http $u"
+              done
+            else
+              echo "  no card images found"
+            fi
+            # Also check og:image
+            ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+            if [ -n "$ogimg" ]; then
+              echo "  og:image: $ogimg"
+            fi
+          done
+
+          echo ""
+          echo "=== KardsApp.com ==="
+          kards="007-mega-zygarde-ex 046-germignon 047-hericendre 048-kaiminus 070-ptyranidur 080-feunnec"
+          for slug in $kards; do
+            echo ""
+            echo "--- $slug ---"
+            html=$(curl -s -L --max-time 15 "https://kardsapp.com/game/tcg-pokemon/me_mega-evolution/mep_promo-me/FR/${slug}")
+            img=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|flag\|banner' | head -5)
+            if [ -n "$img" ]; then
+              echo "  images:"
+              echo "$img" | head -5
+            fi
+            ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+            if [ -n "$ogimg" ]; then
+              echo "  og:image: $ogimg"
+            fi
+          done
+
+          echo ""
+          echo "=== TCGdex API (direct curl) ==="
+          for num in 7 46 47 48 70 80; do
+            json=$(curl -s --max-time 10 "https://api.tcgdex.net/v2/fr/cards/mep-${num}" 2>/dev/null)
+            echo "mep-${num}: $(echo "$json" | head -c 500)"
+          done
+
+          echo ""
+          echo "=== Pokemon.com images CDN direct test ==="
+          for num in 7 46 47 48 70 80; do
+            for pattern in \
+              "https://images.pokemon.com/assets/cms2/img/cards/web/MEP/MEP_EN_${num}.png" \
+              "https://images.pokemon.com/assets/cms2/img/cards/web/ME/ME_EN_${num}.png" \
+              "https://images.pokemon.com/assets/cms2/img/cards/web/MEP/MEP_FR_${num}.png"; do
+              http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$pattern")
+              if [ "$http" = "200" ]; then
+                size=$(curl -s -o /tmp/img -L --max-time 10 "$pattern" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+                echo "  FOUND ($size b): $pattern"
+              fi
+            done
+          done
+
+          echo ""
+          echo "=== pokemontcg.io images CDN ==="
+          for num in 7 46 47 48 70 80; do
+            for set in mep me MEP ME mef MEF; do
+              url="https://images.pokemontcg.io/${set}/${num}.png"
+              http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
+              if [ "$http" = "200" ]; then
+                size=$(curl -s -o /tmp/img -L --max-time 10 "$url" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+                echo "  FOUND ($size b): $url"
+              fi
+              url2="https://images.pokemontcg.io/${set}/${num}_hires.png"
+              http2=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url2")
+              if [ "$http2" = "200" ]; then
+                size2=$(curl -s -o /tmp/img -L --max-time 10 "$url2" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+                echo "  FOUND ($size2 b): $url2"
+              fi
+            done
+          done
+
+          echo ""
+          echo "=== Pokedexia images ==="
+          for card in "ptyranidur-mep-070" "feunnec-mep-080" "germignon-mep-046" "hericendre-mep-047" "kaiminus-mep-048" "mega-zygarde-ex-mep-007"; do
+            html=$(curl -s -L --max-time 15 "https://pokedexia.com/fr/cartes-pokemon/extensions/promos-mega-evolution/${card}")
+            img=$(echo "$html" | grep -oP 'https://[^"]+\.(png|jpg|webp)' | grep -iv 'logo\|icon\|avatar\|flag\|banner\|favicon' | head -3)
+            if [ -n "$img" ]; then
+              echo "  $card images:"
+              echo "$img"
+            fi
+            ogimg=$(echo "$html" | grep -oP 'og:image[^>]+content="[^"]+' | grep -oP 'https://[^"]+')
+            if [ -n "$ogimg" ]; then
+              echo "  $card og:image: $ogimg"
+            fi
+          done
+
+          echo ""
+          echo "=== DONE ==="
