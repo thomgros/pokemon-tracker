@@ -1,0 +1,46 @@
+name: Diagnostic - New MEP card images
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify image URLs for new MEP cards
+        run: |
+          set +e
+          check_url() {
+            local url=$1 label=$2
+            http=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$url")
+            if [ "$http" = "200" ]; then
+              size=$(curl -s -o /tmp/img -L --max-time 10 "$url" && stat -c%s /tmp/img 2>/dev/null || echo 0)
+              if [ "$size" -gt 3000 ]; then
+                echo "  ✓ $label ($size b) $url"
+                return 0
+              else
+                echo "  ✗ $label (too small: $size b) $url"
+              fi
+            else
+              echo "  ✗ $label (HTTP $http) $url"
+            fi
+            return 1
+          }
+
+          echo "=== FR MEP Pokedexia CDN ==="
+          for num in 013 029 054; do
+            echo "--- MEP-${num} ---"
+            check_url "https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-${num}-v2-high.webp" "v2-high"
+            check_url "https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-${num}-high.webp" "high"
+            check_url "https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-${num}-v2-low.webp" "v2-low"
+          done
+
+          echo ""
+          echo "=== EN MEP-080 Fennekin ==="
+          check_url "https://pkmncards.com/wp-content/uploads/mebsp_en_080_std.png" "PkmnCards-EN-080"
+
+          echo ""
+          echo "=== Raikou Vivid Voltage ==="
+          check_url "https://images.pokemontcg.io/swsh4/50_hires.png" "ptcgio-swsh4-50-hires"
+          check_url "https://images.pokemontcg.io/swsh4/50.png" "ptcgio-swsh4-50"
+
+          echo ""
+          echo "=== DONE ==="
