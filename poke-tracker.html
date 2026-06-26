@@ -745,7 +745,7 @@ const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR
 const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pt_img_cache_v6";
+  const CACHE_KEY = "pt_img_cache_v7";
   const OVR_KEY   = "pt_img_overrides";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
@@ -824,14 +824,11 @@ function useCardImages(cards) {
       const [setCode, numRaw] = card.tcgdex.split("-");
       const numPad = numRaw.padStart(3, "0");
       const langCode = LANG_API_CODE[card.lang] || "en";
-      const uc = setCode.toUpperCase();
-      const series = uc.startsWith("SV") ? (setCode.startsWith("SV") ? "SV" : "sv")
-                   : (uc.startsWith("M") && !uc.startsWith("ME")) ? "M"
-                   : null;
+      const series = setCode.startsWith("SV") ? "SV" : (setCode.startsWith("M") ? "M" : null);
 
-      // 1. CDN TCGdex direct (deviné) — numRaw d'abord (chemin canonique)
+      // 1. CDN TCGdex direct (deviné)
       if (series) {
-        for (const n of [numRaw, numPad]) {
+        for (const n of [numPad, numRaw]) {
           const url = `https://assets.tcgdex.net/${langCode}/${series}/${setCode}/${n}/high.webp`;
           if (await tryImg(url)) return url;
         }
@@ -872,35 +869,11 @@ function useCardImages(cards) {
         if (!alive) return;
         let url = null, fallbackEn = false;
 
-        const meIntl = card.tcgdex && card.tcgdex.match(/^me\d/);
-        if (card.tcgdex && !meIntl) {
+        if (card.tcgdex) {
           url = await nativeLookup(card);
           if (!url && card.lang !== "EN") {
             url = await tcgdexLookup("en", card.tcgdex);
             if (url) fallbackEn = true;
-          }
-        }
-        // Sets ME internationaux : Pokedexia CDN (FR) puis pokemontcg.io (EN)
-        const ME_INTL_MAP = {
-          me01:{code:"MEG",slugs:["mega-evolution"]},
-          me02:{code:"PFL",slugs:["prismatic-flames","phantasmal-flames"]},
-          "me02.5":{code:"ASC",slugs:["ascended-heroes"]},
-          me03:{code:"POR",slugs:["perfect-order"]},
-          me04:{code:"CRI",slugs:["chaos-rising"]},
-        };
-        if (!url && meIntl) {
-          const [sc, nr] = card.tcgdex.split("-");
-          const np = nr.padStart(3, "0");
-          const info = ME_INTL_MAP[sc];
-          if (info) {
-            outer: for (const slug of info.slugs) {
-              for (const u of [
-                `https://cdn.pokedexia.com/cards/me/${slug}/cards/${info.code}-${np}-high.webp`,
-                `https://cdn.pokedexia.com/cards/me/${slug}/cards/${info.code}-${np}-v2-high.webp`,
-              ]) {
-                if (await tryImg(u)) { url = u; break outer; }
-              }
-            }
           }
         }
         // pokemontcg.io ne référence que des cartes EN : tout résultat venant de là pour
