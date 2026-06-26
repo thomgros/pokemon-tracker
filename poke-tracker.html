@@ -826,7 +826,7 @@ function useCardImages(cards) {
       const langCode = LANG_API_CODE[card.lang] || "en";
       const uc = setCode.toUpperCase();
       const series = uc.startsWith("SV") ? (setCode.startsWith("SV") ? "SV" : "sv")
-                   : uc.startsWith("M")  ? "M"
+                   : (uc.startsWith("M") && !uc.startsWith("ME")) ? "M"
                    : null;
 
       // 1. CDN TCGdex direct (deviné)
