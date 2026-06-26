@@ -993,7 +993,13 @@ function BinderView({ cards, color }) {
       setName,
       cards: setCards.sort((a, b) => parseVal(b.value) - parseVal(a.value)),
     }))
-    .sort((a, b) => parseVal(b.cards[0]?.value) - parseVal(a.cards[0]?.value));
+    .sort((a, b) => parseVal(b.cards[0]?.value) - parseVal(a.cards[0]?.value))
+    .flatMap(({ setName, cards }) => {
+      const pages = [];
+      for (let i = 0; i < cards.length; i += BINDER_PAGE_SIZE)
+        pages.push({ setName, cards: cards.slice(i, i + BINDER_PAGE_SIZE), totalInSet: cards.length });
+      return pages;
+    });
 
   const totalPages = Math.max(1, setPages.length);
   const curPage    = setPages[Math.min(page, totalPages - 1)] || { setName: "", cards: [] };
@@ -1073,7 +1079,7 @@ function BinderView({ cards, color }) {
           disabled={page === 0}
           style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "5px 12px" }}>←</button>
         <span style={{ fontSize: 11, color: T.textMuted, textAlign: "center" }}>
-          {setPages.length > 0 ? <><div style={{ fontWeight: 600, color: color }}>{curPage.setName}</div><div>{curPage.cards.length} carte{curPage.cards.length > 1 ? "s" : ""} · {page + 1}/{totalPages}</div></> : "Vide"}
+          {setPages.length > 0 ? <><div style={{ fontWeight: 600, color: color }}>{curPage.setName}</div><div>{curPage.totalInSet || curPage.cards.length} carte{(curPage.totalInSet || curPage.cards.length) > 1 ? "s" : ""} · {page + 1}/{totalPages}</div></> : "Vide"}
         </span>
         <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
           disabled={page === totalPages - 1}
