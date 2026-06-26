@@ -745,7 +745,7 @@ const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR
 const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pt_img_cache_v4";
+  const CACHE_KEY = "pt_img_cache_v5";
   const OVR_KEY   = "pt_img_overrides";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
@@ -872,7 +872,8 @@ function useCardImages(cards) {
         if (!alive) return;
         let url = null, fallbackEn = false;
 
-        if (card.tcgdex) {
+        const meIntl = card.tcgdex && card.tcgdex.match(/^me\d/);
+        if (card.tcgdex && !meIntl) {
           url = await nativeLookup(card);
           if (!url && card.lang !== "EN") {
             url = await tcgdexLookup("en", card.tcgdex);
