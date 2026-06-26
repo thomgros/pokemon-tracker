@@ -745,7 +745,7 @@ const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR
 const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
 function useCardImages(cards) {
-  const CACHE_KEY = "pt_img_cache_v2";
+  const CACHE_KEY = "pt_img_cache_v3";
   const OVR_KEY   = "pt_img_overrides";
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
@@ -824,20 +824,8 @@ function useCardImages(cards) {
       const [setCode, numRaw] = card.tcgdex.split("-");
       const numPad = numRaw.padStart(3, "0");
       const langCode = LANG_API_CODE[card.lang] || "en";
-      const uc = setCode.toUpperCase();
-      const series = uc.startsWith("SV") ? (setCode.startsWith("SV") ? "SV" : "sv")
-                   : (uc.startsWith("M") && !uc.startsWith("ME")) ? "M"
-                   : null;
 
-      // 1. CDN TCGdex direct (deviné)
-      if (series) {
-        for (const n of [numPad, numRaw]) {
-          const url = `https://assets.tcgdex.net/${langCode}/${series}/${setCode}/${n}/high.webp`;
-          if (await tryImg(url)) return url;
-        }
-      }
-
-      // 2. API TCGdex (langue native) — chemin exact même si le numéro local diffère
+      // 1. API TCGdex (langue native) — chemin exact même si le numéro local diffère
       const apiUrl = await tcgdexLookup(langCode, card.tcgdex);
       if (apiUrl) return apiUrl;
 
