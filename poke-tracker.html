@@ -826,7 +826,6 @@ function useCardImages(cards) {
       const langCode = LANG_API_CODE[card.lang] || "en";
       const uc = setCode.toUpperCase();
       const series = uc.startsWith("SV") ? (setCode.startsWith("SV") ? "SV" : "sv")
-                   : uc.startsWith("ME") ? "me"
                    : uc.startsWith("M")  ? "M"
                    : null;
 
