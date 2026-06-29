@@ -1036,6 +1036,7 @@ function BinderView({ cards, color }) {
           flex: 1,
           background: "linear-gradient(160deg, #1d1208 0%, #261506 60%, #1a1005 100%)",
           padding: "12px 12px 12px 8px",
+          position: "relative",
         }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: 7 }}>
             {pageCards.map((card, i) => {
@@ -1049,27 +1050,48 @@ function BinderView({ cards, color }) {
               );
             })}
           </div>
+
+          {/* Overlay carte agrandie */}
+          {selected && (() => {
+            const imgUrl = selected.img || images[selected.id]?.url;
+            return (
+              <div onClick={() => setSelected(null)} style={{
+                position: "absolute", inset: 0,
+                background: "rgba(0,0,0,0.80)",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                zIndex: 10, cursor: "pointer",
+              }}>
+                {imgUrl && (
+                  <img src={imgUrl} alt={selected.name}
+                    style={{
+                      width: "64%", maxHeight: "72%",
+                      aspectRatio: "5/7", objectFit: "contain",
+                      borderRadius: 10,
+                      boxShadow: `0 8px 40px rgba(0,0,0,0.9), 0 0 20px ${color}33`,
+                    }}
+                  />
+                )}
+                <div style={{ marginTop: 10, textAlign: "center", padding: "0 12px" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>
+                    {LANG_FLAG[selected.lang]} {selected.fullName}
+                  </div>
+                  {selected.value && (
+                    <div style={{ fontSize: 16, color: "#4ade80", fontWeight: 700, marginTop: 3 }}>
+                      {selected.value}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
-      {/* Info carte sélectionnée */}
-      {selected && (
-        <div style={{ ...css.card, border: `1px solid ${color}55`, marginBottom: 12 }}>
-          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-            {images[selected.id]?.url && (
-              <img src={selected.img || images[selected.id].url} alt={selected.fullName}
-                style={{ width: 52, height: 73, objectFit: "cover", borderRadius: 5, flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
-                onError={e => e.target.style.display = "none"}
-              />
-            )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{LANG_FLAG[selected.lang]} {selected.fullName}</div>
-              <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
-              {selected.value && <div style={{ fontSize: 12, color: "#4ade80", fontWeight: 600, marginTop: 4 }}>{selected.value}</div>}
-            </div>
-            <button onClick={() => setSelected(null)} style={{ fontSize: 11, color: T.textMuted, background: "none", border: "none", cursor: "pointer", padding: "2px 6px" }}>✕</button>
-          </div>
-          {!selected.img && <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />}
+      {/* ImageHelp si image manquante/fallback */}
+      {selected && !selected.img && (
+        <div style={{ marginBottom: 12 }}>
+          <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />
         </div>
       )}
 
