@@ -1248,7 +1248,7 @@ function CoursTab({ ownedList }) {
           ))}
         </div>
         {/* Grille */}
-        <div style={{ flex:1, background:"linear-gradient(160deg,#1d1208 0%,#261506 60%,#1a1005 100%)", padding:"12px 12px 12px 8px" }}>
+        <div style={{ flex:1, background:"linear-gradient(160deg,#1d1208 0%,#261506 60%,#1a1005 100%)", padding:"12px 12px 12px 8px", position:"relative" }}>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gridTemplateRows:"repeat(3,1fr)", gap:7 }}>
             {pageCards.map((card, i) => {
               const imgData  = card ? imgCache[card.id] : undefined;
@@ -1304,6 +1304,59 @@ function CoursTab({ ownedList }) {
               );
             })}
           </div>
+
+          {/* Overlay carte gradée agrandie */}
+          {selected && (() => {
+            const imgUrl = imgCache[selected.id]?.url;
+            const selMeta = GRADING_META[selected.id];
+            const statusColor = selected.status === "graded" ? "#4ade80" : selected.status === "grading" ? "#60a5fa" : "#fb923c";
+            const statusLabel = selected.status === "graded" ? `Gradé ${selMeta?.grade || "PSA"}` : selected.status === "grading" ? "En grading PSA" : "À envoyer";
+            const lastH = GRADING_HISTORY[selected.id]?.h;
+            const lastVal = lastH ? lastH[lastH.length - 1] : null;
+            return (
+              <div onClick={() => setSelected(null)} style={{
+                position:"absolute", inset:0,
+                background:"rgba(0,0,0,0.82)",
+                display:"flex", flexDirection:"column",
+                alignItems:"center", justifyContent:"center",
+                zIndex:10, cursor:"pointer", padding:"8px",
+              }}>
+                {imgUrl && (
+                  <img src={imgUrl} alt={selected.name}
+                    style={{
+                      width:"58%", maxHeight:"55%",
+                      aspectRatio:"5/7", objectFit:"contain",
+                      borderRadius:10,
+                      boxShadow:`0 8px 40px rgba(0,0,0,0.9), 0 0 20px ${statusColor}33`,
+                    }}
+                  />
+                )}
+                <div style={{ marginTop:8, textAlign:"center", padding:"0 8px", maxWidth:"100%" }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:"#fff" }}>
+                    {LANG_FLAG[selected.lang]} {selected.name}
+                  </div>
+                  <div style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{selected.set}</div>
+                  <div style={{
+                    display:"inline-flex", alignItems:"center", gap:4, marginTop:5,
+                    background:`${statusColor}18`, border:`1px solid ${statusColor}44`,
+                    borderRadius:5, padding:"2px 8px",
+                  }}>
+                    <span style={{ fontSize:10, fontWeight:600, color:statusColor }}>{statusLabel}</span>
+                  </div>
+                  {lastVal && (
+                    <div style={{ display:"flex", justifyContent:"center", gap:10, marginTop:6 }}>
+                      <span style={{ fontSize:10, color:"#60a5fa" }}>NM {lastVal.nm}€</span>
+                      <span style={{ fontSize:10, color:"#fb923c" }}>PSA 9 {lastVal.psa9}€</span>
+                      <span style={{ fontSize:10, color:"#4ade80", fontWeight:700 }}>PSA 10 {lastVal.psa10}€</span>
+                    </div>
+                  )}
+                  {selected.note && (
+                    <div style={{ fontSize:9, color:T.textMuted, marginTop:4, lineHeight:1.4, maxWidth:260 }}>{selected.note}</div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -1314,37 +1367,6 @@ function CoursTab({ ownedList }) {
       {/* Panneau détail carte sélectionnée */}
       {selected && (
         <div style={{ ...css.card, border:`1px solid ${curColor}55`, marginBottom:8 }}>
-          {/* Header */}
-          <div style={{ display:"flex", gap:12, alignItems:"flex-start", marginBottom:14 }}>
-            {imgCache[selected.id]?.url && (
-              <img src={imgCache[selected.id].url} alt={selected.name}
-                style={{ width:64, height:90, objectFit:"cover", borderRadius:7, flexShrink:0, boxShadow:"0 6px 20px rgba(0,0,0,0.6)" }}
-                onError={e => e.target.style.display="none"}
-              />
-            )}
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{LANG_FLAG[selected.lang]} {selected.name}</div>
-              <div style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{selected.set}</div>
-              {/* Statut badge */}
-              <div style={{ marginTop:6, display:"inline-flex", alignItems:"center", gap:5,
-                background: selected.status === "graded" ? "rgba(74,222,128,0.12)" : selected.status === "grading" ? "rgba(96,165,250,0.12)" : "rgba(251,146,60,0.12)",
-                border:`1px solid ${selected.status === "graded" ? "#4ade8044" : selected.status === "grading" ? "#60a5fa44" : "#fb923c44"}`,
-                borderRadius:6, padding:"3px 8px" }}>
-                <span style={{ fontSize:10, fontWeight:600, color: selected.status === "graded" ? "#4ade80" : selected.status === "grading" ? "#60a5fa" : "#fb923c" }}>
-                  {selected.status === "graded" ? "✅ Gradé PSA" : selected.status === "grading" ? "⏳ En cours de grading PSA" : "📬 À envoyer au grading"}
-                </span>
-              </div>
-              {meta?.grade && (
-                <div style={{ marginTop:5, fontSize:10, color:"#4ade80", fontWeight:600 }}>
-                  Grade attendu : {meta.grade}
-                </div>
-              )}
-              {selected.note && (
-                <div style={{ marginTop:4, fontSize:10, color:T.textMuted, lineHeight:1.5 }}>{selected.note}</div>
-              )}
-            </div>
-            <button onClick={() => setSelected(null)} style={{ fontSize:11, color:T.textMuted, background:"none", border:"none", cursor:"pointer", padding:"2px 6px", flexShrink:0 }}>✕</button>
-          </div>
 
           {!meta?.img && <ImageHelp card={selected} imgData={imgCache[selected.id]} onSetOverride={setOverride} color={curColor} />}
 
