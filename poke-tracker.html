@@ -140,6 +140,8 @@ const DEFAULT_WATCH = [
   // ── 30e Anniversaire ──────────────────────────────────────────────────────
   { id: 16, name: "Darkrai & Cresselia LEGEND",    ebayQuery: "Darkrai Cresselia Legend 99/102 100/102 Triumphant Near Mint",                set: "Triumphant",          number: "99-100/102", maxPrice: 85,  priority: 2, lang: "EN", type: "anniv30", img: "https://images.pokemontcg.io/hgss4/99_hires.png" },
   { id: 17, name: "Palkia Lv.X",                   ebayQuery: "Palkia Lv.X 126/106 Great Encounters Near Mint",                             set: "Great Encounters",    number: "126/106", maxPrice: 65,  priority: 3, lang: "EN", type: "anniv30", img: "https://images.pokemontcg.io/dp4/126_hires.png" },
+  // ── Cartes à fort ratio PSA ──────────────────────────────────────────────────
+  { id: 21, name: "M Charizard EX 107/106",         ebayQuery: "M Charizard EX 107/106 XY Flashfire Secret Rare Near Mint",                  set: "XY Flashfire",        number: "107/106", maxPrice: 230, priority: 1, lang: "EN", type: "collector", img: "https://images.pokemontcg.io/xy2/107_hires.png" },
 ];
 
 const DEFAULT_OWNED = [
@@ -156,6 +158,8 @@ const DEFAULT_OWNED = [
   { id: "o16", name: "Lugia Holo 9/111",              price: 750,    status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "1st Ed · reçu · batch 15 août 2026 · assurance obligatoire · PSA 7-8 estimé · holo propre, 2 pts blancs coin BG", ebayQuery: "Lugia 9/111 Neo Genesis 1st Edition Holo Near Mint" },
   { id: "o21", name: "Sneasel 25/111",               price: 0,      status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "1st Ed · reçu · NM confirmé · scratches toploader (pas carte) · PSA 7-8 visé · batch août 2026", ebayQuery: "Sneasel 25/111 Neo Genesis 1st Edition Near Mint" },
   { id: "o22", name: "Togepi 51/111",                price: 0,      status: "à grader",   set: "Neo Genesis",           lang: "EN", note: "1st Ed · reçu · coin haut droit whiteline légère · PSA 7 probable · batch août 2026", ebayQuery: "Togepi 51/111 Neo Genesis 1st Edition Near Mint" },
+  { id: "o23", name: "Meowth 106/094 IR",           price: 28.99,  status: "à grader",   set: "Phantasmal Flames",     lang: "EN", note: "Illustration Rare · à acheter chez Chndd 28,99€ · batch 15 août 2026", ebayQuery: "Meowth 106/094 Phantasmal Flames Illustration Rare Near Mint" },
+  { id: "o24", name: "Aerodactyl 1/62 Fossil 1st Ed",price: 83,    status: "à grader",   set: "Fossil",                lang: "EN", note: "1st Ed · Holo · coin BG dos léger, centrage légèrement off · PSA 7 probable, PSA 8 possible · batch 15 août 2026 · valeur déclarée 83€ · palier ≤300€ sans assurance", ebayQuery: "Aerodactyl 1/62 Fossil 1st Edition Holo Near Mint" },
   // Envoi grading séparé
   { id: "o5",  name: "Mew ex MEW 205",                 price: 27.5,   status: "grading",    set: "151",                   lang: "EN", note: "Envoi séparé PokéLoutre",                           ebayQuery: "Mew ex 205/165 Pokemon 151 Near Mint" },
   // Collection physique
@@ -566,6 +570,7 @@ const GRADING_HISTORY = {
   "o21": { h:[{date:"Jun 26",nm:30,psa9:130,psa10:350}] },
   "o22": { h:[{date:"Jun 26",nm:18,psa9:85,psa10:220}] },
   "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
+  "o24": { h:[{date:"Juil 26",nm:83,psa9:320,psa10:1800},{date:"Août 26",nm:85,psa9:330,psa10:1900}] },
 };
 
 // img = URL directe confirmée · tcgdex = "SETCODE-num" pour API TCGdex · ptcgioQ = fallback pokemontcg.io
@@ -583,6 +588,8 @@ const GRADING_META = {
   "o20": { tcgdex:"M2a-232",                                       grade:"grading",   ptcgioQ:'set.id:me2pt5 number:232' },
   "o21": { img:"https://images.pokemontcg.io/neo1/25_hires.png",   grade:"PSA 7-8" },
   "o22": { img:"https://images.pokemontcg.io/neo1/51_hires.png",   grade:"PSA 7" },
+  "o23": { img:"https://images.pokemontcg.io/me2/106_hires.png",   grade:"PSA 10",   ptcgioQ:'set.id:me2 number:106' },
+  "o24": { img:"https://images.pokemontcg.io/fo1/1_hires.png",     grade:"PSA 7",    ptcgioQ:'set.id:fo1 number:1' },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
