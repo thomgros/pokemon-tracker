@@ -1,0 +1,13 @@
+{
+  "name": "pokemon-price-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Watches the watchlist across eBay (and PriceCharting/Cardmarket once configured) for cards priced below target or grading arbitrage opportunities.",
+  "main": "src/run.js",
+  "scripts": {
+    "check": "node src/run.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
