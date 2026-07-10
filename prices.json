@@ -1,5 +1,200 @@
 {
-  "generatedAt": null,
-  "count": 0,
-  "cards": {}
+  "generatedAt": "2026-07-10T12:58:15.700Z",
+  "count": 18,
+  "cards": {
+    "1": {
+      "raw": 229.42,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "base4-4",
+      "low": 159.94,
+      "avg30": 240.57,
+      "trend": 229.42,
+      "sourceLang": "EN",
+      "ts": 1783688234837
+    },
+    "c08": {
+      "raw": 13.71,
+      "currency": "USD",
+      "source": "tcgplayer",
+      "ptcgioId": "me1-155",
+      "low": 10.99,
+      "high": 135.7,
+      "sourceLang": "EN",
+      "ts": 1783688147250
+    },
+    "c111": {
+      "raw": 3.07,
+      "currency": "USD",
+      "source": "tcgplayer",
+      "ptcgioId": "me1-144",
+      "low": 2,
+      "high": 96.95,
+      "sourceLang": "EN",
+      "ts": 1783688147250
+    },
+    "c15": {
+      "raw": 0.09,
+      "currency": "USD",
+      "source": "tcgplayer",
+      "ptcgioId": "me2-45",
+      "low": 0.01,
+      "high": 19.98,
+      "sourceLang": "EN",
+      "ts": 1783688170697
+    },
+    "o23": {
+      "raw": 20.83,
+      "currency": "USD",
+      "source": "tcgplayer",
+      "ptcgioId": "me2-106",
+      "low": 18.99,
+      "high": 188.88,
+      "sourceLang": "EN",
+      "ts": 1783688170697
+    },
+    "c16": {
+      "raw": 0.33,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv5-51",
+      "low": 0.02,
+      "avg30": 0.26,
+      "trend": 0.33,
+      "sourceLang": "EN",
+      "ts": 1783688176828
+    },
+    "c71": {
+      "raw": 0.67,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv2-130",
+      "low": 0.02,
+      "avg30": 0.59,
+      "trend": 0.67,
+      "sourceLang": "EN",
+      "ts": 1783688186651
+    },
+    "c72": {
+      "raw": 0.87,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv3-22",
+      "low": 0.2,
+      "avg30": 0.83,
+      "trend": 0.87,
+      "sourceLang": "EN",
+      "ts": 1783688192926
+    },
+    "c75": {
+      "raw": 0.04,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv3-23",
+      "low": 0.02,
+      "avg30": 0.05,
+      "trend": 0.04,
+      "sourceLang": "EN",
+      "ts": 1783688192926
+    },
+    "c76": {
+      "raw": 1.22,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv3-210",
+      "low": 0.15,
+      "avg30": 1.47,
+      "trend": 1.22,
+      "sourceLang": "EN",
+      "ts": 1783688192926
+    },
+    "c101": {
+      "raw": 0.08,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv3-183",
+      "low": 0.02,
+      "avg30": 0.06,
+      "trend": 0.08,
+      "sourceLang": "EN",
+      "ts": 1783688192926
+    },
+    "c103": {
+      "raw": 1.95,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv3-214",
+      "low": 0.7,
+      "avg30": 2.06,
+      "trend": 1.95,
+      "sourceLang": "EN",
+      "ts": 1783688192926
+    },
+    "c77": {
+      "raw": 0.03,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv9-139",
+      "low": 0.02,
+      "avg30": 0.03,
+      "trend": 0.03,
+      "sourceLang": "EN",
+      "ts": 1783688198985
+    },
+    "c120": {
+      "raw": 0.03,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv9-145",
+      "low": 0.02,
+      "avg30": 0.05,
+      "trend": 0.03,
+      "sourceLang": "EN",
+      "ts": 1783688198985
+    },
+    "c109": {
+      "raw": 4.57,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "sv1-248",
+      "low": 2.4,
+      "avg30": 4.45,
+      "trend": 4.57,
+      "sourceLang": "EN",
+      "ts": 1783688206082
+    },
+    "c110": {
+      "raw": 0.15,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "pl1-91",
+      "low": 0.02,
+      "avg30": 0.2,
+      "trend": 0.15,
+      "sourceLang": "EN",
+      "ts": 1783688212505
+    },
+    "c121": {
+      "raw": 2.12,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "swsh1-138",
+      "low": 0.5,
+      "avg30": 2.9,
+      "trend": 2.12,
+      "sourceLang": "EN",
+      "ts": 1783688218457
+    },
+    "o24": {
+      "raw": 44.11,
+      "currency": "EUR",
+      "source": "cardmarket",
+      "ptcgioId": "base3-1",
+      "low": 5,
+      "avg30": 23.42,
+      "trend": 44.11,
+      "sourceLang": "EN",
+      "ts": 1783688220422
+    }
+  }
 }
