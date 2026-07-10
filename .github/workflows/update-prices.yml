@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: update-prices
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   prices:

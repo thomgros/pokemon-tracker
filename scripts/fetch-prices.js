@@ -74,7 +74,8 @@ function watchQuery(c) {
 async function apiPrices(query) {
   const url = `${API}?q=${encodeURIComponent(query)}&pageSize=1&select=id,name,cardmarket,tcgplayer`;
   const headers = API_KEY ? { "X-Api-Key": API_KEY } : {};
-  const r = await fetch(url, { headers });
+  const r = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
+  if (r.status === 429) { await sleep(2500); throw new Error("429 rate-limited"); }
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
   const card = d?.data?.[0];

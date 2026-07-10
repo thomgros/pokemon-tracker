@@ -294,6 +294,17 @@ const rawEur = entry => {
   return entry.currency === "USD" ? Math.round(entry.raw * USD_TO_EUR) : Math.round(entry.raw);
 };
 
+// ── Prix d'achat (éditable, défaut « booster ») ───────────────────────────────
+// localStorage pt_purchase_v1 : { [cardId]: number | "booster" }.
+// Résolution: valeur saisie → sinon prix payé connu (owned) → sinon "booster".
+const PURCHASE_KEY = "pt_purchase_v1";
+const resolvePurchase = (store, card) => {
+  if (store && store[card.id] !== undefined) return store[card.id];
+  if (card && card.price > 0) return card.price;
+  return "booster";
+};
+const purchaseLabel = v => (v === "booster" || v == null ? "Booster" : `${v}€`);
+
 const relTime = ts => {
   if (!ts) return "";
   const m = Math.floor((Date.now() - ts) / 60000);
@@ -1022,6 +1033,61 @@ function ImageHelp({ card, imgData, onSetOverride, color }) {
   );
 }
 
+// ── Prix d'achat éditable + bande économique ─────────────────────────────────
+
+function PurchaseEditor({ card, store, onSet }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState("");
+  const cur = resolvePurchase(store, card);
+  const isBooster = cur === "booster" || cur == null;
+  const begin = e => { e && e.stopPropagation(); setV(isBooster ? "" : String(cur)); setEditing(true); };
+  const save = e => { e && e.stopPropagation(); const n = parseFloat(String(v).replace(",", ".")); onSet(card.id, isNaN(n) ? "booster" : Math.round(n * 100) / 100); setEditing(false); };
+  const booster = e => { e && e.stopPropagation(); onSet(card.id, "booster"); setEditing(false); };
+  if (editing) {
+    return (
+      <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
+        <input autoFocus type="text" inputMode="decimal" value={v} onChange={e => setV(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") save(e); if (e.key === "Escape") setEditing(false); }}
+          placeholder="€" style={{ ...css.input, width: 62, padding: "3px 7px", fontSize: 12, textAlign: "center" }} />
+        <button onClick={save} style={{ ...css.btn("primary"), padding: "3px 8px", fontSize: 10 }}>OK</button>
+        <button onClick={booster} title="Marquer comme trouvée en booster" style={{ ...css.btn(), padding: "3px 8px", fontSize: 10 }}>Booster</button>
+      </div>
+    );
+  }
+  return (
+    <button onClick={begin} title="Modifier le prix d'achat" style={{
+      background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit",
+      fontSize: 14, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5,
+      color: isBooster ? T.textSub : T.text,
+    }}>
+      {isBooster ? <span style={{ fontStyle: "italic", fontWeight: 600 }}>Booster</span> : `${cur}€`}
+      <span style={{ fontSize: 10, opacity: 0.45 }}>✎</span>
+    </button>
+  );
+}
+
+// Bande de 2-3 tuiles : Prix d'achat (éditable) · RAW indicatif · Plus-value.
+function EconoStrip({ card, rawEntry, store, onSetPurchase, refValue, color }) {
+  const raw = rawEur(rawEntry);
+  const cur = resolvePurchase(store, card);
+  const paid = typeof cur === "number" ? cur : null;
+  const ref = refValue != null ? refValue : raw;
+  const plus = (paid != null && ref != null) ? Math.round(ref - paid) : null;
+  const tile = (label, node, c, extra) => (
+    <div style={{ background: `${c}10`, border: `1px solid ${c}30`, borderRadius: 10, padding: "8px 6px", textAlign: "center", ...extra }}>
+      <div style={{ fontSize: 8, color: c, opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: c, fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>{node}</div>
+    </div>
+  );
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: plus != null ? "repeat(3,1fr)" : "repeat(2,1fr)", gap: 6, marginTop: 10 }}>
+      {tile("Prix d'achat", <PurchaseEditor card={card} store={store} onSet={onSetPurchase} />, color)}
+      {tile("RAW indicatif", raw != null ? `~${raw}€` : "—", "#60a5fa")}
+      {plus != null && tile("Plus-value", `${plus >= 0 ? "+" : ""}${plus}€`, plus >= 0 ? "#4ade80" : "#f87171")}
+    </div>
+  );
+}
+
 // ── Slot individuel ───────────────────────────────────────────────────────────
 
 function CardSlot({ card, imgData, selected, color, onClick }) {
@@ -1076,6 +1142,9 @@ function BinderView({ cards, color }) {
   const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
   const { images, setOverride } = useCardImages(cards);
+  const prices                  = usePrices();
+  const [purchase, setPurchase] = useLs(PURCHASE_KEY, {});
+  const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
 
   const parseVal = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
   const grouped = {};
@@ -1180,10 +1249,33 @@ function BinderView({ cards, color }) {
         </div>
       </div>
 
-      {/* ImageHelp si image manquante/fallback */}
-      {selected && !selected.img && (
-        <div style={{ marginBottom: 12 }}>
-          <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />
+      {/* Panneau détail carte sélectionnée */}
+      {selected && (
+        <div className="pt-pop" style={{ ...css.card, border: `1px solid ${color}44`, marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {LANG_FLAG[selected.lang]} {selected.fullName}
+            </div>
+            <div style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>{selected.set.split(" · ")[0]}</div>
+          </div>
+          <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP} color={color} />
+          {(() => {
+            const e = prices?.[selected.id];
+            return e ? (
+              <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>
+                RAW {e.source === "cardmarket" ? "CardMarket" : "TCGplayer"} (EN indicatif) · {relTime(e.ts)}
+              </div>
+            ) : prices === null ? (
+              <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Chargement des prix…</div>
+            ) : (
+              <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Prix RAW auto indisponible pour cette carte</div>
+            );
+          })()}
+          {!selected.img && (
+            <div style={{ marginTop: 8 }}>
+              <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />
+            </div>
+          )}
         </div>
       )}
 
@@ -1248,6 +1340,9 @@ function CoursTab({ ownedList }) {
   const [grade, setGrade]       = useState("psa10");
   const [livePrices, setLivePrices] = useLs("pt_cours_live", {});
   const [loadingId, setLoadingId]   = useState(null);
+  const prices                      = usePrices();
+  const [purchase, setPurchase]     = useLs(PURCHASE_KEY, {});
+  const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
 
   const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded" || c.status === "transit");
   const langCards    = gradingCards.filter(c => c.lang === lang);
@@ -1461,6 +1556,16 @@ function CoursTab({ ownedList }) {
         <div style={{ ...css.card, border:`1px solid ${curColor}55`, marginBottom:8 }}>
 
           {!meta?.img && <ImageHelp card={selected} imgData={imgCache[selected.id]} onSetOverride={setOverride} color={curColor} />}
+
+          {/* Prix d'achat + RAW + plus-value */}
+          <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP}
+            refValue={histData ? histData[histData.length - 1][(meta?.grade || "").includes("10") ? "psa10" : "psa9"] : null}
+            color={curColor} />
+          {prices?.[selected.id] && (
+            <div style={{ fontSize:9.5, color:T.textMuted, marginTop:7, textAlign:"center" }}>
+              RAW {prices[selected.id].source === "cardmarket" ? "CardMarket" : "TCGplayer"} (EN indicatif) · {relTime(prices[selected.id].ts)}
+            </div>
+          )}
 
           {histData ? (
             <>
