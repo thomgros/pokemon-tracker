@@ -6,17 +6,40 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>Poké Tracker</title>
+<title>PokéTracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.10/babel.min.js" crossorigin="anonymous"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: linear-gradient(160deg, #050b18 0%, #0c1c38 35%, #15305c 65%, #0a1830 100%); }
-  ::-webkit-scrollbar { width: 3px; height: 3px; }
-  ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #060912;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-thumb { background: rgba(124,108,252,0.35); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(124,108,252,0.6); }
   input[type=number]::-webkit-inner-spin-button { opacity: 0.4; }
-  select option { background: #12121a; }
+  select option { background: #10131f; }
+  input::placeholder { color: #4b4f66; }
+  button { -webkit-tap-highlight-color: transparent; }
+  @keyframes ptFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ptFade   { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ptPop    { 0% { opacity: 0; transform: scale(0.94); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes ptSheen  { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  @keyframes ptPulse  { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+  .pt-fade-up { animation: ptFadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+  .pt-pop { animation: ptPop 0.22s cubic-bezier(0.22,1,0.36,1) both; }
+  .pt-skel { background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.03) 75%); background-size: 200% 100%; animation: ptSheen 1.4s ease-in-out infinite; }
+  .pt-lift { transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s, border-color 0.18s, background 0.18s; }
+  .pt-lift:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body>
@@ -32,17 +55,25 @@ const USD_TO_EUR = 0.92;
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 const T = {
-  bg: "#0a0a0f",
-  bgGradient: "linear-gradient(160deg, #050b18 0%, #0c1c38 35%, #15305c 65%, #0a1830 100%)",
-  surface: "#12121a",
-  surfaceHover: "#1a1a26",
-  border: "rgba(255,255,255,0.07)",
-  borderMid: "rgba(255,255,255,0.12)",
-  text: "#e8e8f0",
-  textSub: "#8888a8",
-  textMuted: "#555570",
-  accent: "#7c6cfc",
-  accentGlow: "rgba(124,108,252,0.25)",
+  bg: "#060912",
+  bgGradient: "radial-gradient(1200px 600px at 20% -10%, #1a2c55 0%, rgba(10,20,45,0) 55%), radial-gradient(1000px 700px at 100% 0%, #241a52 0%, rgba(10,16,40,0) 50%), linear-gradient(165deg, #070b16 0%, #0a1122 40%, #0b1428 70%, #070a15 100%)",
+  surface: "rgba(20,23,38,0.72)",
+  surfaceSolid: "#12141f",
+  surfaceHover: "rgba(30,34,54,0.85)",
+  glass: "rgba(255,255,255,0.045)",
+  glassBorder: "rgba(255,255,255,0.09)",
+  border: "rgba(255,255,255,0.08)",
+  borderMid: "rgba(255,255,255,0.14)",
+  text: "#eef0f8",
+  textSub: "#9aa0c0",
+  textMuted: "#5b6080",
+  accent: "#8b7cff",
+  accent2: "#38dcf0",
+  accentGrad: "linear-gradient(120deg, #8b7cff 0%, #b06bff 45%, #38dcf0 100%)",
+  accentGlow: "rgba(139,124,255,0.28)",
+  green: "#4ade80",
+  amber: "#fb923c",
+  red: "#f87171",
 };
 
 const css = {
@@ -53,11 +84,20 @@ const css = {
   }),
   card: {
     background: T.surface,
-    border: `1px solid ${T.border}`,
-    borderRadius: 12,
+    border: `1px solid ${T.glassBorder}`,
+    borderRadius: 14,
     padding: "12px 14px",
-    marginBottom: 6,
-    transition: "border-color 0.15s, background 0.15s",
+    marginBottom: 7,
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
+    transition: "border-color 0.18s, background 0.18s, transform 0.18s",
+  },
+  glass: {
+    background: T.glass,
+    border: `1px solid ${T.glassBorder}`,
+    borderRadius: 16,
+    backdropFilter: "blur(16px) saturate(1.2)",
+    WebkitBackdropFilter: "blur(16px) saturate(1.2)",
   },
   input: {
     padding: "7px 11px",
@@ -1662,40 +1702,90 @@ function RessourcesTab() {
 
 function AccueilTab({ statItems, gradingCount, onOpen }) {
   const tiles = [
-    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs FR / JP / EN" },
-    { id: "statut",     label: "Statut collection",    icon: "🗂️", desc: "Investi, transit, grading…" },
-    { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix" },
-    { id: "watch",      label: "À surveiller",          icon: "⭐", desc: "Liste de chasse & prix live eBay" },
-    { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading" },
-    { id: "calendrier", label: "Calendrier sorties",    icon: "📅", desc: "Prochains sets & ETB" },
+    { id: "chasse",     label: "Ma collection",        icon: "📦", desc: "Classeurs FR / JP / EN",        color: "#60a5fa" },
+    { id: "statut",     label: "Statut collection",    icon: "🗂️", desc: "Investi, transit, grading…",     color: "#a855f7" },
+    { id: "cours",      label: "Cartes gradées",        icon: "📈", desc: "Suivi PSA + historique prix",    color: "#4ade80" },
+    { id: "watch",      label: "À surveiller",          icon: "⭐", desc: "Liste de chasse & prix live",     color: "#fb923c" },
+    { id: "ressources", label: "Outils & ressources",   icon: "🛠️", desc: "Boutiques, alertes, grading",     color: "#38dcf0" },
+    { id: "calendrier", label: "Calendrier sorties",    icon: "📅", desc: "Prochains sets & ETB",           color: "#f472b6" },
   ];
   return (
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
         {statItems.map((st, i) => (
-          <div key={i} style={{ background: st.bg, border: `1px solid ${st.border}`, borderRadius: 10, padding: "10px", textAlign: "center" }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{st.val}</div>
-            <div style={{ fontSize: 10, color: st.color, opacity: 0.7, marginTop: 4, letterSpacing: "0.04em", textTransform: "uppercase" }}>{st.label}</div>
+          <div key={i} className="pt-fade-up" style={{
+            position: "relative", overflow: "hidden",
+            background: st.bg, border: `1px solid ${st.border}`, borderRadius: 14, padding: "12px 8px", textAlign: "center",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            animationDelay: `${i * 45}ms`,
+          }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: st.color, opacity: 0.55 }} />
+            <div style={{ fontSize: 21, fontWeight: 700, color: st.color, fontVariantNumeric: "tabular-nums", lineHeight: 1, fontFamily: "'Sora','DM Sans',sans-serif" }}>{st.val}</div>
+            <div style={{ fontSize: 9, color: st.color, opacity: 0.75, marginTop: 5, letterSpacing: "0.05em", textTransform: "uppercase", fontWeight: 600 }}>{st.label}</div>
           </div>
         ))}
       </div>
 
       {gradingCount > 0 && (
-        <div style={{ background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0 }}>⚡ Urgent</span>
+        <div className="pt-fade-up" style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.28)", borderRadius: 14, padding: "11px 14px", marginBottom: 16, fontSize: 12, display: "flex", alignItems: "center", gap: 9, backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+          <span style={{ color: "#f87171", fontWeight: 700, flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 4 }}>⚡ Urgent</span>
           <span style={{ color: "#fca5a5" }}>{gradingCount} carte{gradingCount > 1 ? "s" : ""} en grading PSA chez PokéLoutre</span>
         </div>
       )}
 
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Accès rapide</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-        {tiles.map(t => (
-          <div key={t.id} onClick={() => onOpen(t.id)} style={{ ...css.card, cursor: "pointer", display: "flex", flexDirection: "column", gap: 4, marginBottom: 0 }}>
-            <span style={{ fontSize: 22 }}>{t.icon}</span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{t.label}</span>
-            <span style={{ fontSize: 10, color: T.textMuted }}>{t.desc}</span>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>Accès rapide</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 18 }}>
+        {tiles.map((t, i) => (
+          <div key={t.id} onClick={() => onOpen(t.id)} className="pt-lift pt-fade-up" style={{
+            ...css.glass, cursor: "pointer", padding: "14px", display: "flex", flexDirection: "column", gap: 6, marginBottom: 0,
+            position: "relative", overflow: "hidden", animationDelay: `${i * 45}ms`,
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = t.color + "66"; e.currentTarget.style.boxShadow = `0 10px 30px rgba(0,0,0,0.4), 0 0 0 1px ${t.color}22`; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.glassBorder; e.currentTarget.style.boxShadow = "none"; }}
+          >
+            <div style={{
+              width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 21,
+              background: `linear-gradient(135deg, ${t.color}22, ${t.color}0a)`, border: `1px solid ${t.color}33`,
+            }}>{t.icon}</div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: T.text, marginTop: 2 }}>{t.label}</span>
+            <span style={{ fontSize: 10.5, color: T.textMuted, lineHeight: 1.35 }}>{t.desc}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Logo ────────────────────────────────────────────────────────────────────────
+
+function LogoMark({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={{ display: "block", flexShrink: 0, filter: "drop-shadow(0 4px 14px rgba(139,124,255,0.35))" }}>
+      <defs>
+        <linearGradient id="ptGrad" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#8b7cff" />
+          <stop offset="0.5" stopColor="#b06bff" />
+          <stop offset="1" stopColor="#38dcf0" />
+        </linearGradient>
+      </defs>
+      <rect x="1.4" y="1.4" width="37.2" height="37.2" rx="11.5" fill="#0b0f1e" stroke="url(#ptGrad)" strokeWidth="1.7" />
+      <circle cx="20" cy="20" r="11.3" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+      <path d="M8 23.5 L14.5 18.5 L19.5 21.5 L27 12.5" stroke="url(#ptGrad)" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="20" cy="20" r="3.5" fill="#0b0f1e" stroke="url(#ptGrad)" strokeWidth="2" />
+      <circle cx="27" cy="12.5" r="1.9" fill="#38dcf0" />
+    </svg>
+  );
+}
+
+function Logo({ size = 40, sub }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+      <LogoMark size={size} />
+      <div style={{ lineHeight: 1 }}>
+        <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", fontSize: size * 0.52, fontWeight: 800, letterSpacing: "-0.02em", color: T.text }}>
+          Poké<span style={{ background: T.accentGrad, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent" }}>Tracker</span>
+        </div>
+        {sub && <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 3, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600 }}>{sub}</div>}
       </div>
     </div>
   );
@@ -1742,30 +1832,37 @@ function PokeTracker() {
     <div style={{ padding: "20px 16px", maxWidth: 700, margin: "0 auto", fontFamily: "'DM Sans', 'Inter', sans-serif", background: T.bgGradient, backgroundAttachment: "fixed", minHeight: "100vh", color: T.text }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 20, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-        <div>
+      <div style={{
+        marginBottom: 22, padding: "12px 14px", borderRadius: 18,
+        ...css.glass,
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+        position: "sticky", top: 8, zIndex: 30,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
+      }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
           {sub
-            ? <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <button onClick={() => setSub(null)} style={{ fontSize: 16, color: T.text, background: "none", border: "none", cursor: "pointer", padding: "2px 4px" }}>←</button>
-                <div style={{ fontSize: 20, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>{SUB_TITLES[sub]}</div>
+            ? <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                <button onClick={() => setSub(null)} style={{
+                  fontSize: 16, color: T.text, background: T.glass, border: `1px solid ${T.glassBorder}`,
+                  borderRadius: 10, width: 34, height: 34, cursor: "pointer", flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>←</button>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Sora','DM Sans',sans-serif", fontSize: 18, fontWeight: 700, color: T.text, letterSpacing: "-0.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{SUB_TITLES[sub]}</div>
+                  <div style={{ fontSize: 9.5, color: T.textMuted, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, marginTop: 2 }}>PokéTracker</div>
+                </div>
               </div>
-            : <>
-                <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: "-0.02em" }}>Poké Tracker</div>
-                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>Prix live eBay · ventes finalisées NM</div>
-              </>
+            : <Logo size={40} sub="Suivi collection & prix" />
           }
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => { localStorage.removeItem('pt_img_cache_v2'); window.location.reload(); }}
-            title="Vider le cache des illustrations (les images que tu as fournies sont conservées) et recharger"
-            style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
-            ↺ Images
-          </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+          <button onClick={() => { try { localStorage.removeItem('pt_img_cache_v7'); } catch {} window.location.reload(); }}
+            title="Recharger les illustrations (les images fournies sont conservées)"
+            style={{ fontSize: 14, color: T.textSub, background: T.glass, border: `1px solid ${T.glassBorder}`, borderRadius: 10, width: 34, height: 34, cursor: "pointer", fontFamily: "inherit" }}>↺</button>
           <button onClick={() => { if (window.confirm("Réinitialiser toutes les données aux valeurs par défaut ?")) { resetWatch(); resetOwned(); try { localStorage.removeItem("pt_cours_live"); } catch {} } }}
-            style={{ fontSize: 10, color: T.textMuted, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>
-            ↺ Reset
-          </button>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 8px #4ade80" }} />
+            title="Réinitialiser les données"
+            style={{ fontSize: 12, color: T.textMuted, background: T.glass, border: `1px solid ${T.glassBorder}`, borderRadius: 10, width: 34, height: 34, cursor: "pointer", fontFamily: "inherit" }}>⟲</button>
+          <div title="Données live" style={{ width: 9, height: 9, borderRadius: "50%", background: T.green, boxShadow: `0 0 10px ${T.green}`, animation: "ptPulse 2.4s ease-in-out infinite" }} />
         </div>
       </div>
 
@@ -1869,8 +1966,11 @@ function PokeTracker() {
         </div>
       )}
 
-      <div style={{ marginTop: 24, paddingTop: 12, borderTop: `1px solid ${T.border}`, fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em" }}>
-        eBay Finding API · TCGdex · ventes USD · données sauvegardées localement
+      <div style={{ marginTop: 28, paddingTop: 14, borderTop: `1px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+        <div style={{ opacity: 0.5 }}><LogoMark size={26} /></div>
+        <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center", letterSpacing: "0.04em" }}>
+          PokéTracker · TCGdex · pokemontcg.io · données sauvegardées localement
+        </div>
       </div>
     </div>
   );
