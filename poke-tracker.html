@@ -870,9 +870,24 @@ const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR
 // est ré-interrogée — sans ça une correction de données resterait masquée par l'ancien cache.
 const sig = c => `${c.lang}|${c.tcgdex || ""}|${c.ptcgioQ || ""}`;
 
+// images.json = illustrations en langue native résolues et VÉRIFIÉES côté serveur
+// (Action GitHub). Chargé une seule fois, partagé entre toutes les vues. Utilisé en
+// priorité sur la cascade live → images natives instantanées et fiables. Si absent : cascade.
+let SERVER_IMAGES_CACHE = null;
+
 function useCardImages(cards) {
   const CACHE_KEY = "pt_img_cache_v7";
   const OVR_KEY   = "pt_img_overrides";
+  const [serverImages, setServerImages] = useState(SERVER_IMAGES_CACHE);
+  useEffect(() => {
+    if (SERVER_IMAGES_CACHE) { if (!serverImages) setServerImages(SERVER_IMAGES_CACHE); return; }
+    let alive = true;
+    fetch("./images.json", { cache: "no-store" })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { SERVER_IMAGES_CACHE = (d && d.cards) ? d.cards : {}; if (alive) setServerImages(SERVER_IMAGES_CACHE); })
+      .catch(() => { SERVER_IMAGES_CACHE = {}; if (alive) setServerImages({}); });
+    return () => { alive = false; };
+  }, []);
   const [cache, setCache] = useState(() => {
     try { return JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { return {}; }
   });
@@ -899,7 +914,8 @@ function useCardImages(cards) {
   };
 
   useEffect(() => {
-    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && isStale(cache[c.id], c));
+    if (serverImages === null) return; // attendre images.json avant de lancer la cascade
+    const toFetch = cards.filter(c => !c.img && !overrides[c.id] && !serverImages[c.id] && isStale(cache[c.id], c));
     if (!toFetch.length) return;
     let alive = true;
     const save = (id, signature, data) => setCache(p => {
@@ -1015,12 +1031,14 @@ function useCardImages(cards) {
       }
     })();
     return () => { alive = false; };
-  }, [cards.map(c => c.id).join(",")]);
+  }, [cards.map(c => c.id).join(","), serverImages === null]);
 
   const images = {};
   for (const c of cards) {
     if (overrides[c.id]) { images[c.id] = { url: overrides[c.id], override: true }; continue; }
     if (c.img) { images[c.id] = { url: c.img }; continue; }
+    const srv = serverImages && serverImages[c.id];
+    if (srv && srv.url) { images[c.id] = { url: srv.url, fallbackEn: c.lang !== "EN" && srv.lang === "en" }; continue; }
     images[c.id] = (cache[c.id] && cache[c.id].sig === sig(c)) ? cache[c.id].data : undefined; // undefined = en cours de chargement (ou cache obsolète)
   }
   return { images, setOverride };
