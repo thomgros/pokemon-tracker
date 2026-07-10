@@ -1012,23 +1012,40 @@ function useCardImages(cards) {
 // seul un repli EN a été trouvé pour une carte FR/JP — conformément à la consigne :
 // langue native d'abord, sinon demander une image à l'utilisateur, sinon EN en dernier recours.
 
-function ImageHelp({ card, imgData, onSetOverride, color }) {
+function ImageHelp({ card, imgData, onSetOverride, color, force }) {
   const [url, setUrl] = useState("");
   const missing = imgData === null;
   const isEnFallback = imgData?.fallbackEn;
-  if (!missing && !isEnFallback) return null;
+  // Toujours disponible en mode `force` (bouton « Changer l'illustration ») ;
+  // sinon affiché seulement si image manquante ou repli EN sur une carte FR/JP.
+  if (!force && !missing && !isEnFallback) return null;
+  const onFile = e => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { onSetOverride(card.id, rd.result); setUrl(""); };
+    rd.readAsDataURL(f);
+  };
+  const tone = missing ? "#f87171" : isEnFallback ? "#facc15" : (color || T.accent);
+  const title = missing ? "📷 Image introuvable automatiquement"
+    : isEnFallback ? `🇬🇧 Illustration EN affichée — ${card.lang} native introuvable`
+    : "🖼️ Changer l'illustration";
   return (
-    <div style={{ marginTop: 8, padding: "8px 10px", background: missing ? "rgba(248,113,113,0.06)" : "rgba(250,204,21,0.06)", border: `1px solid ${missing ? "rgba(248,113,113,0.25)" : "rgba(250,204,21,0.25)"}`, borderRadius: 8 }}>
-      <div style={{ fontSize: 11, color: missing ? "#f87171" : "#facc15", fontWeight: 600, marginBottom: 6 }}>
-        {missing ? "📷 Image introuvable automatiquement" : `🇬🇧 Illustration EN affichée (${card.lang} introuvable)`}
+    <div style={{ marginTop: 8, padding: "9px 11px", background: `${tone}12`, border: `1px solid ${tone}3d`, borderRadius: 10 }} onClick={e => e.stopPropagation()}>
+      <div style={{ fontSize: 11, color: tone, fontWeight: 700, marginBottom: 5 }}>{title}</div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 7 }}>
+        {card.lang !== "EN"
+          ? `Colle une URL de l'illustration ${LANG_FLAG[card.lang]} ${card.lang}, ou importe un fichier.`
+          : "Colle une URL d'image, ou importe un fichier."}
       </div>
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>
-        Tu as une image {card.lang !== "EN" ? card.lang : ""} ? Colle l'URL ci-dessous pour l'intégrer.
+      <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+        <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://…" style={{ ...css.input, fontSize: 11, padding: "6px 9px" }} />
+        <button onClick={e => { e.stopPropagation(); if (url.trim()) { onSetOverride(card.id, url.trim()); setUrl(""); } }} style={{ ...css.btn("primary"), padding: "6px 12px", fontSize: 11 }}>OK</button>
       </div>
-      <div style={{ display: "flex", gap: 6 }}>
-        <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://…" style={{ ...css.input, fontSize: 11, padding: "5px 8px" }} onClick={e => e.stopPropagation()} />
-        <button onClick={e => { e.stopPropagation(); if (url.trim()) { onSetOverride(card.id, url.trim()); setUrl(""); } }} style={{ ...css.btn("primary"), padding: "5px 10px", fontSize: 11 }}>OK</button>
-      </div>
+      <label style={{ ...css.btn(), padding: "6px 10px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+        📁 Importer un fichier
+        <input type="file" accept="image/*" onChange={onFile} style={{ display: "none" }} />
+      </label>
     </div>
   );
 }
@@ -1141,10 +1158,12 @@ function CardSlot({ card, imgData, selected, color, onClick }) {
 function BinderView({ cards, color }) {
   const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
+  const [imgEdit, setImgEdit]   = useState(false);
   const { images, setOverride } = useCardImages(cards);
   const prices                  = usePrices();
   const [purchase, setPurchase] = useLs(PURCHASE_KEY, {});
   const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
+  useEffect(() => { setImgEdit(false); }, [selected && selected.id]);
 
   const parseVal = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
   const grouped = {};
@@ -1201,7 +1220,9 @@ function BinderView({ cards, color }) {
         }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(3, 1fr)", gap: 7 }}>
             {pageCards.map((card, i) => {
-              const imgData = card ? (card.img ? { url: card.img } : images[card.id]) : undefined;
+              // images[card.id] applique override > card.img > cascade (override gagne toujours,
+              // même sur une image codée en dur — permet de corriger une mauvaise langue).
+              const imgData = card ? (images[card.id] ?? (card.img ? { url: card.img } : undefined)) : undefined;
               return (
                 <CardSlot key={i}
                   card={card} imgData={imgData}
@@ -1214,7 +1235,7 @@ function BinderView({ cards, color }) {
 
           {/* Overlay carte agrandie */}
           {selected && (() => {
-            const imgUrl = selected.img || images[selected.id]?.url;
+            const imgUrl = images[selected.id]?.url || selected.img;
             return (
               <div onClick={() => setSelected(null)} style={{
                 position: "absolute", inset: 0,
@@ -1271,11 +1292,12 @@ function BinderView({ cards, color }) {
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Prix RAW auto indisponible pour cette carte</div>
             );
           })()}
-          {!selected.img && (
-            <div style={{ marginTop: 8 }}>
-              <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} />
-            </div>
-          )}
+          <div style={{ marginTop: 9, display: "flex", justifyContent: "flex-end" }}>
+            <button onClick={() => setImgEdit(v => !v)} style={{ ...css.btn(), padding: "4px 10px", fontSize: 10 }}>
+              🖼️ {imgEdit ? "Fermer" : "Changer l'illustration"}
+            </button>
+          </div>
+          <ImageHelp card={selected} imgData={images[selected.id]} onSetOverride={setOverride} color={color} force={imgEdit} />
         </div>
       )}
 
@@ -1343,6 +1365,8 @@ function CoursTab({ ownedList }) {
   const prices                      = usePrices();
   const [purchase, setPurchase]     = useLs(PURCHASE_KEY, {});
   const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
+  const [imgEdit, setImgEdit]       = useState(false);
+  useEffect(() => { setImgEdit(false); }, [selected && selected.id]);
 
   const gradingCards = ownedList.filter(c => c.status === "grading" || c.status === "à grader" || c.status === "graded" || c.status === "transit");
   const langCards    = gradingCards.filter(c => c.lang === lang);
@@ -1555,7 +1579,12 @@ function CoursTab({ ownedList }) {
       {selected && (
         <div style={{ ...css.card, border:`1px solid ${curColor}55`, marginBottom:8 }}>
 
-          {!meta?.img && <ImageHelp card={selected} imgData={imgCache[selected.id]} onSetOverride={setOverride} color={curColor} />}
+          <ImageHelp card={selected} imgData={imgCache[selected.id]} onSetOverride={setOverride} color={curColor} force={imgEdit} />
+          <div style={{ marginTop: 8, display: "flex", justifyContent: "flex-end" }}>
+            <button onClick={() => setImgEdit(v => !v)} style={{ ...css.btn(), padding: "4px 10px", fontSize: 10 }}>
+              🖼️ {imgEdit ? "Fermer" : "Changer l'illustration"}
+            </button>
+          </div>
 
           {/* Prix d'achat + RAW + plus-value */}
           <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP}
