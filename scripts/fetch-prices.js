@@ -71,35 +71,65 @@ function watchQuery(c) {
   return num ? `name:"${nm}" number:${num}` : `name:"${nm}"`;
 }
 
-async function apiPrices(query) {
-  const url = `${API}?q=${encodeURIComponent(query)}&pageSize=1&select=id,name,cardmarket,tcgplayer`;
-  const headers = API_KEY ? { "X-Api-Key": API_KEY } : {};
-  const r = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
-  if (r.status === 429) { await sleep(2500); throw new Error("429 rate-limited"); }
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const d = await r.json();
-  const card = d?.data?.[0];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Extraction du prix RAW depuis un objet carte pokemontcg.io.
+function extractPrice(card) {
   if (!card) return null;
-  const cm = card.cardmarket?.prices || null;
-  const tp = card.tcgplayer?.prices || null;
-  let raw = null, currency = null, source = null, extra = {};
+  const cm = card.cardmarket && card.cardmarket.prices;
+  const tp = card.tcgplayer && card.tcgplayer.prices;
   if (cm && (cm.trendPrice || cm.averageSellPrice || cm.avg30)) {
-    raw = cm.trendPrice ?? cm.averageSellPrice ?? cm.avg30;
-    currency = "EUR"; source = "cardmarket";
-    extra = { low: cm.lowPrice ?? null, avg30: cm.avg30 ?? null, trend: cm.trendPrice ?? null };
-  } else if (tp) {
-    const variant = tp.holofoil || tp.reverseHolofoil || tp.normal || Object.values(tp)[0];
-    if (variant?.market || variant?.mid) {
-      raw = variant.market ?? variant.mid;
-      currency = "USD"; source = "tcgplayer";
-      extra = { low: variant.low ?? null, high: variant.high ?? null };
+    const raw = cm.trendPrice ?? cm.averageSellPrice ?? cm.avg30;
+    return { raw: Math.round(raw * 100) / 100, currency: "EUR", source: "cardmarket", ptcgioId: card.id,
+             low: cm.lowPrice ?? null, avg30: cm.avg30 ?? null, trend: cm.trendPrice ?? null };
+  }
+  if (tp) {
+    const v = tp.holofoil || tp.reverseHolofoil || tp.normal || Object.values(tp)[0];
+    if (v && (v.market || v.mid)) {
+      const raw = v.market ?? v.mid;
+      return { raw: Math.round(raw * 100) / 100, currency: "USD", source: "tcgplayer", ptcgioId: card.id,
+               low: v.low ?? null, high: v.high ?? null };
     }
   }
-  if (raw == null) return null;
-  return { raw: Math.round(raw * 100) / 100, currency, source, ptcgioId: card.id, ...extra };
+  return null;
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+// fetch JSON avec timeout + retries (504/429/timeout fréquents sur pokemontcg.io).
+async function fetchJson(url, tries = 3) {
+  const headers = API_KEY ? { "X-Api-Key": API_KEY } : {};
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(url, { headers, signal: AbortSignal.timeout(20000) });
+      if (r.status === 429 || r.status === 502 || r.status === 503 || r.status === 504) {
+        lastErr = new Error(`HTTP ${r.status}`); await sleep(2000 * (i + 1)); continue;
+      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.json();
+    } catch (e) { lastErr = e; await sleep(1500 * (i + 1)); }
+  }
+  throw lastErr;
+}
+
+// Toutes les cartes d'un set (pageSize 250) → 1 requête au lieu de N.
+async function fetchSet(setId) {
+  const url = `${API}?q=${encodeURIComponent("set.id:" + setId)}&pageSize=250&select=id,name,number,cardmarket,tcgplayer`;
+  const d = await fetchJson(url);
+  return (d && d.data) || [];
+}
+
+async function fetchOne(query) {
+  const url = `${API}?q=${encodeURIComponent(query)}&pageSize=1&select=id,name,number,cardmarket,tcgplayer`;
+  const d = await fetchJson(url);
+  return d && d.data && d.data[0] ? d.data[0] : null;
+}
+
+const parseQ = q => ({
+  setId:  (q.match(/set\.id:([^\s]+)/) || [])[1] || null,
+  number: (q.match(/number:([^\s]+)/) || [])[1] || null,
+  name:   (q.match(/name:"([^"]+)"/) || [])[1] || null,
+});
+const normNum = n => String(n == null ? "" : n).replace(/^0+/, "").toLowerCase();
 
 async function main() {
   const html = fs.readFileSync(HTML, "utf8");
@@ -108,43 +138,63 @@ async function main() {
   const META = evalLiteral(html, "GRADING_META");
   const WATCH = evalLiteral(html, "DEFAULT_WATCH");
 
-  // Liste unifiée { id, query, lang }
   const jobs = [];
-  for (const c of CLASSEUR) if (c.ptcgioQ) jobs.push({ id: c.id, query: c.ptcgioQ, lang: c.lang, name: c.name });
-  for (const c of OWNED) {
-    const q = META[c.id]?.ptcgioQ;
-    if (q) jobs.push({ id: c.id, query: q, lang: c.lang, name: c.name });
-  }
-  for (const c of WATCH) {
-    const q = watchQuery(c);
-    if (q) jobs.push({ id: String(c.id), query: q, lang: c.lang, name: c.name });
-  }
+  for (const c of CLASSEUR) if (c.ptcgioQ) jobs.push({ id: c.id, q: c.ptcgioQ, lang: c.lang, name: c.name, p: parseQ(c.ptcgioQ) });
+  for (const c of OWNED) { const q = META[c.id] && META[c.id].ptcgioQ; if (q) jobs.push({ id: c.id, q, lang: c.lang, name: c.name, p: parseQ(q) }); }
+  for (const c of WATCH) { const q = watchQuery(c); if (q) jobs.push({ id: String(c.id), q, lang: c.lang, name: c.name, p: parseQ(q) }); }
 
-  console.log(`${jobs.length} cartes à interroger… (CLASSEUR ${CLASSEUR.length}, OWNED ${OWNED.length}, WATCH ${WATCH.length})`);
+  console.log(`${jobs.length} cartes (CLASSEUR ${CLASSEUR.length}, OWNED ${OWNED.length}, WATCH ${WATCH.length})`);
   if (process.argv.includes("--dry")) {
-    console.log("Mode --dry : pas d'appel API. Échantillon des requêtes :");
-    jobs.slice(0, 8).forEach(j => console.log(`  ${j.id} [${j.lang}] → ${j.query}`));
-    const noQ = CLASSEUR.filter(c => !c.ptcgioQ).map(c => c.id);
-    if (noQ.length) console.log(`  (classeur sans ptcgioQ: ${noQ.join(", ")})`);
+    const bySet = {}; jobs.forEach(j => { const k = (j.p.setId && j.p.number) ? j.p.setId : "(nom)"; bySet[k] = (bySet[k] || 0) + 1; });
+    console.log("Regroupement par set :", JSON.stringify(bySet));
     return;
   }
+
+  // 1) Regrouper par set.id (avec number) → 1 requête / set
+  const bySet = {};
+  const leftovers = [];
+  for (const j of jobs) {
+    if (j.p.setId && j.p.number) (bySet[j.p.setId] = bySet[j.p.setId] || []).push(j);
+    else leftovers.push(j);
+  }
+
   const out = {};
   let ok = 0, miss = 0, err = 0;
-  for (const j of jobs) {
+  const setIds = Object.keys(bySet);
+  console.log(`${setIds.length} sets à interroger + ${leftovers.length} requêtes par nom`);
+
+  for (const setId of setIds) {
     try {
-      const p = await apiPrices(j.query);
-      if (p) { out[j.id] = { ...p, sourceLang: "EN", ts: Date.now() }; ok++; }
-      else { miss++; }
+      const cards = await fetchSet(setId);
+      const byNum = {};
+      for (const c of cards) byNum[normNum(c.number)] = c;
+      for (const j of bySet[setId]) {
+        const card = byNum[normNum(j.p.number)];
+        const price = extractPrice(card);
+        if (price) { out[j.id] = { ...price, sourceLang: "EN", ts: Date.now() }; ok++; }
+        else miss++;
+      }
+      if (!cards.length) console.warn(`  · set ${setId}: 0 carte (set inconnu de pokemontcg.io ?)`);
     } catch (e) {
-      err++;
-      console.warn(`  ✗ ${j.id} (${j.name}): ${e.message}`);
+      err += bySet[setId].length;
+      console.warn(`  ✗ set ${setId}: ${e.message}`);
     }
-    await sleep(120);
+    await sleep(150);
+  }
+
+  // 2) Requêtes par nom (watch, ou cartes sans numéro)
+  for (const j of leftovers) {
+    try {
+      const price = extractPrice(await fetchOne(j.q));
+      if (price) { out[j.id] = { ...price, sourceLang: "EN", ts: Date.now() }; ok++; }
+      else miss++;
+    } catch (e) { err++; console.warn(`  ✗ ${j.id} (${j.name}): ${e.message}`); }
+    await sleep(150);
   }
 
   const payload = { generatedAt: new Date().toISOString(), count: ok, cards: out };
   fs.writeFileSync(OUT, JSON.stringify(payload, null, 2) + "\n");
-  console.log(`✅ prices.json écrit — ${ok} prix, ${miss} sans prix, ${err} erreurs`);
+  console.log(`✅ prices.json — ${ok} prix, ${miss} sans prix, ${err} erreurs`);
 }
 
 main().catch(e => { console.error("FATAL:", e); process.exit(1); });
