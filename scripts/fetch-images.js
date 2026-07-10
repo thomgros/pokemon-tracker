@@ -141,8 +141,11 @@ async function main() {
     const p = prev[card.id];
     if (p && p.lang === (LANG_API[card.lang] || "en") && p.lang !== "en") { out[card.id] = p; if (p.lang === "fr") fr++; else if (p.lang === "ja") ja++; continue; }
     const r = await resolve(card);
-    if (r) { out[card.id] = r; if (r.lang === "fr") fr++; else if (r.lang === "ja") ja++; else en++; }
-    else { miss++; }
+    // On n'écrit QUE du natif (FR/JP) — jamais un repli EN pour une carte FR/JP :
+    // sinon on court-circuiterait la cascade live qui peut trouver le natif ailleurs.
+    if (r && (r.lang !== "en" || card.lang === "EN")) {
+      out[card.id] = r; if (r.lang === "fr") fr++; else if (r.lang === "ja") ja++; else en++;
+    } else { miss++; }
     await sleep(60);
   }
 
