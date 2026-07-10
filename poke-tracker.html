@@ -1197,13 +1197,22 @@ function BinderView({ cards, color }) {
   const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
   const [imgEdit, setImgEdit]   = useState(false);
+  const [valInput, setValInput] = useState("");
   const { images, setOverride } = useCardImages(cards);
   const prices                  = usePrices();
   const [purchase, setPurchase] = useLs(PURCHASE_KEY, {});
   const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
+  const [valHist, setValHist]   = useLs("pt_valhist_v1", {});
+  const addValPoint = (id, v) => setValHist(h => {
+    const day = new Date().toISOString().slice(0, 10);
+    const list = (h[id] || []).filter(p => p.t !== day);
+    return { ...h, [id]: [...list, { t: day, v }].sort((a, b) => a.t.localeCompare(b.t)).slice(-40) };
+  });
+  const delValHist = id => setValHist(h => { const n = { ...h }; delete n[id]; return n; });
   const detailRef = React.useRef(null);
   useEffect(() => {
     setImgEdit(false);
+    setValInput("");
     if (selected && detailRef.current) {
       const t = setTimeout(() => { try { detailRef.current.scrollIntoView({ behavior: "smooth", block: "center" }); } catch {} }, 60);
       return () => clearTimeout(t);
@@ -1353,21 +1362,42 @@ function BinderView({ cards, color }) {
             );
           })()}
 
-          {/* Courbe d'évolution RAW */}
+          {/* Courbe d'évolution : valeur saisie à la main (prioritaire) sinon RAW auto */}
           {(() => {
-            const cd = rawChartData(prices?.[selected.id]);
+            const manual = (valHist[selected.id] || []).map(p => ({ date: p.t.slice(5), raw: p.v }));
+            const est = parseVal(selected.value);
+            let cd = null, kind = "RAW", col = "#60a5fa";
+            if (manual.length >= 2) { cd = manual; kind = "valeur"; col = "#a855f7"; }
+            else if (manual.length === 1 && est) { cd = [{ date: "estim.", raw: est }, ...manual]; kind = "valeur"; col = "#a855f7"; }
+            else { cd = rawChartData(prices?.[selected.id]); }
             if (!cd) return null;
             const diff = cd[cd.length - 1].raw - cd[0].raw;
             return (
               <div style={{ marginTop: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-                  <span style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Évolution RAW</span>
+                  <span style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Évolution {kind}</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: diff >= 0 ? "#4ade80" : "#f87171" }}>{diff >= 0 ? "+" : ""}{diff}€</span>
                 </div>
-                <SvgLineChart data={cd} lines={[{ key: "raw", color: "#60a5fa", label: "RAW" }]} />
+                <SvgLineChart data={cd} lines={[{ key: "raw", color: col, label: kind === "valeur" ? "Valeur" : "RAW" }]} />
               </div>
             );
           })()}
+
+          {/* Ajouter un point de valeur (pour bâtir une courbe même sans prix auto) */}
+          <div style={{ marginTop: 12, padding: "9px 11px", background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.25)", borderRadius: 10 }}>
+            <div style={{ fontSize: 10, color: "#c084fc", fontWeight: 700, marginBottom: 6 }}>📈 Suivre la valeur toi-même</div>
+            <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+              <input value={valInput} onChange={e => setValInput(e.target.value)} type="text" inputMode="decimal" placeholder="Valeur du jour €"
+                onKeyDown={e => { if (e.key === "Enter") { const n = parseFloat(String(valInput).replace(",", ".")); if (!isNaN(n)) { addValPoint(selected.id, Math.round(n * 100) / 100); setValInput(""); } } }}
+                style={{ ...css.input, width: 130, padding: "6px 9px", fontSize: 12 }} />
+              <button onClick={() => { const n = parseFloat(String(valInput).replace(",", ".")); if (!isNaN(n)) { addValPoint(selected.id, Math.round(n * 100) / 100); setValInput(""); } }}
+                style={{ ...css.btn("primary"), padding: "6px 12px", fontSize: 11 }}>+ Ajouter</button>
+              {(valHist[selected.id] || []).length > 0 && (
+                <button onClick={() => delValHist(selected.id)} style={{ ...css.btn(), padding: "6px 10px", fontSize: 11, color: "#f87171" }}>Effacer ({valHist[selected.id].length})</button>
+              )}
+            </div>
+            <div style={{ fontSize: 9, color: T.textMuted, marginTop: 6 }}>Ajoute une valeur de temps en temps → la courbe se construit, comme pour tes cartes gradées.</div>
+          </div>
 
           <div style={{ marginTop: 9, display: "flex", justifyContent: "flex-end" }}>
             <button onClick={() => setImgEdit(v => !v)} style={{ ...css.btn(), padding: "4px 10px", fontSize: 10 }}>
