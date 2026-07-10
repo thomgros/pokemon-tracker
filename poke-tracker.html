@@ -1119,26 +1119,28 @@ function PurchaseEditor({ card, store, onSet }) {
   );
 }
 
-// Bande de 2-3 tuiles : Prix d'achat (éditable) · RAW indicatif · Plus-value.
-function EconoStrip({ card, rawEntry, store, onSetPurchase, refValue, color }) {
+// Bande de tuiles valeur : (Valeur estimée) · Prix d'achat (éditable) · RAW · Plus-value.
+// `estimate` (nombre) affiche une tuile Valeur estimée et sert de référence de plus-value
+// quand aucun prix RAW/PSA n'est disponible — utile pour le classeur collection.
+function EconoStrip({ card, rawEntry, store, onSetPurchase, refValue, color, estimate }) {
   const raw = rawEur(rawEntry);
   const cur = resolvePurchase(store, card);
   const paid = typeof cur === "number" ? cur : null;
-  const ref = refValue != null ? refValue : raw;
+  const ref = refValue != null ? refValue : (raw != null ? raw : (estimate != null ? estimate : null));
   const plus = (paid != null && ref != null) ? Math.round(ref - paid) : null;
-  const tile = (label, node, c, extra) => (
-    <div style={{ background: `${c}10`, border: `1px solid ${c}30`, borderRadius: 10, padding: "8px 6px", textAlign: "center", ...extra }}>
-      <div style={{ fontSize: 8, color: c, opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: c, fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>{node}</div>
+  const tile = (label, node, c) => (
+    <div key={label} style={{ background: `${c}12`, border: `1px solid ${c}33`, borderRadius: 12, padding: "10px 6px", textAlign: "center" }}>
+      <div style={{ fontSize: 8, color: c, opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: c, fontVariantNumeric: "tabular-nums", lineHeight: 1.1, fontFamily: "'Sora','DM Sans',sans-serif" }}>{node}</div>
     </div>
   );
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: plus != null ? "repeat(3,1fr)" : "repeat(2,1fr)", gap: 6, marginTop: 10 }}>
-      {tile("Prix d'achat", <PurchaseEditor card={card} store={store} onSet={onSetPurchase} />, color)}
-      {tile("RAW indicatif", raw != null ? `~${raw}€` : "—", "#60a5fa")}
-      {plus != null && tile("Plus-value", `${plus >= 0 ? "+" : ""}${plus}€`, plus >= 0 ? "#4ade80" : "#f87171")}
-    </div>
-  );
+  const tiles = [];
+  if (estimate != null) tiles.push(tile("Valeur estimée", `~${estimate}€`, color));
+  tiles.push(tile("Prix d'achat", <PurchaseEditor card={card} store={store} onSet={onSetPurchase} />, "#a855f7"));
+  tiles.push(tile("RAW indicatif", raw != null ? `~${raw}€` : "—", "#60a5fa"));
+  if (plus != null) tiles.push(tile("Plus-value", `${plus >= 0 ? "+" : ""}${plus}€`, plus >= 0 ? "#4ade80" : "#f87171"));
+  const cols = tiles.length >= 4 ? 2 : tiles.length;
+  return <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols},1fr)`, gap: 6, marginTop: 10 }}>{tiles}</div>;
 }
 
 // ── Slot individuel ───────────────────────────────────────────────────────────
@@ -1199,7 +1201,14 @@ function BinderView({ cards, color }) {
   const prices                  = usePrices();
   const [purchase, setPurchase] = useLs(PURCHASE_KEY, {});
   const setP = (id, val) => setPurchase(p => ({ ...p, [id]: val }));
-  useEffect(() => { setImgEdit(false); }, [selected && selected.id]);
+  const detailRef = React.useRef(null);
+  useEffect(() => {
+    setImgEdit(false);
+    if (selected && detailRef.current) {
+      const t = setTimeout(() => { try { detailRef.current.scrollIntoView({ behavior: "smooth", block: "center" }); } catch {} }, 60);
+      return () => clearTimeout(t);
+    }
+  }, [selected && selected.id]);
 
   const parseVal = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
   const grouped = {};
@@ -1308,14 +1317,14 @@ function BinderView({ cards, color }) {
 
       {/* Panneau détail carte sélectionnée */}
       {selected && (
-        <div className="pt-pop" style={{ ...css.card, border: `1px solid ${color}44`, marginBottom: 12 }}>
+        <div ref={detailRef} className="pt-pop" style={{ ...css.card, border: `1px solid ${color}44`, marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: T.text, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {LANG_FLAG[selected.lang]} {selected.fullName}
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>{selected.set.split(" · ")[0]}</div>
           </div>
-          <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP} color={color} />
+          <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP} color={color} estimate={parseVal(selected.value) || undefined} />
           {(() => {
             const e = prices?.[selected.id];
             return e ? (
