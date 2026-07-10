@@ -293,6 +293,25 @@ const rawEur = entry => {
   if (!entry || entry.raw == null) return null;
   return entry.currency === "USD" ? Math.round(entry.raw * USD_TO_EUR) : Math.round(entry.raw);
 };
+// Données de courbe RAW (en €) : historique réel accumulé, sinon série courte
+// dérivée des moyennes CardMarket (30j / 7j / 1j / auj.). Renvoie [{date, raw}] ou null.
+const rawChartData = entry => {
+  if (!entry) return null;
+  const conv = v => (v == null ? null : (entry.currency === "USD" ? Math.round(v * USD_TO_EUR) : Math.round(v)));
+  if (Array.isArray(entry.history) && entry.history.length >= 2) {
+    return entry.history.map(h => ({ date: (h.t || "").slice(5), raw: conv(h.raw) })).filter(d => d.raw != null);
+  }
+  if (entry.source === "cardmarket") {
+    const pts = [];
+    if (entry.avg30 != null) pts.push({ date: "30j", raw: conv(entry.avg30) });
+    if (entry.avg7  != null) pts.push({ date: "7j",  raw: conv(entry.avg7) });
+    if (entry.avg1  != null) pts.push({ date: "1j",  raw: conv(entry.avg1) });
+    pts.push({ date: "auj.", raw: conv(entry.raw) });
+    const uniq = pts.filter(p => p.raw != null);
+    return uniq.length >= 2 ? uniq : null;
+  }
+  return null;
+};
 
 // ── Prix d'achat (éditable, défaut « booster ») ───────────────────────────────
 // localStorage pt_purchase_v1 : { [cardId]: number | "booster" }.
@@ -1292,6 +1311,23 @@ function BinderView({ cards, color }) {
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Prix RAW auto indisponible pour cette carte</div>
             );
           })()}
+
+          {/* Courbe d'évolution RAW */}
+          {(() => {
+            const cd = rawChartData(prices?.[selected.id]);
+            if (!cd) return null;
+            const diff = cd[cd.length - 1].raw - cd[0].raw;
+            return (
+              <div style={{ marginTop: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Évolution RAW</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: diff >= 0 ? "#4ade80" : "#f87171" }}>{diff >= 0 ? "+" : ""}{diff}€</span>
+                </div>
+                <SvgLineChart data={cd} lines={[{ key: "raw", color: "#60a5fa", label: "RAW" }]} />
+              </div>
+            );
+          })()}
+
           <div style={{ marginTop: 9, display: "flex", justifyContent: "flex-end" }}>
             <button onClick={() => setImgEdit(v => !v)} style={{ ...css.btn(), padding: "4px 10px", fontSize: 10 }}>
               🖼️ {imgEdit ? "Fermer" : "Changer l'illustration"}

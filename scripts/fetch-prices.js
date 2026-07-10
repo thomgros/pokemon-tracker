@@ -80,8 +80,9 @@ function extractPrice(card) {
   const tp = card.tcgplayer && card.tcgplayer.prices;
   if (cm && (cm.trendPrice || cm.averageSellPrice || cm.avg30)) {
     const raw = cm.trendPrice ?? cm.averageSellPrice ?? cm.avg30;
+    const r2 = v => (v == null ? null : Math.round(v * 100) / 100);
     return { raw: Math.round(raw * 100) / 100, currency: "EUR", source: "cardmarket", ptcgioId: card.id,
-             low: cm.lowPrice ?? null, avg30: cm.avg30 ?? null, trend: cm.trendPrice ?? null };
+             low: r2(cm.lowPrice), avg1: r2(cm.avg1), avg7: r2(cm.avg7), avg30: r2(cm.avg30), trend: r2(cm.trendPrice) };
   }
   if (tp) {
     const v = tp.holofoil || tp.reverseHolofoil || tp.normal || Object.values(tp)[0];
@@ -138,6 +139,19 @@ async function main() {
   const META = evalLiteral(html, "GRADING_META");
   const WATCH = evalLiteral(html, "DEFAULT_WATCH");
 
+  // Historique RAW conservé d'un run à l'autre (1 point/jour, cap 60) → courbe d'évolution.
+  let prevCards = {};
+  try { prevCards = JSON.parse(fs.readFileSync(OUT, "utf8")).cards || {}; } catch {}
+  const today = new Date().toISOString().slice(0, 10);
+  const mkEntry = (id, price) => {
+    const prev = prevCards[id];
+    let history = (prev && Array.isArray(prev.history)) ? prev.history.slice() : [];
+    if (history.length && history[history.length - 1].t === today) history[history.length - 1] = { t: today, raw: price.raw };
+    else history.push({ t: today, raw: price.raw });
+    if (history.length > 60) history = history.slice(-60);
+    return { ...price, sourceLang: "EN", ts: Date.now(), history };
+  };
+
   const jobs = [];
   for (const c of CLASSEUR) if (c.ptcgioQ) jobs.push({ id: c.id, q: c.ptcgioQ, lang: c.lang, name: c.name, p: parseQ(c.ptcgioQ) });
   for (const c of OWNED) { const q = META[c.id] && META[c.id].ptcgioQ; if (q) jobs.push({ id: c.id, q, lang: c.lang, name: c.name, p: parseQ(q) }); }
@@ -171,7 +185,7 @@ async function main() {
       for (const j of bySet[setId]) {
         const card = byNum[normNum(j.p.number)];
         const price = extractPrice(card);
-        if (price) { out[j.id] = { ...price, sourceLang: "EN", ts: Date.now() }; ok++; }
+        if (price) { out[j.id] = mkEntry(j.id, price); ok++; }
         else miss++;
       }
       if (!cards.length) console.warn(`  · set ${setId}: 0 carte (set inconnu de pokemontcg.io ?)`);
@@ -186,7 +200,7 @@ async function main() {
   for (const j of leftovers) {
     try {
       const price = extractPrice(await fetchOne(j.q));
-      if (price) { out[j.id] = { ...price, sourceLang: "EN", ts: Date.now() }; ok++; }
+      if (price) { out[j.id] = mkEntry(j.id, price); ok++; }
       else miss++;
     } catch (e) { err++; console.warn(`  ✗ ${j.id} (${j.name}): ${e.message}`); }
     await sleep(150);
