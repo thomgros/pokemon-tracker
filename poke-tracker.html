@@ -1317,12 +1317,27 @@ function BinderView({ cards, color }) {
 
       {/* Panneau détail carte sélectionnée */}
       {selected && (
-        <div ref={detailRef} className="pt-pop" style={{ ...css.card, border: `1px solid ${color}44`, marginBottom: 12 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {LANG_FLAG[selected.lang]} {selected.fullName}
+        <div ref={detailRef} className="pt-pop" style={{ ...css.card, border: `1px solid ${color}55`, marginBottom: 12, boxShadow: `0 12px 34px rgba(0,0,0,0.5), 0 0 0 1px ${color}22` }}>
+          {/* En-tête : illustration + infos carte */}
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 4 }}>
+            {(() => {
+              const dImg = images[selected.id]?.url || selected.img;
+              return dImg ? (
+                <img src={dImg} alt={selected.name} style={{ width: 96, aspectRatio: "5/7", objectFit: "cover", borderRadius: 8, flexShrink: 0, boxShadow: "0 6px 18px rgba(0,0,0,0.6)" }} />
+              ) : (
+                <div style={{ width: 96, aspectRatio: "5/7", borderRadius: 8, flexShrink: 0, background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, opacity: 0.4 }}>🃏</div>
+              );
+            })()}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: T.text, fontFamily: "'Sora','DM Sans',sans-serif", lineHeight: 1.2 }}>
+                {LANG_FLAG[selected.lang]} {selected.name}
+              </div>
+              <div style={{ fontSize: 11, color: T.textSub, marginTop: 3 }}>{selected.fullName}</div>
+              <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
+              <div style={{ display: "inline-flex", marginTop: 7, background: `${color}18`, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 8px", fontSize: 10, fontWeight: 600, color }}>
+                {LANG_TABS_CFG.find(t => t.id === selected.lang)?.label || selected.lang}
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>{selected.set.split(" · ")[0]}</div>
           </div>
           <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP} color={color} estimate={parseVal(selected.value) || undefined} />
           {(() => {
