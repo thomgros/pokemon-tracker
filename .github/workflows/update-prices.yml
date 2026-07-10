@@ -1,0 +1,49 @@
+name: Update prices
+
+# Récupère les prix RAW (pokemontcg.io) côté serveur et commit prices.json.
+# Tourne 1×/jour, manuellement, et à chaque changement des cartes.
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # tous les jours à 05:00 UTC
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "poke-tracker.html"
+      - "scripts/fetch-prices.js"
+      - ".github/workflows/update-prices.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch prices
+        env:
+          POKEMONTCG_IO_API_KEY: ${{ secrets.POKEMONTCG_IO_API_KEY }}
+        run: node scripts/fetch-prices.js
+
+      - name: Commit prices.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prices.json
+          if git diff --cached --quiet; then
+            echo "Aucun changement de prix."
+          else
+            git commit -m "chore: mise à jour automatique des prix"
+            git push
+          fi

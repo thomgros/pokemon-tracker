@@ -273,6 +273,27 @@ async function fetchEbayPrices(query) {
 
 const toEur = usd => Math.round(parseFloat(usd) * USD_TO_EUR);
 const fmt   = (n, d = 0) => Number(n).toFixed(d);
+
+// ── Prix RAW auto (prices.json généré côté serveur par l'Action GitHub) ───────
+// Fichier servi en même origine → aucun blocage CORS. null = en cours de chargement.
+function usePrices() {
+  const [prices, setPrices] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    fetch("./prices.json", { cache: "no-store" })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (alive) setPrices(d && d.cards ? d.cards : {}); })
+      .catch(() => { if (alive) setPrices({}); });
+    return () => { alive = false; };
+  }, []);
+  return prices;
+}
+// Prix RAW en euros pour une entrée prices.json (ou null)
+const rawEur = entry => {
+  if (!entry || entry.raw == null) return null;
+  return entry.currency === "USD" ? Math.round(entry.raw * USD_TO_EUR) : Math.round(entry.raw);
+};
+
 const relTime = ts => {
   if (!ts) return "";
   const m = Math.floor((Date.now() - ts) / 60000);
