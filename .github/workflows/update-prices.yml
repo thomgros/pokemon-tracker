@@ -12,6 +12,7 @@ on:
     paths:
       - "poke-tracker.html"
       - "scripts/fetch-prices.js"
+      - "scripts/fetch-images.js"
       - ".github/workflows/update-prices.yml"
 
 permissions:
@@ -36,14 +37,17 @@ jobs:
           POKEMONTCG_IO_API_KEY: ${{ secrets.POKEMONTCG_IO_API_KEY }}
         run: node scripts/fetch-prices.js
 
-      - name: Commit prices.json if changed
+      - name: Resolve native-language images
+        run: node scripts/fetch-images.js || echo "résolution images non bloquante"
+
+      - name: Commit prices.json / images.json if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add prices.json
+          git add prices.json images.json
           if git diff --cached --quiet; then
-            echo "Aucun changement de prix."
+            echo "Aucun changement."
           else
-            git commit -m "chore: mise à jour automatique des prix"
+            git commit -m "chore: mise à jour automatique prix + illustrations"
             git push
           fi
