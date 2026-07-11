@@ -312,6 +312,33 @@ const rawChartData = entry => {
   return null;
 };
 
+// ── Courbe de valeur ESTIMÉE (6 mois, 1 pt/mois) ─────────────────────────────
+// Générée de façon déterministe à partir de la valeur actuelle de la carte : donne
+// une tendance indicative quand aucune source de prix ne suit la carte (Méga FR…).
+// Ce ne sont PAS des prix réels enregistrés — l'UI l'affiche comme « estimation ».
+const parseValue = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
+const MONTHS_FR = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
+const hashStr = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
+const estValueHistory = card => {
+  const base = parseValue(card.value);
+  if (!base) return null;
+  const h = hashStr(card.id || card.name || "x");
+  const startFactor = 0.74 + ((h % 47) / 47) * 0.42; // valeur il y a 6 mois = base × 0.74..1.16
+  const now = new Date();
+  const N = 6, pts = [];
+  for (let i = N; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = `${MONTHS_FR[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`;
+    const t = (N - i) / N;
+    const lin = base * (startFactor + (1 - startFactor) * t);
+    const wig = 1 + ((((h >> (i + 1)) % 13) - 6) / 100); // ±6% déterministe
+    let v = i === 0 ? base : lin * wig;
+    v = Math.max(1, base < 10 ? Math.round(v * 10) / 10 : Math.round(v));
+    pts.push({ date: label, raw: v });
+  }
+  return pts;
+};
+
 // ── Prix d'achat (éditable, défaut « booster ») ───────────────────────────────
 // localStorage pt_purchase_v1 : { [cardId]: number | "booster" }.
 // Résolution: valeur saisie → sinon prix payé connu (owned) → sinon "booster".
@@ -1362,23 +1389,30 @@ function BinderView({ cards, color }) {
             );
           })()}
 
-          {/* Courbe d'évolution : valeur saisie à la main (prioritaire) sinon RAW auto */}
+          {/* Courbe : tes points manuels → RAW auto réel → estimation 6 mois */}
           {(() => {
             const manual = (valHist[selected.id] || []).map(p => ({ date: p.t.slice(5), raw: p.v }));
             const est = parseVal(selected.value);
-            let cd = null, kind = "RAW", col = "#60a5fa";
-            if (manual.length >= 2) { cd = manual; kind = "valeur"; col = "#a855f7"; }
-            else if (manual.length === 1 && est) { cd = [{ date: "estim.", raw: est }, ...manual]; kind = "valeur"; col = "#a855f7"; }
-            else { cd = rawChartData(prices?.[selected.id]); }
+            const auto = rawChartData(prices?.[selected.id]);
+            let cd = null, kind = "estimation", col = "#f59e0b", label = "Valeur";
+            if (manual.length >= 2) { cd = manual; kind = "valeur (saisie)"; col = "#a855f7"; }
+            else if (manual.length === 1 && est) { cd = [{ date: "estim.", raw: est }, ...manual]; kind = "valeur (saisie)"; col = "#a855f7"; }
+            else if (auto && auto.length >= 3) { cd = auto; kind = "RAW"; col = "#60a5fa"; label = "RAW"; }
+            else { cd = estValueHistory(selected) || auto; }
             if (!cd) return null;
             const diff = cd[cd.length - 1].raw - cd[0].raw;
             return (
               <div style={{ marginTop: 14 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
                   <span style={{ fontSize: 10, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Évolution {kind}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: diff >= 0 ? "#4ade80" : "#f87171" }}>{diff >= 0 ? "+" : ""}{diff}€</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: diff >= 0 ? "#4ade80" : "#f87171" }}>{diff >= 0 ? "+" : ""}{Math.round(diff)}€</span>
                 </div>
-                <SvgLineChart data={cd} lines={[{ key: "raw", color: col, label: kind === "valeur" ? "Valeur" : "RAW" }]} />
+                <SvgLineChart data={cd} lines={[{ key: "raw", color: col, label }]} />
+                {kind === "estimation" && (
+                  <div style={{ fontSize: 9, color: T.textMuted, marginTop: 2, textAlign: "center", fontStyle: "italic" }}>
+                    Tendance estimée (indicative) — ajoute tes valeurs ci-dessous pour l'affiner
+                  </div>
+                )}
               </div>
             );
           })()}
