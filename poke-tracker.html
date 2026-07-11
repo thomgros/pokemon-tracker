@@ -1376,16 +1376,34 @@ function BinderView({ cards, color }) {
             </div>
           </div>
           <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP} color={color} estimate={parseVal(selected.value) || undefined} />
+          {/* Valeurs gradées PSA (si connues via PriceCharting) */}
           {(() => {
             const e = prices?.[selected.id];
+            if (!e || (e.psa9 == null && e.psa10 == null)) return null;
+            const tile = (label, val, c) => (
+              <div style={{ background: `${c}12`, border: `1px solid ${c}33`, borderRadius: 12, padding: "9px 6px", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: c, opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: 3 }}>{label}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: c, fontVariantNumeric: "tabular-nums", fontFamily: "'Sora','DM Sans',sans-serif" }}>{val != null ? `${val}€` : "—"}</div>
+              </div>
+            );
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 6 }}>
+                {tile("PSA 9", e.psa9, "#fb923c")}
+                {tile("PSA 10", e.psa10, "#4ade80")}
+              </div>
+            );
+          })()}
+          {(() => {
+            const e = prices?.[selected.id];
+            const srcLabel = e && (e.source === "pricecharting" ? "PriceCharting" : e.source === "cardmarket" ? "CardMarket" : "TCGplayer");
             return e ? (
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>
-                RAW {e.source === "cardmarket" ? "CardMarket" : "TCGplayer"} (EN indicatif) · {relTime(e.ts)}
+                Prix {srcLabel}{e.source !== "pricecharting" ? " (EN indicatif)" : ""} · {relTime(e.ts)}
               </div>
             ) : prices === null ? (
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Chargement des prix…</div>
             ) : (
-              <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Prix RAW auto indisponible pour cette carte</div>
+              <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Prix auto indisponible — courbe estimée</div>
             );
           })()}
 
