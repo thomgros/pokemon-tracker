@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 /**
  * probe-pricecharting.js — TEST DE FAISABILITÉ (jetable).
- * Récupère quelques pages PriceCharting côté serveur (runner GitHub) et affiche ce
- * qu'on peut en extraire : statut HTTP, prix (Ungraded / Grade 9 / PSA 10) et présence
- * d'un historique. Sert à décider si on peut brancher de vrais prix automatiquement.
+ * Étape 2 : peut-on RÉSOUDRE automatiquement chaque carte → sa page PriceCharting
+ * via la recherche du site ? On teste quelques requêtes (dont Méga FR) et on affiche
+ * les premières pages produit trouvées.
  */
-
-const URLS = [
-  "https://www.pricecharting.com/game/pokemon-fossil/aerodactyl-1st-edition-1",
-  "https://www.pricecharting.com/game/pokemon-jungle/snorlax-11",
-];
 
 async function fetchText(url) {
   const r = await fetch(url, {
@@ -20,40 +15,35 @@ async function fetchText(url) {
   return { status: r.status, ct: r.headers.get("content-type") || "", body: await r.text() };
 }
 
-function extract(html) {
-  const out = {};
-  // Prix par cellule : PriceCharting expose #used_price / #complete_price / #new_price
-  for (const id of ["used_price", "complete_price", "new_price"]) {
-    const m = html.match(new RegExp(`id=["']${id}["'][\\s\\S]{0,220}?\\$([0-9][0-9.,]*)`));
-    out[id] = m ? m[1] : null;
-  }
-  // Libellés de colonnes (pour savoir ce que used/complete/new veulent dire ici)
-  const labels = [...html.matchAll(/<th[^>]*>\s*([A-Za-z0-9 ]{3,20})\s*<\/th>/g)].map(m => m[1].trim()).slice(0, 8);
-  out.labels = labels;
-  // Historique : PriceCharting embarque souvent les séries dans un <script> (VGPC / chart)
-  out.hasChartVar = /VGPC|chart_data|price_data|"prices"|graph/i.test(html);
-  const jsonBlob = html.match(/(\[\s*\[\s*\d{10,13}\s*,\s*[0-9.]+\s*\][\s\S]{0,60}?\])/);
-  out.historySample = jsonBlob ? jsonBlob[1].slice(0, 160) : null;
-  const title = html.match(/<title>([\s\S]*?)<\/title>/);
-  out.title = title ? title[1].trim().slice(0, 80) : null;
-  return out;
+// Extrait les liens de pages produit /game/... d'une page de résultats
+function productLinks(html) {
+  const links = [...html.matchAll(/href="(\/game\/[a-z0-9-]+\/[a-z0-9-]+)"/g)].map(m => m[1]);
+  return [...new Set(links)].slice(0, 4);
 }
 
+const QUERIES = [
+  "aerodactyl fossil 1st edition",
+  "mega greninja ex chaos ascendant",   // = Méga-Amphinobi ex 022/086 FR
+  "mega gardevoir ex perfect order",     // = Méga-Mélodelfe ex (POR)
+  "zacian v sword shield 138",
+  "raikou vivid voltage 50",
+];
+
 async function main() {
-  for (const url of URLS) {
-    console.log("\n=== " + url);
+  for (const q of QUERIES) {
+    const url = `https://www.pricecharting.com/search-products?q=${encodeURIComponent(q)}&type=prices`;
+    console.log("\n=== recherche: " + q);
     try {
       const r = await fetchText(url);
-      console.log(`HTTP ${r.status} · ${r.ct} · ${r.body.length} octets`);
-      if (r.status !== 200) { console.log("  (non-200 — bloqué ?)"); continue; }
-      const e = extract(r.body);
-      console.log("  title:", e.title);
-      console.log("  colonnes:", JSON.stringify(e.labels));
-      console.log("  used_price:", e.used_price, "| complete_price:", e.complete_price, "| new_price:", e.new_price);
-      console.log("  historique présent:", e.hasChartVar, "| échantillon:", e.historySample);
-    } catch (err) {
-      console.log("  ERREUR:", err.message);
-    }
+      console.log(`  HTTP ${r.status} · ${r.body.length} octets`);
+      if (r.status === 200) {
+        const links = productLinks(r.body);
+        console.log("  produits:", JSON.stringify(links));
+        // Si redirigé direct vers une page produit (1 seul résultat), l'URL finale le montrerait
+        const title = (r.body.match(/<title>([\s\S]*?)<\/title>/) || [])[1];
+        console.log("  title:", title ? title.trim().slice(0, 90) : null);
+      }
+    } catch (e) { console.log("  ERREUR:", e.message); }
   }
 }
 main();
