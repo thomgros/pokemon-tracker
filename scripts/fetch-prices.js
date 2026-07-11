@@ -113,33 +113,13 @@ async function resolve(query) {
 const priceUSD = (h, id) => { const m = h.match(new RegExp(`id=["']${id}["'][\\s\\S]{0,260}?\\$([0-9][0-9,]*\\.?[0-9]*)`)); return m ? parseFloat(m[1].replace(/,/g, "")) : null; };
 const eur = usd => (usd == null ? null : Math.round(usd * USD_EUR * 100) / 100);
 
-// Historique RAW : la page embarque 3 séries (Ungraded/Grade9/PSA10). On choisit
-// celle dont la dernière valeur colle au RAW actuel, pour ne pas confondre avec la
-// courbe PSA. Downsample en points mensuels (€).
-function history(html, targetEur) {
-  const matches = [...html.matchAll(/\[\s*\[\s*\d{10,13}\s*,\s*\d+\s*\](?:\s*,\s*\[\s*\d{10,13}\s*,\s*\d+\s*\])+\s*\]/g)].map(x => x[0]);
-  let best = null, bestDiff = Infinity;
-  for (const s of matches) {
-    let arr; try { arr = JSON.parse(s); } catch { continue; }
-    const nz = arr.filter(p => p[1] > 0);
-    if (!nz.length) continue;
-    const lastEur = nz[nz.length - 1][1] / 100 * USD_EUR;
-    const diff = targetEur ? Math.abs(lastEur - targetEur) / targetEur : 0;
-    if (diff < bestDiff) { bestDiff = diff; best = arr; }
-  }
-  if (!best || (targetEur && bestDiff > 0.6)) return []; // pas de série fiable
-  const byMonth = {};
-  for (const [ts, pennies] of best) {
-    if (!pennies) continue;
-    const d = new Date(ts);
-    byMonth[`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`] = Math.round(pennies / 100 * USD_EUR * 100) / 100;
-  }
-  const keys = Object.keys(byMonth).sort().slice(-18);
-  return keys.map(k => ({ t: `${k}-01`, raw: byMonth[k] }));
-}
-
 async function main() {
   const src = fs.readFileSync(HTML, "utf8");
+  // Historique RAW réel accumulé d'un run à l'autre (1 pt/jour). On purge les points
+  // aberrants d'anciennes versions (hors bande 0.25×–4× du RAW du jour).
+  let prevCards = {};
+  try { prevCards = JSON.parse(fs.readFileSync(OUT, "utf8")).cards || {}; } catch {}
+  const today = new Date().toISOString().slice(0, 10);
   const CLASSEUR = evalLiteral(src, "CLASSEUR_CARDS");
   const OWNED = evalLiteral(src, "DEFAULT_OWNED");
   const META = evalLiteral(src, "GRADING_META");
@@ -166,7 +146,10 @@ async function main() {
       const raw = priceUSD(r.body, "used_price"), g9 = priceUSD(r.body, "complete_price"), p10 = priceUSD(r.body, "new_price");
       if (raw == null) { miss++; if (validate) console.log(`  ✗ ${j.id} "${j.q}" — pas de prix`); continue; }
       const rawE = eur(raw);
-      const hist = history(r.body, rawE);
+      const prev = prevCards[j.id];
+      const carried = (prev && Array.isArray(prev.history) ? prev.history : [])
+        .filter(p => p.t !== today && p.raw > 0 && p.raw <= rawE * 4 && p.raw >= rawE * 0.25);
+      const hist = [...carried, { t: today, raw: rawE }].slice(-90);
       const entry = { raw: rawE, psa9: eur(g9), psa10: eur(p10), currency: "EUR", source: "pricecharting", url: r.url.split("?")[0], ts: Date.now(), history: hist };
       out[j.id] = entry; ok++;
       if (validate) console.log(`  ✓ ${j.id} "${j.q}" → ${entry.raw}€ (PSA9 ${entry.psa9}€ / PSA10 ${entry.psa10}€) · ${hist.length} pts histo · ${entry.url}`);
