@@ -275,14 +275,24 @@ const fmt   = (n, d = 0) => Number(n).toFixed(d);
 
 // ── Prix RAW auto (prices.json généré côté serveur par l'Action GitHub) ───────
 // Fichier servi en même origine → aucun blocage CORS. null = en cours de chargement.
+// MANUAL_PRICES : valeurs saisies à la main (CardMarket réel) qui GAGNENT sur l'auto
+// pour les cartes où le scraping sous-estime (PSA vintage notamment).
+const MANUAL_PRICES = {
+  "1": { psa8: 1500, psa9: 3500, psa10: 6500, manual: true }, // Charizard 4/102 Unlimited — CardMarket réel
+};
 function usePrices() {
   const [prices, setPrices] = useState(null);
   useEffect(() => {
     let alive = true;
     fetch("./prices.json", { cache: "no-store" })
       .then(r => (r.ok ? r.json() : null))
-      .then(d => { if (alive) setPrices(d && d.cards ? d.cards : {}); })
-      .catch(() => { if (alive) setPrices({}); });
+      .then(d => {
+        if (!alive) return;
+        const cards = (d && d.cards) ? { ...d.cards } : {};
+        for (const id in MANUAL_PRICES) cards[id] = { ...(cards[id] || {}), ...MANUAL_PRICES[id] };
+        setPrices(cards);
+      })
+      .catch(() => { if (alive) { const cards = { ...MANUAL_PRICES }; setPrices(cards); } });
     return () => { alive = false; };
   }, []);
   return prices;
@@ -362,7 +372,7 @@ const relTime = ts => {
 
 // ── CardRow ───────────────────────────────────────────────────────────────────
 
-function CardRow({ card, onDelete }) {
+function CardRow({ card, onDelete, priceEntry }) {
   const [open, setOpen] = useState(false);
   const [price, setPrice] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -421,6 +431,29 @@ function CardRow({ card, onDelete }) {
           </div>
             </div>
           </div>
+
+          {/* Valeurs marché (RAW + PSA) si connues */}
+          {priceEntry && (priceEntry.raw != null || priceEntry.psa8 != null || priceEntry.psa9 != null || priceEntry.psa10 != null) && (() => {
+            const tile = (label, v, c) => (
+              <div key={label} style={{ background: `${c}12`, border: `1px solid ${c}33`, borderRadius: 10, padding: "8px 6px", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: c, opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 700, marginBottom: 3 }}>{label}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: c, fontVariantNumeric: "tabular-nums", fontFamily: "'Sora','DM Sans',sans-serif" }}>{v != null ? `${v}€` : "—"}</div>
+              </div>
+            );
+            const tiles = [];
+            if (priceEntry.raw  != null) tiles.push(tile("RAW", Math.round(priceEntry.raw), "#60a5fa"));
+            if (priceEntry.psa8 != null) tiles.push(tile("PSA 8", Math.round(priceEntry.psa8), "#eab308"));
+            if (priceEntry.psa9 != null) tiles.push(tile("PSA 9", Math.round(priceEntry.psa9), "#fb923c"));
+            if (priceEntry.psa10!= null) tiles.push(tile("PSA 10", Math.round(priceEntry.psa10), "#4ade80"));
+            return (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${tiles.length},1fr)`, gap: 6 }}>{tiles}</div>
+                <div style={{ fontSize: 9, color: T.textMuted, marginTop: 5, textAlign: "center" }}>
+                  {priceEntry.manual ? "Valeurs CardMarket (saisies)" : priceEntry.source === "pricecharting" ? "PriceCharting" : "indicatif"}
+                </div>
+              </div>
+            );
+          })()}
 
           <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 8, padding: 12, marginBottom: 10 }}>
             <div style={{ ...css.label, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
@@ -2110,6 +2143,7 @@ function Logo({ size = 40, sub }) {
 function PokeTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pt_watch", DEFAULT_WATCH);
   const [ownedList, setOwnedList, resetOwned] = useStorage("pt_owned_v5", DEFAULT_OWNED);
+  const prices                    = usePrices();
   const [sub, setSub]             = useState(null); // "chasse" | "cours" | "watch" | "ressources" | "calendrier"
   const [filterP, setFilterP]     = useState("all");
   const [filterT, setFilterT]     = useState("all");
@@ -2224,7 +2258,7 @@ function PokeTracker() {
           </div>
 
           <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Priorité 1 — à trouver</div>
-          {watchList.filter(c => c.priority === 1).map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+          {watchList.filter(c => c.priority === 1).map(c => <CardRow key={c.id} card={c} onDelete={delWatch} priceEntry={prices?.[String(c.id)]} />)}
         </div>
       )}
 
@@ -2276,7 +2310,7 @@ function PokeTracker() {
             <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · cliquer pour prix live</span>
             {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
           </div>
-          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} />)}
+          {filtered.map(c => <CardRow key={c.id} card={c} onDelete={delWatch} priceEntry={prices?.[String(c.id)]} />)}
         </div>
       )}
 
