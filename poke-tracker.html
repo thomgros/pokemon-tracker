@@ -278,7 +278,8 @@ const fmt   = (n, d = 0) => Number(n).toFixed(d);
 // MANUAL_PRICES : valeurs saisies à la main (CardMarket réel) qui GAGNENT sur l'auto
 // pour les cartes où le scraping sous-estime (PSA vintage notamment).
 const MANUAL_PRICES = {
-  "1": { psa8: 1500, psa9: 3500, psa10: 6500, manual: true }, // Charizard 4/102 Unlimited — CardMarket réel
+  // Charizard 4/102 Unlimited — PSA 8 = sold réel (comps PSA ~$1200-1400), PSA 9/10 estimés
+  "1": { psa8: 1250, psa9: 3500, psa10: 6500, manual: true },
 };
 function usePrices() {
   const [prices, setPrices] = useState(null);
