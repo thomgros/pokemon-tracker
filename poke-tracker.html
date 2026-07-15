@@ -206,6 +206,7 @@ const DEFAULT_OWNED = [
   { id: "o7",  name: "Mew ex SAR PSA 9 205/165",       price: 200,    status: "graded",     set: "151 SV2a",              lang: "JP", note: "Gradé PSA 9 ✓ · Acheté 217,50 USD (~200€) eBay · cert #1538817247 · reçu 4 juin", ebayQuery: "Mew ex SAR PSA 9 205/165 Japanese" },
   { id: "o8",  name: "Jigglypuff 1st Ed 54/64",        price: 0,      status: "collection", set: "Jungle",                lang: "EN", note: "État played",                                        ebayQuery: "Jigglypuff 54/64 Jungle 1st Edition Near Mint" },
   { id: "o25", name: "Méga-Dracaufeu X ex 223/193 MA",price: 0,      status: "graded",     set: "M2α Ascended Heroes",   lang: "JP", note: "Mega Attack Rare · cadeau · PSA 10 GEM MT ✓ · cert #157270173", ebayQuery: "Mega Charizard X ex 223/193 Ascended Heroes Japanese PSA 10" },
+  { id: "o26", name: "Charizard 4/102 Base Set",       price: 1000,   status: "transit",    set: "Base Set Unlimited",    lang: "EN", note: "Acheté 1000€ CardMarket (UE, sans taxes) · Unlimited authentique, holo cosmos vérifié · candidat PSA 8-9 · PSA 8 plancher ~1200€ · PSA 9 ~3000€ · à réception: loupe whitening liserés jaunes avant grading", ebayQuery: "Charizard 4/102 Base Set Unlimited Near Mint" },
 ];
 
 // ── localStorage ──────────────────────────────────────────────────────────────
@@ -724,6 +725,7 @@ const GRADING_HISTORY = {
   "o7":  { h:[{date:"Jan 23",nm:240,psa9:480,psa10:1100},{date:"Juil 23",nm:310,psa9:650,psa10:1450},{date:"Jan 24",nm:360,psa9:730,psa10:1620},{date:"Juil 24",nm:340,psa9:700,psa10:1550},{date:"Jan 25",nm:320,psa9:660,psa10:1470},{date:"Juil 25",nm:300,psa9:625,psa10:1390},{date:"Jan 26",nm:280,psa9:590,psa10:1310},{date:"Mar 26",nm:272,psa9:575,psa10:1265},{date:"Mai 26",nm:265,psa9:560,psa10:1230}] },
   "o24": { h:[{date:"Juil 26",nm:83,psa9:320,psa10:1800},{date:"Août 26",nm:85,psa9:330,psa10:1900}] },
   "o25": { h:[{date:"Juil 26",nm:50,psa9:87,psa10:210}] },
+  "o26": { h:[{date:"Juil 26",nm:450,psa9:3000,psa10:6000}] },
 };
 
 // img = URL directe confirmée · tcgdex = "SETCODE-num" pour API TCGdex · ptcgioQ = fallback pokemontcg.io
@@ -744,6 +746,7 @@ const GRADING_META = {
   "o23": { img:"https://images.pokemontcg.io/me2/106_hires.png",   grade:"PSA 10",   ptcgioQ:'set.id:me2 number:106' },
   "o24": { img:"https://images.pokemontcg.io/base3/1_hires.png",   grade:"PSA 7",    ptcgioQ:'set.id:base3 number:1' },
   "o25": { grade:"PSA 10 ✓", tcgdex:"M2a-223", ptcgioQ:'set.id:me2pt5 number:223' },
+  "o26": { img:"https://images.pokemontcg.io/base1/4_hires.png", grade:"PSA 8-9 visé", ptcgioQ:'set.id:base1 number:4' },
 };
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
