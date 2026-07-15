@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-14T07:14:17.898Z",
-  "count": 91,
+  "generatedAt": "2026-07-15T07:18:21.553Z",
+  "count": 98,
   "cards": {
     "1": {
-      "raw": 358.34,
-      "psa9": 689.99,
-      "psa10": 1155.06,
+      "raw": 374.84,
+      "psa9": 665.16,
+      "psa10": 1129.77,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-base-set/charizard-4",
-      "ts": 1784013239794,
+      "ts": 1784099885372,
       "history": [
         {
           "t": "2025-02-01",
@@ -30,6 +30,10 @@
         {
           "t": "2026-07-14",
           "raw": 358.34
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 374.84
         }
       ]
     },
@@ -40,7 +44,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-team-rocket/dark-charizard-4",
-      "ts": 1784013243502,
+      "ts": 1784099886658,
       "history": [
         {
           "t": "2025-02-01",
@@ -65,21 +69,29 @@
         {
           "t": "2026-07-14",
           "raw": 171.52
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 171.52
         }
       ]
     },
     "4": {
-      "raw": 158.7,
+      "raw": 156.39,
       "psa9": 119.6,
       "psa10": 125.58,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-champion%27s-path/charizard-vmax-74",
-      "ts": 1784013245439,
+      "ts": 1784099888646,
       "history": [
         {
           "t": "2026-07-14",
           "raw": 158.7
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 156.39
         }
       ]
     },
@@ -90,7 +102,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-base-set/mewtwo-10",
-      "ts": 1784013247989,
+      "ts": 1784099891391,
       "history": [
         {
           "t": "2026-07-11",
@@ -107,21 +119,25 @@
         {
           "t": "2026-07-14",
           "raw": 22.57
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 22.57
         }
       ]
     },
-    "18": {
-      "raw": 121.03,
-      "psa9": 202.4,
-      "psa10": 283.97,
+    "14": {
+      "raw": 46,
+      "psa9": null,
+      "psa10": 28.78,
       "currency": "EUR",
       "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-southern-islands/togepi-4",
-      "ts": 1784013252970,
+      "url": "https://www.pricecharting.com/game/pokemon-paldea-evolved/chi-yu-ex-259",
+      "ts": 1784099893273,
       "history": [
         {
-          "t": "2026-07-14",
-          "raw": 121.03
+          "t": "2026-07-15",
+          "raw": 46
         }
       ]
     },
@@ -132,7 +148,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-southern-islands/ledyba-7",
-      "ts": 1784013255156,
+      "ts": 1784099898337,
       "history": [
         {
           "t": "2026-07-13",
@@ -140,6 +156,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 36.8
+        },
+        {
+          "t": "2026-07-15",
           "raw": 36.8
         }
       ]
@@ -151,7 +171,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-southern-islands/vileplume-17",
-      "ts": 1784013256770,
+      "ts": 1784099899656,
       "history": [
         {
           "t": "2025-02-01",
@@ -224,6 +244,10 @@
         {
           "t": "2026-07-14",
           "raw": 46.45
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 46.45
         }
       ]
     },
@@ -234,7 +258,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-flashfire/charizard-ex-11",
-      "ts": 1784013257648,
+      "ts": 1784099901302,
       "history": [
         {
           "t": "2025-09-01",
@@ -259,6 +283,10 @@
         {
           "t": "2026-07-14",
           "raw": 7.98
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 7.98
         }
       ]
     },
@@ -269,7 +297,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/emma-107",
-      "ts": 1784013034114,
+      "ts": 1784099669433,
       "history": [
         {
           "t": "2026-07-01",
@@ -290,6 +318,10 @@
         {
           "t": "2026-07-14",
           "raw": 4.13
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 4.13
         }
       ]
     },
@@ -300,7 +332,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/krookodile-ex-55",
-      "ts": 1784013035221,
+      "ts": 1784099670668,
       "history": [
         {
           "t": "2026-07-11",
@@ -317,6 +349,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.34
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.34
         }
       ]
     },
@@ -327,7 +363,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/tauros-96",
-      "ts": 1784013035852,
+      "ts": 1784099671823,
       "history": [
         {
           "t": "2026-05-01",
@@ -352,6 +388,10 @@
         {
           "t": "2026-07-14",
           "raw": 6.05
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 6.05
         }
       ]
     },
@@ -362,7 +402,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/prism-tower-80",
-      "ts": 1784013036576,
+      "ts": 1784099675934,
       "history": [
         {
           "t": "2026-07-11",
@@ -379,6 +419,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.75
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.75
         }
       ]
     },
@@ -389,7 +433,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/goodra-68",
-      "ts": 1784013037572,
+      "ts": 1784099676428,
       "history": [
         {
           "t": "2026-06-01",
@@ -414,6 +458,10 @@
         {
           "t": "2026-07-14",
           "raw": 2.69
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.69
         }
       ]
     },
@@ -424,7 +472,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/sliggoo-95",
-      "ts": 1784013038422,
+      "ts": 1784099677224,
       "history": [
         {
           "t": "2026-07-11",
@@ -441,6 +489,10 @@
         {
           "t": "2026-07-14",
           "raw": 3.05
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 3.05
         }
       ]
     },
@@ -451,7 +503,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/xerneas-42",
-      "ts": 1784013038842,
+      "ts": 1784099678200,
       "history": [
         {
           "t": "2026-07-11",
@@ -468,6 +520,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.88
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.88
         }
       ]
     },
@@ -478,7 +534,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/ampharos-29",
-      "ts": 1784013039376,
+      "ts": 1784099678917,
       "history": [
         {
           "t": "2026-07-11",
@@ -494,6 +550,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 1.83
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.83
         }
       ]
@@ -505,7 +565,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/deoxys-32",
-      "ts": 1784013040357,
+      "ts": 1784099679464,
       "history": [
         {
           "t": "2026-07-11",
@@ -522,17 +582,21 @@
         {
           "t": "2026-07-14",
           "raw": 0.56
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.56
         }
       ]
     },
     "c08": {
-      "raw": 12.77,
-      "psa9": 11.1,
+      "raw": 12.71,
+      "psa9": 16.87,
       "psa10": 17.83,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-mega-evolution/mega-venusaur-ex-155",
-      "ts": 1784013040959,
+      "ts": 1784099680419,
       "history": [
         {
           "t": "2025-10-01",
@@ -585,6 +649,10 @@
         {
           "t": "2026-07-14",
           "raw": 12.77
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 12.71
         }
       ]
     },
@@ -595,7 +663,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/patrat-70",
-      "ts": 1784013041884,
+      "ts": 1784099682014,
       "history": [
         {
           "t": "2026-07-11",
@@ -612,6 +680,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.34
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.34
         }
       ]
     },
@@ -622,7 +694,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/mega-clefable-ex-31",
-      "ts": 1784013042349,
+      "ts": 1784099682978,
       "history": [
         {
           "t": "2026-07-11",
@@ -639,6 +711,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.4
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.4
         }
       ]
     },
@@ -649,7 +725,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/meowth-ex-62",
-      "ts": 1784013042837,
+      "ts": 1784099683671,
       "history": [
         {
           "t": "2026-07-11",
@@ -666,6 +742,10 @@
         {
           "t": "2026-07-14",
           "raw": 2.76
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.76
         }
       ]
     },
@@ -676,7 +756,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/poke-pad-81",
-      "ts": 1784013043256,
+      "ts": 1784099684500,
       "history": [
         {
           "t": "2026-07-11",
@@ -692,6 +772,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 1.15
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.15
         }
       ]
@@ -703,7 +787,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/lumiose-city-111",
-      "ts": 1784013044066,
+      "ts": 1784099685318,
       "history": [
         {
           "t": "2026-07-11",
@@ -719,34 +803,41 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 2.74
+        },
+        {
+          "t": "2026-07-15",
           "raw": 2.74
         }
       ]
     },
-    "c16": {
-      "raw": 5.52,
-      "psa9": 16.12,
-      "psa10": 16.77,
+    "c61": {
+      "raw": 4.74,
+      "psa9": null,
+      "psa10": null,
       "currency": "EUR",
       "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-temporal-forces/pikachu-2026-pokemon-day-51",
-      "ts": 1784013062756,
+      "url": "https://www.pricecharting.com/game/pokemon-perfect-order/espurr-95",
+      "ts": 1784099686180,
       "history": [
         {
-          "t": "2026-07-11",
-          "raw": 4.77
-        },
+          "t": "2026-07-15",
+          "raw": 4.74
+        }
+      ]
+    },
+    "c33": {
+      "raw": 2.29,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-japanese-black-bolt/serperior-ex-159",
+      "ts": 1784099703848,
+      "history": [
         {
-          "t": "2026-07-12",
-          "raw": 4.77
-        },
-        {
-          "t": "2026-07-13",
-          "raw": 5.52
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 5.52
+          "t": "2026-07-15",
+          "raw": 2.29
         }
       ]
     },
@@ -757,7 +848,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-black-bolt/genesect-ex-69",
-      "ts": 1784013068110,
+      "ts": 1784099706728,
       "history": [
         {
           "t": "2026-07-12",
@@ -770,17 +861,21 @@
         {
           "t": "2026-07-14",
           "raw": 1.38
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.38
         }
       ]
     },
     "c35": {
-      "raw": 6,
+      "raw": 6.45,
       "psa9": null,
       "psa10": null,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-black-bolt/fraxure-151",
-      "ts": 1784013068747,
+      "ts": 1784099707482,
       "history": [
         {
           "t": "2026-07-12",
@@ -793,17 +888,21 @@
         {
           "t": "2026-07-14",
           "raw": 6
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 6.45
         }
       ]
     },
     "c36": {
-      "raw": 2.04,
+      "raw": 2.38,
       "psa9": 2.76,
       "psa10": 3.91,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-ancient-roar/crustle-67",
-      "ts": 1784013071073,
+      "ts": 1784099709729,
       "history": [
         {
           "t": "2026-07-13",
@@ -812,6 +911,25 @@
         {
           "t": "2026-07-14",
           "raw": 2.04
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.38
+        }
+      ]
+    },
+    "c37": {
+      "raw": 2.86,
+      "psa9": 3.68,
+      "psa10": 5.06,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-japanese-ancient-roar/wimpod-69",
+      "ts": 1784099712204,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 2.86
         }
       ]
     },
@@ -822,10 +940,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-ancient-roar/brute-bonnet-77",
-      "ts": 1784013076270,
+      "ts": 1784099713197,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 5.47
+        },
+        {
+          "t": "2026-07-15",
           "raw": 5.47
         }
       ]
@@ -837,7 +959,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-ancient-roar/lokix-52",
-      "ts": 1784013077088,
+      "ts": 1784099715340,
       "history": [
         {
           "t": "2026-07-13",
@@ -846,6 +968,25 @@
         {
           "t": "2026-07-14",
           "raw": 1.06
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.06
+        }
+      ]
+    },
+    "c40": {
+      "raw": 1.48,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-japanese-clay-burst/flamigo-65",
+      "ts": 1784099717496,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 1.48
         }
       ]
     },
@@ -856,10 +997,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-ascended-heroes/mega-hawlucha-ex-116",
-      "ts": 1784013081612,
+      "ts": 1784099719675,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 1.57
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.57
         }
       ]
@@ -871,7 +1016,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/meowth-ex-62",
-      "ts": 1784013083948,
+      "ts": 1784099721343,
       "history": [
         {
           "t": "2026-07-12",
@@ -884,6 +1029,10 @@
         {
           "t": "2026-07-14",
           "raw": 2.76
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.76
         }
       ]
     },
@@ -894,7 +1043,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/salazzle-ex-16",
-      "ts": 1784013088861,
+      "ts": 1784099726082,
       "history": [
         {
           "t": "2026-07-13",
@@ -902,6 +1051,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 1.34
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.34
         }
       ]
@@ -913,7 +1066,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/aurorus-24",
-      "ts": 1784013089606,
+      "ts": 1784099726961,
       "history": [
         {
           "t": "2026-07-11",
@@ -930,40 +1083,21 @@
         {
           "t": "2026-07-14",
           "raw": 1.53
-        }
-      ]
-    },
-    "c48": {
-      "raw": 2.75,
-      "psa9": null,
-      "psa10": null,
-      "currency": "EUR",
-      "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-perfect-order/sacred-ash-115",
-      "ts": 1784013091395,
-      "history": [
-        {
-          "t": "2026-07-12",
-          "raw": 3
         },
         {
-          "t": "2026-07-13",
-          "raw": 3
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 2.75
+          "t": "2026-07-15",
+          "raw": 1.53
         }
       ]
     },
     "c49": {
-      "raw": 2.48,
+      "raw": 2.29,
       "psa9": null,
       "psa10": null,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/spewpa-89",
-      "ts": 1784013093749,
+      "ts": 1784099731913,
       "history": [
         {
           "t": "2026-07-11",
@@ -980,6 +1114,25 @@
         {
           "t": "2026-07-14",
           "raw": 2.48
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.29
+        }
+      ]
+    },
+    "c59": {
+      "raw": 1.18,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-perfect-order/probopass-96",
+      "ts": 1784099733581,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 1.18
         }
       ]
     },
@@ -990,7 +1143,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-ascended-heroes/hop%27s-trevenant-237",
-      "ts": 1784013098415,
+      "ts": 1784099734337,
       "history": [
         {
           "t": "2026-07-13",
@@ -998,6 +1151,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 4.85
+        },
+        {
+          "t": "2026-07-15",
           "raw": 4.85
         }
       ]
@@ -1009,7 +1166,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/leafeon-master-ball-5",
-      "ts": 1784013100369,
+      "ts": 1784099736403,
       "history": [
         {
           "t": "2025-02-01",
@@ -1098,6 +1255,10 @@
         {
           "t": "2026-07-14",
           "raw": 35.71
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 35.71
         }
       ]
     },
@@ -1108,7 +1269,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/miltank-master-ball-81",
-      "ts": 1784013101668,
+      "ts": 1784099738395,
       "history": [
         {
           "t": "2026-07-11",
@@ -1125,6 +1286,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.47
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.47
         }
       ]
     },
@@ -1135,7 +1300,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/goldeen-master-ball-20",
-      "ts": 1784013103321,
+      "ts": 1784099740635,
       "history": [
         {
           "t": "2026-07-12",
@@ -1148,6 +1313,25 @@
         {
           "t": "2026-07-14",
           "raw": 2.47
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 2.47
+        }
+      ]
+    },
+    "c62": {
+      "raw": 1.07,
+      "psa9": null,
+      "psa10": 7.6,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/prime-catcher-119",
+      "ts": 1784099743349,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 1.07
         }
       ]
     },
@@ -1158,7 +1342,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/patrat-70",
-      "ts": 1784013108137,
+      "ts": 1784099744177,
       "history": [
         {
           "t": "2026-07-11",
@@ -1175,33 +1359,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.34
-        }
-      ]
-    },
-    "c98": {
-      "raw": 0.75,
-      "psa9": null,
-      "psa10": null,
-      "currency": "EUR",
-      "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/prism-tower-80",
-      "ts": 1784013108922,
-      "history": [
-        {
-          "t": "2026-07-11",
-          "raw": 0.82
         },
         {
-          "t": "2026-07-12",
-          "raw": 0.82
-        },
-        {
-          "t": "2026-07-13",
-          "raw": 0.82
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 0.75
+          "t": "2026-07-15",
+          "raw": 0.34
         }
       ]
     },
@@ -1212,7 +1373,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-vivid-voltage/raikou-50",
-      "ts": 1784013111407,
+      "ts": 1784099750204,
       "history": [
         {
           "t": "2025-02-01",
@@ -1301,6 +1462,10 @@
         {
           "t": "2026-07-14",
           "raw": 6.18
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 6.18
         }
       ]
     },
@@ -1311,11 +1476,30 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/yveltal-ex-105",
-      "ts": 1784013113163,
+      "ts": 1784099751213,
       "history": [
         {
           "t": "2026-07-14",
           "raw": 4.71
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 4.71
+        }
+      ]
+    },
+    "c86": {
+      "raw": 4.43,
+      "psa9": null,
+      "psa10": 18.4,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-perfect-order/jacinthe-110",
+      "ts": 1784099752035,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 4.43
         }
       ]
     },
@@ -1326,10 +1510,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-floette-ex-35",
-      "ts": 1784013117529,
+      "ts": 1784099758075,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 1.45
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.45
         }
       ]
@@ -1341,7 +1529,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-greninja-ex-22",
-      "ts": 1784013119318,
+      "ts": 1784099758577,
       "history": [
         {
           "t": "2026-07-12",
@@ -1354,21 +1542,25 @@
         {
           "t": "2026-07-14",
           "raw": 1.96
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.96
         }
       ]
     },
-    "c68": {
-      "raw": 12.44,
+    "c67": {
+      "raw": 3.67,
       "psa9": null,
       "psa10": null,
       "currency": "EUR",
       "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/xerneas-91",
-      "ts": 1784013124106,
+      "url": "https://www.pricecharting.com/game/pokemon-perfect-order/wondrous-patch-117",
+      "ts": 1784099759425,
       "history": [
         {
-          "t": "2026-07-14",
-          "raw": 12.44
+          "t": "2026-07-15",
+          "raw": 3.67
         }
       ]
     },
@@ -1379,7 +1571,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/garbodor-57",
-      "ts": 1784013124806,
+      "ts": 1784099764059,
       "history": [
         {
           "t": "2026-07-11",
@@ -1396,6 +1588,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.41
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.41
         }
       ]
     },
@@ -1406,7 +1602,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-obsidian-flames/toedscruel-ex-22",
-      "ts": 1784013129599,
+      "ts": 1784099769074,
       "history": [
         {
           "t": "2026-07-11",
@@ -1423,6 +1619,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.42
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.42
         }
       ]
     },
@@ -1433,7 +1633,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-obsidian-flames/capsakid-reverse-holo-23",
-      "ts": 1784013130237,
+      "ts": 1784099770042,
       "history": [
         {
           "t": "2026-07-11",
@@ -1450,36 +1650,21 @@
         {
           "t": "2026-07-14",
           "raw": 0.3
-        }
-      ]
-    },
-    "c76": {
-      "raw": 2.15,
-      "psa9": 8.74,
-      "psa10": 9.66,
-      "currency": "EUR",
-      "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-obsidian-flames/eiscue-ex-210",
-      "ts": 1784013132482,
-      "history": [
-        {
-          "t": "2026-07-13",
-          "raw": 2.15
         },
         {
-          "t": "2026-07-14",
-          "raw": 2.15
+          "t": "2026-07-15",
+          "raw": 0.3
         }
       ]
     },
     "c77": {
-      "raw": 1,
+      "raw": 0.98,
       "psa9": 10.12,
       "psa10": 11.51,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-destined-rivals/arven%27s-mabosstiff-ex-139",
-      "ts": 1784013134312,
+      "ts": 1784099775220,
       "history": [
         {
           "t": "2026-07-11",
@@ -1496,6 +1681,25 @@
         {
           "t": "2026-07-14",
           "raw": 1
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.98
+        }
+      ]
+    },
+    "c79": {
+      "raw": 6.05,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/tauros-96",
+      "ts": 1784099775956,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 6.05
         }
       ]
     },
@@ -1506,7 +1710,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/beedrill-ex-3",
-      "ts": 1784013138827,
+      "ts": 1784099777783,
       "history": [
         {
           "t": "2026-07-11",
@@ -1523,25 +1727,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.54
-        }
-      ]
-    },
-    "c81": {
-      "raw": 1.32,
-      "psa9": null,
-      "psa10": null,
-      "currency": "EUR",
-      "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-pyroar-ex-15",
-      "ts": 1784013139636,
-      "history": [
-        {
-          "t": "2026-07-13",
-          "raw": 1.15
         },
         {
-          "t": "2026-07-14",
-          "raw": 1.32
+          "t": "2026-07-15",
+          "raw": 1.54
         }
       ]
     },
@@ -1552,10 +1741,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/xerneas-91",
-      "ts": 1784013141606,
+      "ts": 1784099782280,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 12.44
+        },
+        {
+          "t": "2026-07-15",
           "raw": 12.44
         }
       ]
@@ -1567,7 +1760,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-scarlet-&-violet-151/caterpie-172",
-      "ts": 1784013143689,
+      "ts": 1784099783238,
       "history": [
         {
           "t": "2026-07-11",
@@ -1584,40 +1777,21 @@
         {
           "t": "2026-07-14",
           "raw": 4.7
-        }
-      ]
-    },
-    "c87": {
-      "raw": 3.67,
-      "psa9": null,
-      "psa10": null,
-      "currency": "EUR",
-      "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-japanese-scarlet-&-violet-151/arbok-ex-187",
-      "ts": 1784013145739,
-      "history": [
-        {
-          "t": "2026-07-12",
-          "raw": 3.61
         },
         {
-          "t": "2026-07-13",
-          "raw": 3.61
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 3.67
+          "t": "2026-07-15",
+          "raw": 4.7
         }
       ]
     },
     "c88": {
-      "raw": 94.47,
+      "raw": 87.4,
       "psa9": 46,
       "psa10": 57.51,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-shiny-star-v/charizard-v-307",
-      "ts": 1784013148077,
+      "ts": 1784099789816,
       "history": [
         {
           "t": "2025-02-01",
@@ -1706,17 +1880,21 @@
         {
           "t": "2026-07-14",
           "raw": 94.47
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 87.4
         }
       ]
     },
     "c93": {
-      "raw": 94.47,
+      "raw": 87.4,
       "psa9": 46,
       "psa10": 57.51,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-shiny-star-v/charizard-v-307",
-      "ts": 1784013149805,
+      "ts": 1784099791519,
       "history": [
         {
           "t": "2026-07-12",
@@ -1729,6 +1907,10 @@
         {
           "t": "2026-07-14",
           "raw": 94.47
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 87.4
         }
       ]
     },
@@ -1739,7 +1921,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/baltoy-46",
-      "ts": 1784013151595,
+      "ts": 1784099793927,
       "history": [
         {
           "t": "2026-07-11",
@@ -1755,6 +1937,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 0.1
+        },
+        {
+          "t": "2026-07-15",
           "raw": 0.1
         }
       ]
@@ -1766,7 +1952,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/claydol-47",
-      "ts": 1784013153909,
+      "ts": 1784099797254,
       "history": [
         {
           "t": "2026-07-11",
@@ -1783,6 +1969,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.12
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.12
         }
       ]
     },
@@ -1793,7 +1983,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-gallade-ex-48",
-      "ts": 1784013155698,
+      "ts": 1784099798987,
       "history": [
         {
           "t": "2026-07-11",
@@ -1810,6 +2000,10 @@
         {
           "t": "2026-07-14",
           "raw": 1.84
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.84
         }
       ]
     },
@@ -1820,7 +2014,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/qwilfish-52",
-      "ts": 1784013157706,
+      "ts": 1784099800579,
       "history": [
         {
           "t": "2026-07-13",
@@ -1828,6 +2022,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 0.17
+        },
+        {
+          "t": "2026-07-15",
           "raw": 0.17
         }
       ]
@@ -1839,7 +2037,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/stunky-53",
-      "ts": 1784013159654,
+      "ts": 1784099802575,
       "history": [
         {
           "t": "2026-07-11",
@@ -1856,17 +2054,21 @@
         {
           "t": "2026-07-14",
           "raw": 0.1
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.1
         }
       ]
     },
     "c96": {
-      "raw": 0.42,
+      "raw": 0.37,
       "psa9": null,
       "psa10": null,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/chien-pao-54",
-      "ts": 1784013162010,
+      "ts": 1784099805186,
       "history": [
         {
           "t": "2026-07-11",
@@ -1883,6 +2085,25 @@
         {
           "t": "2026-07-14",
           "raw": 0.42
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.37
+        }
+      ]
+    },
+    "c100": {
+      "raw": 3.27,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/prism-tower-111",
+      "ts": 1784099805831,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 3.27
         }
       ]
     },
@@ -1893,7 +2114,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-obsidian-flames/oinkologne-183",
-      "ts": 1784013166648,
+      "ts": 1784099806659,
       "history": [
         {
           "t": "2026-07-11",
@@ -1910,6 +2131,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.18
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.18
         }
       ]
     },
@@ -1920,7 +2145,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/cinccino-ex-73",
-      "ts": 1784013167161,
+      "ts": 1784099808580,
       "history": [
         {
           "t": "2026-07-12",
@@ -1933,6 +2158,25 @@
         {
           "t": "2026-07-14",
           "raw": 1.13
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.13
+        }
+      ]
+    },
+    "c103": {
+      "raw": 3.06,
+      "psa9": 12.82,
+      "psa10": 13.8,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-obsidian-flames/absol-ex-214",
+      "ts": 1784099810603,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 3.06
         }
       ]
     },
@@ -1943,7 +2187,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/crobat-93",
-      "ts": 1784013171607,
+      "ts": 1784099812667,
       "history": [
         {
           "t": "2026-07-13",
@@ -1951,6 +2195,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 4.98
+        },
+        {
+          "t": "2026-07-15",
           "raw": 4.98
         }
       ]
@@ -1962,7 +2210,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/roxie%27s-performance-81",
-      "ts": 1784013172817,
+      "ts": 1784099815694,
       "history": [
         {
           "t": "2026-07-11",
@@ -1979,6 +2227,25 @@
         {
           "t": "2026-07-14",
           "raw": 0.15
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.15
+        }
+      ]
+    },
+    "c106": {
+      "raw": 1.32,
+      "psa9": null,
+      "psa10": null,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-pyroar-ex-15",
+      "ts": 1784099817332,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 1.32
         }
       ]
     },
@@ -1989,10 +2256,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/aurorus-92",
-      "ts": 1784013177729,
+      "ts": 1784099819573,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 4.16
+        },
+        {
+          "t": "2026-07-15",
           "raw": 4.16
         }
       ]
@@ -2004,7 +2275,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-promo/mega-zygarde-ex-71",
-      "ts": 1784013178426,
+      "ts": 1784099823165,
       "history": [
         {
           "t": "2026-07-11",
@@ -2021,6 +2292,25 @@
         {
           "t": "2026-07-14",
           "raw": 1.11
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.11
+        }
+      ]
+    },
+    "c109": {
+      "raw": 5.51,
+      "psa9": 6.05,
+      "psa10": 12.92,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-scarlet-&-violet/iron-treads-ex-248",
+      "ts": 1784099825176,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 5.51
         }
       ]
     },
@@ -2031,7 +2321,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-platinum/riolu-san-diego-comic-con-91",
-      "ts": 1784013182823,
+      "ts": 1784099828580,
       "history": [
         {
           "t": "2026-07-11",
@@ -2047,6 +2337,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 125.34
+        },
+        {
+          "t": "2026-07-15",
           "raw": 125.34
         }
       ]
@@ -2058,7 +2352,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-mega-evolution/shedinja-144",
-      "ts": 1784013186452,
+      "ts": 1784099829807,
       "history": [
         {
           "t": "2026-07-12",
@@ -2071,6 +2365,10 @@
         {
           "t": "2026-07-14",
           "raw": 3.63
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 3.63
         }
       ]
     },
@@ -2081,7 +2379,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/zubat-49",
-      "ts": 1784013187342,
+      "ts": 1784099831731,
       "history": [
         {
           "t": "2026-07-11",
@@ -2097,18 +2395,22 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 0.18
+        },
+        {
+          "t": "2026-07-15",
           "raw": 0.18
         }
       ]
     },
     "c113": {
-      "raw": 0.82,
+      "raw": 1.38,
       "psa9": 7.36,
       "psa10": 9.22,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-mega-evolution/mega-manectric-ex-50",
-      "ts": 1784013189740,
+      "ts": 1784099835098,
       "history": [
         {
           "t": "2026-07-11",
@@ -2125,6 +2427,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.82
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.38
         }
       ]
     },
@@ -2135,7 +2441,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/crobat-51",
-      "ts": 1784013191684,
+      "ts": 1784099836821,
       "history": [
         {
           "t": "2026-07-11",
@@ -2151,6 +2457,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 1.78
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.78
         }
       ]
@@ -2162,7 +2472,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/mega-gallade-ex-48",
-      "ts": 1784013193421,
+      "ts": 1784099837420,
       "history": [
         {
           "t": "2026-07-12",
@@ -2175,6 +2485,25 @@
         {
           "t": "2026-07-14",
           "raw": 1.84
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 1.84
+        }
+      ]
+    },
+    "c119": {
+      "raw": 3.49,
+      "psa9": 4.79,
+      "psa10": 9.67,
+      "currency": "EUR",
+      "source": "pricecharting",
+      "url": "https://www.pricecharting.com/game/pokemon-destined-rivals/electrike-196",
+      "ts": 1784099839584,
+      "history": [
+        {
+          "t": "2026-07-15",
+          "raw": 3.49
         }
       ]
     },
@@ -2185,10 +2514,14 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-destined-rivals/steven%27s-metagross-ex-145",
-      "ts": 1784013197897,
+      "ts": 1784099841584,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 1.48
+        },
+        {
+          "t": "2026-07-15",
           "raw": 1.48
         }
       ]
@@ -2200,7 +2533,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/sudowoodo-43",
-      "ts": 1784013202924,
+      "ts": 1784099849411,
       "history": [
         {
           "t": "2026-07-11",
@@ -2216,6 +2549,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 0.22
+        },
+        {
+          "t": "2026-07-15",
           "raw": 0.22
         }
       ]
@@ -2227,7 +2564,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/phanpy-44",
-      "ts": 1784013203595,
+      "ts": 1784099851258,
       "history": [
         {
           "t": "2026-07-11",
@@ -2244,6 +2581,10 @@
         {
           "t": "2026-07-14",
           "raw": 0.17
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 0.17
         }
       ]
     },
@@ -2254,7 +2595,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/tyrantrum-45",
-      "ts": 1784013205625,
+      "ts": 1784099853416,
       "history": [
         {
           "t": "2026-07-11",
@@ -2271,17 +2612,21 @@
         {
           "t": "2026-07-14",
           "raw": 4.6
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 4.6
         }
       ]
     },
     "o1": {
-      "raw": 158.7,
+      "raw": 156.39,
       "psa9": 119.6,
       "psa10": 125.58,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-champion%27s-path/charizard-vmax-74",
-      "ts": 1784013210720,
+      "ts": 1784099854334,
       "history": [
         {
           "t": "2026-07-13",
@@ -2290,6 +2635,10 @@
         {
           "t": "2026-07-14",
           "raw": 158.7
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 156.39
         }
       ]
     },
@@ -2300,22 +2649,26 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-perfect-order/rosa%27s-encouragement-123",
-      "ts": 1784013211195,
+      "ts": 1784099854848,
       "history": [
         {
           "t": "2026-07-14",
+          "raw": 56.43
+        },
+        {
+          "t": "2026-07-15",
           "raw": 56.43
         }
       ]
     },
     "o4": {
-      "raw": 159.33,
+      "raw": 165.83,
       "psa9": null,
-      "psa10": 146.85,
+      "psa10": 147.15,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/eevee-ex-167",
-      "ts": 1784013211738,
+      "ts": 1784099857451,
       "history": [
         {
           "t": "2026-07-12",
@@ -2328,6 +2681,10 @@
         {
           "t": "2026-07-14",
           "raw": 159.33
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 165.83
         }
       ]
     },
@@ -2338,7 +2695,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-prismatic-evolutions/flareon-ex-146",
-      "ts": 1784013213510,
+      "ts": 1784099859457,
       "history": [
         {
           "t": "2026-07-13",
@@ -2346,6 +2703,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 184
+        },
+        {
+          "t": "2026-07-15",
           "raw": 184
         }
       ]
@@ -2357,7 +2718,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-chaos-rising/xerneas-91",
-      "ts": 1784013219435,
+      "ts": 1784099863927,
       "history": [
         {
           "t": "2026-07-13",
@@ -2365,6 +2726,10 @@
         },
         {
           "t": "2026-07-14",
+          "raw": 12.44
+        },
+        {
+          "t": "2026-07-15",
           "raw": 12.44
         }
       ]
@@ -2376,7 +2741,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-neo-genesis/lugia-9",
-      "ts": 1784013222608,
+      "ts": 1784099864892,
       "history": [
         {
           "t": "2025-03-01",
@@ -2397,17 +2762,21 @@
         {
           "t": "2026-07-14",
           "raw": 342.89
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 342.89
         }
       ]
     },
     "o21": {
-      "raw": 10.9,
+      "raw": 11.04,
       "psa9": 40.2,
       "psa10": 60.71,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-japanese-gold-silver-new-world/pikachu-25",
-      "ts": 1784013224394,
+      "ts": 1784099867128,
       "history": [
         {
           "t": "2025-02-01",
@@ -2484,29 +2853,25 @@
         {
           "t": "2026-07-14",
           "raw": 10.9
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 11.04
         }
       ]
     },
-    "o23": {
-      "raw": 17.81,
-      "psa9": 17.55,
-      "psa10": 28.15,
+    "o22": {
+      "raw": 7.36,
+      "psa9": 14.94,
+      "psa10": 50.59,
       "currency": "EUR",
       "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-phantasmal-flames/meowth-106",
-      "ts": 1784013229097,
+      "url": "https://www.pricecharting.com/game/pokemon-neo-genesis/togepi-51",
+      "ts": 1784099868330,
       "history": [
         {
-          "t": "2026-07-12",
-          "raw": 18.63
-        },
-        {
-          "t": "2026-07-13",
-          "raw": 17.81
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 17.81
+          "t": "2026-07-15",
+          "raw": 7.36
         }
       ]
     },
@@ -2517,7 +2882,7 @@
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-fossil/aerodactyl-1",
-      "ts": 1784013230090,
+      "ts": 1784099873225,
       "history": [
         {
           "t": "2026-07-11",
@@ -2534,40 +2899,36 @@
         {
           "t": "2026-07-14",
           "raw": 18.85
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 18.85
         }
       ]
     },
-    "o7": {
-      "raw": 181.01,
-      "psa9": 55.15,
-      "psa10": 57.5,
+    "o6": {
+      "raw": 62.27,
+      "psa9": 138,
+      "psa10": 247.67,
       "currency": "EUR",
       "source": "pricecharting",
-      "url": "https://www.pricecharting.com/game/pokemon-japanese-scarlet-&-violet-151/mew-ex-205",
-      "ts": 1784013237005,
+      "url": "https://www.pricecharting.com/game/pokemon-jungle/snorlax-11",
+      "ts": 1784099878280,
       "history": [
         {
-          "t": "2026-07-12",
-          "raw": 181.01
-        },
-        {
-          "t": "2026-07-13",
-          "raw": 181.01
-        },
-        {
-          "t": "2026-07-14",
-          "raw": 181.01
+          "t": "2026-07-15",
+          "raw": 62.27
         }
       ]
     },
     "o8": {
-      "raw": 4.72,
+      "raw": 4.34,
       "psa9": 21.61,
-      "psa10": 27.6,
+      "psa10": 28.18,
       "currency": "EUR",
       "source": "pricecharting",
       "url": "https://www.pricecharting.com/game/pokemon-jungle/jigglypuff-1st-edition-54",
-      "ts": 1784013237608,
+      "ts": 1784099883565,
       "history": [
         {
           "t": "2026-07-11",
@@ -2584,6 +2945,10 @@
         {
           "t": "2026-07-14",
           "raw": 4.72
+        },
+        {
+          "t": "2026-07-15",
+          "raw": 4.34
         }
       ]
     }
