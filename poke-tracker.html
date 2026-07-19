@@ -1552,6 +1552,7 @@ function ClasseurTab() {
 
 function CoursTab({ ownedList }) {
   const [lang, setLang]         = useState("FR");
+  const [page, setPage]         = useState(0);
   const [selected, setSelected] = useState(null);
   const [grade, setGrade]       = useState("psa10");
   const [livePrices, setLivePrices] = useLs("pt_cours_live", {});
@@ -1603,7 +1604,9 @@ function CoursTab({ ownedList }) {
   }, 0);
 
   const BINDER_SIZE = 9;
-  const pageCards   = Array.from({ length: BINDER_SIZE }, (_, i) => langCards[i] ?? null);
+  const totalPages  = Math.max(1, Math.ceil(langCards.length / BINDER_SIZE));
+  const curPage     = Math.min(page, totalPages - 1);
+  const pageCards   = Array.from({ length: BINDER_SIZE }, (_, i) => langCards[curPage * BINDER_SIZE + i] ?? null);
 
   return (
     <div>
@@ -1629,7 +1632,7 @@ function CoursTab({ ownedList }) {
           const cnt    = gradingCards.filter(c => c.lang === t.id).length;
           const active = lang === t.id;
           return (
-            <button key={t.id} onClick={() => { setLang(t.id); setSelected(null); }} style={{
+            <button key={t.id} onClick={() => { setLang(t.id); setSelected(null); setPage(0); }} style={{
               flex:1, padding:"8px 4px", borderRadius:10, cursor:"pointer", fontFamily:"inherit",
               background: active ? `${t.color}18` : "transparent",
               color: active ? t.color : T.textMuted,
@@ -1764,6 +1767,19 @@ function CoursTab({ ownedList }) {
           })()}
         </div>
       </div>
+
+      {/* Pagination (si + de 9 cartes dans la langue) */}
+      {totalPages > 1 && (
+        <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:12, marginBottom:8 }}>
+          <button onClick={() => { setPage(p => Math.max(0, p - 1)); setSelected(null); }}
+            disabled={curPage === 0}
+            style={{ ...css.btn(), opacity: curPage === 0 ? 0.3 : 1, padding:"5px 12px" }}>←</button>
+          <span style={{ fontSize:11, color:T.textMuted }}>Page {curPage + 1}/{totalPages}</span>
+          <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
+            disabled={curPage === totalPages - 1}
+            style={{ ...css.btn(), opacity: curPage === totalPages - 1 ? 0.3 : 1, padding:"5px 12px" }}>→</button>
+        </div>
+      )}
 
       <div style={{ textAlign:"center", fontSize:10, color:T.textMuted, marginBottom:14 }}>
         {langCards.length} carte{langCards.length!==1?"s":""} · cliquer pour prix PSA
