@@ -1200,9 +1200,11 @@ function PurchaseEditor({ card, store, onSet }) {
 // quand aucun prix RAW/PSA n'est disponible — utile pour le classeur collection.
 function EconoStrip({ card, rawEntry, store, onSetPurchase, refValue, color, estimate }) {
   const raw = rawEur(rawEntry);
+  const cm  = rawEntry && rawEntry.cm != null ? Math.round(rawEntry.cm) : null;   // CardMarket € (natif)
+  const market = cm != null ? cm : raw;                                           // valeur marché préférée
   const cur = resolvePurchase(store, card);
   const paid = typeof cur === "number" ? cur : null;
-  const ref = refValue != null ? refValue : (raw != null ? raw : (estimate != null ? estimate : null));
+  const ref = refValue != null ? refValue : (market != null ? market : (estimate != null ? estimate : null));
   const plus = (paid != null && ref != null) ? Math.round(ref - paid) : null;
   const tile = (label, node, c) => (
     <div key={label} style={{ background: `${c}12`, border: `1px solid ${c}33`, borderRadius: 12, padding: "10px 6px", textAlign: "center" }}>
@@ -1213,7 +1215,7 @@ function EconoStrip({ card, rawEntry, store, onSetPurchase, refValue, color, est
   const tiles = [];
   if (estimate != null) tiles.push(tile("Valeur estimée", `~${estimate}€`, color));
   tiles.push(tile("Prix d'achat", <PurchaseEditor card={card} store={store} onSet={onSetPurchase} />, "#a855f7"));
-  tiles.push(tile("RAW indicatif", raw != null ? `~${raw}€` : "—", "#60a5fa"));
+  tiles.push(tile(cm != null ? "CardMarket" : "RAW indicatif", market != null ? `~${market}€` : "—", "#60a5fa"));
   if (plus != null) tiles.push(tile("Plus-value", `${plus >= 0 ? "+" : ""}${plus}€`, plus >= 0 ? "#4ade80" : "#f87171"));
   const cols = tiles.length >= 4 ? 2 : tiles.length;
   return <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols},1fr)`, gap: 6, marginTop: 10 }}>{tiles}</div>;
@@ -1444,10 +1446,13 @@ function BinderView({ cards, color }) {
           })()}
           {(() => {
             const e = prices?.[selected.id];
-            const srcLabel = e && (e.source === "pricecharting" ? "PriceCharting" : e.source === "cardmarket" ? "CardMarket" : "TCGplayer");
+            const parts = [];
+            if (e && e.cm  != null) parts.push(`CardMarket ${Math.round(e.cm)}€`);
+            if (e && e.tcg != null) parts.push(`TCGplayer ${Math.round(e.tcg)}€`);
+            if (e && e.source === "pricecharting" && e.raw != null && e.cm == null) parts.push(`PriceCharting ${Math.round(e.raw)}€`);
             return e ? (
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>
-                Prix {srcLabel}{e.source !== "pricecharting" ? " (EN indicatif)" : ""} · {relTime(e.ts)}
+                {parts.length ? parts.join(" · ") : "Prix indicatif"} · {relTime(e.ts)}
               </div>
             ) : prices === null ? (
               <div style={{ fontSize: 9.5, color: T.textMuted, marginTop: 7, textAlign: "center" }}>Chargement des prix…</div>
@@ -1814,11 +1819,17 @@ function CoursTab({ ownedList }) {
           <EconoStrip card={selected} rawEntry={prices?.[selected.id]} store={purchase} onSetPurchase={setP}
             refValue={histData ? histData[histData.length - 1][(meta?.grade || "").includes("10") ? "psa10" : "psa9"] : null}
             color={curColor} />
-          {prices?.[selected.id] && (
-            <div style={{ fontSize:9.5, color:T.textMuted, marginTop:7, textAlign:"center" }}>
-              RAW {prices[selected.id].source === "cardmarket" ? "CardMarket" : "TCGplayer"} (EN indicatif) · {relTime(prices[selected.id].ts)}
-            </div>
-          )}
+          {prices?.[selected.id] && (() => {
+            const e = prices[selected.id], parts = [];
+            if (e.cm  != null) parts.push(`CardMarket ${Math.round(e.cm)}€`);
+            if (e.tcg != null) parts.push(`TCGplayer ${Math.round(e.tcg)}€`);
+            if (e.source === "pricecharting" && e.raw != null && e.cm == null) parts.push(`RAW ${Math.round(e.raw)}€`);
+            return (
+              <div style={{ fontSize:9.5, color:T.textMuted, marginTop:7, textAlign:"center" }}>
+                {parts.length ? parts.join(" · ") : "Prix indicatif"} · {relTime(e.ts)}
+              </div>
+            );
+          })()}
 
           {histData ? (
             <>
