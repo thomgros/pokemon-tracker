@@ -18,6 +18,7 @@ const ROOT = path.resolve(__dirname, "..");
 const HTML = path.join(ROOT, "poke-tracker.html");
 const OUT = path.join(ROOT, "prices.json");
 const USD_EUR = 0.92;
+const PTCG_KEY = process.env.POKEMONTCG_IO_API_KEY || "";
 
 // ── Extraction de littéraux depuis le HTML ───────────────────────────────────
 function extractLiteral(src, name) {
@@ -112,6 +113,38 @@ async function resolve(query) {
 
 const priceUSD = (h, id) => { const m = h.match(new RegExp(`id=["']${id}["'][\\s\\S]{0,260}?\\$([0-9][0-9,]*\\.?[0-9]*)`)); return m ? parseFloat(m[1].replace(/,/g, "")) : null; };
 const eur = usd => (usd == null ? null : Math.round(usd * USD_EUR * 100) / 100);
+const round2 = n => (n == null ? null : Math.round(n * 100) / 100);
+
+// ── pokemontcg.io : prix CardMarket (€ natif) + TCGplayer (USD→€) ────────────
+// Interroge l'API par `set.id:xxx number:n` (champ ptcgioQ). Renvoie {cm, tcg, cmUrl}
+// ou null. CardMarket est déjà en euros (pas de conversion). Couverture en retard
+// sur les sets tout récents → simplement absent (repli PriceCharting).
+async function fetchPTCG(q) {
+  const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=1&orderBy=-set.releaseDate`;
+  const headers = { Accept: "application/json" };
+  if (PTCG_KEY) headers["X-Api-Key"] = PTCG_KEY;
+  const r = await fetch(url, { signal: AbortSignal.timeout(20000), headers });
+  if (r.status !== 200) throw new Error("PTCG HTTP " + r.status);
+  const j = await r.json();
+  const card = j.data && j.data[0];
+  if (!card) return null;
+  // CardMarket € (tendance > moyenne de vente > avg7)
+  let cm = null, cmUrl = null;
+  if (card.cardmarket && card.cardmarket.prices) {
+    const p = card.cardmarket.prices;
+    cm = p.trendPrice ?? p.averageSellPrice ?? p.avg7 ?? p.avg30 ?? null;
+    cmUrl = card.cardmarket.url || null;
+  }
+  // TCGplayer USD (market > mid > low), meilleure variante dispo → €
+  let tcgUsd = null;
+  if (card.tcgplayer && card.tcgplayer.prices) {
+    const v = card.tcgplayer.prices;
+    const order = ["holofoil", "normal", "reverseHolofoil", "1stEditionHolofoil", "unlimitedHolofoil", "1stEditionNormal"];
+    let pick = order.map(k => v[k]).find(Boolean) || Object.values(v)[0] || null;
+    if (pick) tcgUsd = pick.market ?? pick.mid ?? pick.low ?? null;
+  }
+  return { cm: round2(cm), tcg: eur(tcgUsd), cmUrl };
+}
 
 async function main() {
   const src = fs.readFileSync(HTML, "utf8");
@@ -133,30 +166,61 @@ async function main() {
   const validate = process.argv.includes("--validate");
   const sIdx = process.argv.indexOf("--sample");
   const sample = sIdx !== -1 ? parseInt(process.argv[sIdx + 1], 10) : 0;
-  const jobs = all.map(c => ({ id: c._id, name: c.fullName || c.name, q: cardQuery(c, META) })).filter(j => j.q);
+  const jobs = all.map(c => ({
+    id: c._id, name: c.fullName || c.name,
+    q: cardQuery(c, META),
+    ptcg: c.ptcgioQ || (META[c.id] && META[c.id].ptcgioQ) || null,
+  })).filter(j => j.q || j.ptcg);
   const list = sample ? jobs.slice(0, sample) : jobs;
-  console.log(`${jobs.length} cartes résolvables / ${all.length}${validate ? " · MODE VALIDATION" : ""}`);
+  console.log(`${jobs.length} cartes résolvables / ${all.length}${validate ? " · MODE VALIDATION" : ""}${PTCG_KEY ? " · clé PTCG ✓" : " · PTCG sans clé"}`);
 
   const out = {};
-  let ok = 0, miss = 0, err = 0;
+  let ok = 0, miss = 0, err = 0, cmN = 0, tcgN = 0;
   for (const j of list) {
     try {
-      const r = await resolve(j.q);
-      if (!r) { miss++; if (validate) console.log(`  ✗ ${j.id} "${j.q}" — non résolu`); continue; }
-      const raw = priceUSD(r.body, "used_price"), g9 = priceUSD(r.body, "complete_price"), p10 = priceUSD(r.body, "new_price");
-      if (raw == null) { miss++; if (validate) console.log(`  ✗ ${j.id} "${j.q}" — pas de prix`); continue; }
-      const rawE = eur(raw);
-      const prev = prevCards[j.id];
+      let entry = null;
+
+      // ── PriceCharting : RAW + PSA 9/10 ──
+      if (j.q) {
+        const r = await resolve(j.q);
+        if (r) {
+          const raw = priceUSD(r.body, "used_price"), g9 = priceUSD(r.body, "complete_price"), p10 = priceUSD(r.body, "new_price");
+          if (raw != null) entry = { raw: eur(raw), psa9: eur(g9), psa10: eur(p10), currency: "EUR", source: "pricecharting", url: r.url.split("?")[0], ts: Date.now() };
+        }
+      }
+
+      // ── pokemontcg.io : CardMarket € + TCGplayer € ──
+      if (j.ptcg) {
+        try {
+          const p = await fetchPTCG(j.ptcg);
+          if (p && (p.cm != null || p.tcg != null)) {
+            if (!entry) entry = { currency: "EUR", ts: Date.now() };
+            if (p.cm != null) { entry.cm = p.cm; cmN++; }
+            if (p.tcg != null) { entry.tcg = p.tcg; tcgN++; }
+            if (p.cmUrl) entry.cmUrl = p.cmUrl;
+          }
+        } catch (e) { if (validate) console.log(`  ~ ${j.id} PTCG — ${e.message}`); }
+        await sleep(300);
+      }
+
+      if (!entry) { miss++; if (validate) console.log(`  ✗ ${j.id} "${j.q || j.ptcg}" — aucune source`); await sleep(250); continue; }
+
+      // RAW de repli = CardMarket (€) si PriceCharting absent (sets récents)
+      if (entry.raw == null && entry.cm != null) { entry.raw = entry.cm; entry.source = "cardmarket"; }
+      if (entry.raw == null) { miss++; if (validate) console.log(`  ✗ ${j.id} — pas de RAW`); await sleep(250); continue; }
+
+      // Historique RAW réel accumulé (purge des points aberrants hors 0.25×–4×)
+      const rawE = entry.raw, prev = prevCards[j.id];
       const carried = (prev && Array.isArray(prev.history) ? prev.history : [])
         .filter(p => p.t !== today && p.raw > 0 && p.raw <= rawE * 4 && p.raw >= rawE * 0.25);
-      const hist = [...carried, { t: today, raw: rawE }].slice(-90);
-      const entry = { raw: rawE, psa9: eur(g9), psa10: eur(p10), currency: "EUR", source: "pricecharting", url: r.url.split("?")[0], ts: Date.now(), history: hist };
+      entry.history = [...carried, { t: today, raw: rawE }].slice(-90);
+
       out[j.id] = entry; ok++;
-      if (validate) console.log(`  ✓ ${j.id} "${j.q}" → ${entry.raw}€ (PSA9 ${entry.psa9}€ / PSA10 ${entry.psa10}€) · ${hist.length} pts histo · ${entry.url}`);
-    } catch (e) { err++; if (validate) console.log(`  ! ${j.id} "${j.q}" — ${e.message}`); }
+      if (validate) console.log(`  ✓ ${j.id} → raw ${entry.raw}€ | CM ${entry.cm ?? "–"} | TCG ${entry.tcg ?? "–"} | PSA9 ${entry.psa9 ?? "–"} PSA10 ${entry.psa10 ?? "–"} · ${entry.source}`);
+    } catch (e) { err++; if (validate) console.log(`  ! ${j.id} — ${e.message}`); }
     await sleep(250);
   }
-  console.log(`Résultat : ${ok} prix, ${miss} sans prix, ${err} erreurs`);
+  console.log(`Résultat : ${ok} prix (${cmN} CardMarket, ${tcgN} TCGplayer), ${miss} sans prix, ${err} erreurs`);
   if (validate) return;
   const payload = { generatedAt: new Date().toISOString(), count: ok, cards: out };
   fs.writeFileSync(OUT, JSON.stringify(payload, null, 2) + "\n");
