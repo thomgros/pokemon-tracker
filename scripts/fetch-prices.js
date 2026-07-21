@@ -66,6 +66,7 @@ const PC_SET_TEXT = {
   "champion's path": "Champions Path", "prismatic evolutions": "Prismatic Evolutions",
   "paldea evolved": "Paldea Evolved", "base expansion pack": "Base Set", "team rocket": "Team Rocket",
   "xy flashfire": "XY Flashfire", "southern islands": "Southern Islands", "vivid voltage": "Vivid Voltage",
+  "base set unlimited": "Base Set", "base set": "Base Set", "chilling reign": "Chilling Reign",
 };
 
 const digits = s => (String(s).match(/\d+/) || [""])[0].replace(/^0+/, "") || "0";
@@ -200,10 +201,18 @@ async function main() {
             if (p.cmUrl) entry.cmUrl = p.cmUrl;
           }
         } catch (e) { if (validate) console.log(`  ~ ${j.id} PTCG — ${e.message}`); }
-        await sleep(300);
+        // Sans clé API, pokemontcg.io limite à ~30 req/min → on espace à ~2 s.
+        await sleep(PTCG_KEY ? 300 : 2100);
       }
 
       if (!entry) { miss++; if (validate) console.log(`  ✗ ${j.id} "${j.q || j.ptcg}" — aucune source`); await sleep(250); continue; }
+
+      // Garde-fou : cm/tcg aberrants (glitch pokemontcg.io / mauvaise variante) —
+      // ignorés s'ils s'écartent trop du RAW PriceCharting de référence.
+      if (entry.source === "pricecharting" && entry.raw != null) {
+        if (entry.cm  != null && (entry.cm  > entry.raw * 4 || entry.cm  < entry.raw * 0.1)) delete entry.cm;
+        if (entry.tcg != null && (entry.tcg > entry.raw * 6 || entry.tcg < entry.raw * 0.1)) delete entry.tcg;
+      }
 
       // RAW de repli = CardMarket (€) si PriceCharting absent (sets récents)
       if (entry.raw == null && entry.cm != null) { entry.raw = entry.cm; entry.source = "cardmarket"; }
