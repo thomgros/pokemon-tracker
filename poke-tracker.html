@@ -745,7 +745,9 @@ const GRADING_META = {
   "o23": { img:"https://images.pokemontcg.io/me2/106_hires.png",   grade:"PSA 10",   ptcgioQ:'set.id:me2 number:106' },
   "o24": { img:"https://images.pokemontcg.io/base3/1_hires.png",   grade:"PSA 7",    ptcgioQ:'set.id:base3 number:1' },
   "o25": { grade:"PSA 10 ✓", tcgdex:"M2a-223", ptcgioQ:'set.id:me2pt5 number:223' },
-  "o26": { img:"https://images.pokemontcg.io/base1/4_hires.png", grade:"PSA 8 visé", ptcgioQ:'set.id:base1 number:4' },};
+  "o26": { img:"https://images.pokemontcg.io/base1/4_hires.png", grade:"PSA 8 visé", ptcgioQ:'set.id:base1 number:4' },
+  "o6":  { ptcgioQ:'set.id:base2 number:11' },
+  "o8":  { ptcgioQ:'set.id:base2 number:54' },};
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
 // img = URL directe confirmée (JP/EN vintage/SV EN) · tcgdex = "SETCODE-num" (résolu via API TCGdex dans la langue
@@ -809,7 +811,7 @@ const CLASSEUR_CARDS = [
   // ── 🇯🇵 sv2P — Clay Burst ─────────────────────────────────────────────────
   { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    tcgdex:"SV2P-65", ptcgioQ:'set.id:sv2p number:65', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/SV2P/SV2P_65_R_JP_LG.png" },
   // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
-  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", img:"https://images.pokemontcg.io/base2/11_hires.png" },
+  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", ptcgioQ:'set.id:base2 number:11', img:"https://images.pokemontcg.io/base2/11_hires.png" },
   // ── 🇬🇧 Ascended Heroes / Perfect Order EN ───────────────────────────────
   { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 116/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", tcgdex:"me02.5-116", ptcgioQ:'set.id:me2pt5 number:116' },
   { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"me03-62",   ptcgioQ:'set.id:me3 number:62' },
@@ -821,15 +823,15 @@ const CLASSEUR_CARDS = [
   { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-96",   ptcgioQ:'set.id:me3 number:96' },
   { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   tcgdex:"me02.5-237", ptcgioQ:'set.id:me2pt5 number:237' },
   // ── 🇬🇧 Prismatic Evolutions — PRE EN ────────────────────────────────────
-  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv8pt5/5_hires.png" },
-  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/sv8pt5/81_hires.png" },
-  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    img:"https://images.pokemontcg.io/sv8pt5/20_hires.png" },
-  { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    img:"https://images.pokemontcg.io/sv8pt5/119_hires.png" },
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:5', img:"https://images.pokemontcg.io/sv8pt5/5_hires.png" },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:81', img:"https://images.pokemontcg.io/sv8pt5/81_hires.png" },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:20', img:"https://images.pokemontcg.io/sv8pt5/20_hires.png" },
+  { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:119', img:"https://images.pokemontcg.io/sv8pt5/119_hires.png" },
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
   { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-70", ptcgioQ:'set.id:mef number:70', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_070_std.png" },
   { id:"c98", name:"Fennekin promo",     fullName:"Fennekin promo MEP 080",      set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-80", ptcgioQ:'set.id:mef number:80', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_080_std.png" },
   // ── 🇬🇧 Vivid Voltage — SWSH4 ──────────────────────────────────────────
-  { id:"c97", name:"Raikou",              fullName:"Raikou 050/185",              set:"VIV · Vivid Voltage",       lang:"EN", value:"~8€",    price:15, img:"https://images.pokemontcg.io/swsh4/50_hires.png" },
+  { id:"c97", name:"Raikou",              fullName:"Raikou 050/185",              set:"VIV · Vivid Voltage",       lang:"EN", value:"~8€",    price:15, ptcgioQ:'set.id:swsh4 number:50', img:"https://images.pokemontcg.io/swsh4/50_hires.png" },
 
   // ── 🇫🇷 Nouvelles cartes FR ──────────────────────────────────────────────
   { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/088",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    tcgdex:"me03-105", ptcgioQ:'set.id:me3 number:105', img:"https://images.scrydex.com/pokemon/me3-105/large" },
@@ -904,7 +906,7 @@ const CLASSEUR_CARDS = [
   { id:"c125", name:"Mega Slowbro ex",         fullName:"Mega Slowbro ex 031/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~5€",    tcgdex:"me05-31",  ptcgioQ:'set.id:pbl number:31' },
   { id:"c126", name:"Primarina",               fullName:"Primarina 088/084 ★",             set:"PBL · Pitch Black",         lang:"EN", value:"~5€",    tcgdex:"me05-88",  ptcgioQ:'set.id:pbl number:88' },
   // ── 🇬🇧 Chilling Reign — SWSH6 (pull booster) ───────────────────────────
-  { id:"c127", name:"Galarian Moltres V",      fullName:"Galarian Moltres V 097/198",      set:"CRE · Chilling Reign",      lang:"EN", value:"~4€",    img:"https://images.pokemontcg.io/swsh6/97_hires.png" },
+  { id:"c127", name:"Galarian Moltres V",      fullName:"Galarian Moltres V 097/198",      set:"CRE · Chilling Reign",      lang:"EN", value:"~4€",    ptcgioQ:'set.id:swsh6 number:97', img:"https://images.pokemontcg.io/swsh6/97_hires.png" },
   // ── 🇬🇧 MEP promo (pull booster) ────────────────────────────────────────
   { id:"c128", name:"Zarude",                  fullName:"Zarude 088",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~3€",    tcgdex:"mep-88",   ptcgioQ:'set.id:mef number:88',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_088_std.png" },
   // ── 🇫🇷 Nuit Noire — ME05 / PBL FR (pulls boosters, suite) ──────────────
