@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-03T08:45:07.294Z",
-  "count": 38,
+  "generatedAt": "2026-08-04T07:54:47.562Z",
+  "count": 41,
   "cards": {
     "c57": {
       "url": "https://assets.tcgdex.net/fr/me/me04/055/high.webp",
@@ -182,6 +182,16 @@
       "lang": "fr",
       "source": "tcgdex-api"
     },
+    "c125": {
+      "url": "https://assets.tcgdex.net/en/me/me05/031/high.webp",
+      "lang": "en",
+      "source": "tcgdex-api"
+    },
+    "c126": {
+      "url": "https://assets.tcgdex.net/en/me/me05/088/high.webp",
+      "lang": "en",
+      "source": "tcgdex-api"
+    },
     "c129": {
       "url": "https://assets.tcgdex.net/fr/me/me05/094/high.webp",
       "lang": "fr",
@@ -190,6 +200,11 @@
     "c130": {
       "url": "https://assets.tcgdex.net/fr/me/me05/045/high.webp",
       "lang": "fr",
+      "source": "tcgdex-api"
+    },
+    "c131": {
+      "url": "https://assets.tcgdex.net/en/me/me05/008/high.webp",
+      "lang": "en",
       "source": "tcgdex-api"
     }
   }
