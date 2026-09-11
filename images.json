@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-10T09:34:18.668Z",
-  "count": 40,
+  "generatedAt": "2026-09-11T09:33:21.193Z",
+  "count": 41,
   "cards": {
     "c57": {
       "url": "https://assets.tcgdex.net/fr/me/me04/055/high.webp",
@@ -79,6 +79,11 @@
     },
     "c49": {
       "url": "https://assets.tcgdex.net/en/me/me03/089/high.webp",
+      "lang": "en",
+      "source": "tcgdex-api"
+    },
+    "c59": {
+      "url": "https://assets.tcgdex.net/en/me/me03/096/high.webp",
       "lang": "en",
       "source": "tcgdex-api"
     },
