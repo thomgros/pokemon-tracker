@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-11T09:33:04.723Z",
+  "generatedAt": "2026-09-12T09:12:16.462Z",
   "count": 1,
   "cards": {
     "c135": {
       "currency": "EUR",
-      "ts": 1789119050828,
+      "ts": 1789204219059,
       "cm": 1.96,
-      "tcg": 7.83,
+      "tcg": 7.91,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/sv4pt5-150",
       "raw": 1.96,
       "source": "cardmarket",
@@ -17,6 +17,10 @@
         },
         {
           "t": "2026-09-11",
+          "raw": 1.96
+        },
+        {
+          "t": "2026-09-12",
           "raw": 1.96
         }
       ]
