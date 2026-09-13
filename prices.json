@@ -1,12 +1,27 @@
 {
-  "generatedAt": "2026-09-12T09:12:16.462Z",
-  "count": 1,
+  "generatedAt": "2026-09-13T10:10:53.378Z",
+  "count": 2,
   "cards": {
+    "c132": {
+      "currency": "EUR",
+      "ts": 1789294131925,
+      "cm": 25.43,
+      "tcg": 19.15,
+      "cmUrl": "https://prices.pokemontcg.io/cardmarket/swsh1-211",
+      "raw": 25.43,
+      "source": "cardmarket",
+      "history": [
+        {
+          "t": "2026-09-13",
+          "raw": 25.43
+        }
+      ]
+    },
     "c135": {
       "currency": "EUR",
-      "ts": 1789204219059,
+      "ts": 1789294142839,
       "cm": 1.96,
-      "tcg": 7.91,
+      "tcg": 7.76,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/sv4pt5-150",
       "raw": 1.96,
       "source": "cardmarket",
@@ -21,6 +36,10 @@
         },
         {
           "t": "2026-09-12",
+          "raw": 1.96
+        },
+        {
+          "t": "2026-09-13",
           "raw": 1.96
         }
       ]
