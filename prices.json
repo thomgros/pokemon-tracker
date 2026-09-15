@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T10:30:52.467Z",
-  "count": 2,
+  "generatedAt": "2026-09-15T09:57:26.244Z",
+  "count": 1,
   "cards": {
     "c41": {
       "currency": "EUR",
-      "ts": 1789381430392,
+      "ts": 1789465844695,
       "cm": 88.28,
       "tcg": 345.61,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/base2-11",
@@ -14,21 +14,10 @@
         {
           "t": "2026-09-14",
           "raw": 88.28
-        }
-      ]
-    },
-    "c133": {
-      "currency": "EUR",
-      "ts": 1789381722191,
-      "cm": 20.91,
-      "tcg": 12.32,
-      "cmUrl": "https://prices.pokemontcg.io/cardmarket/swsh1-212",
-      "raw": 20.91,
-      "source": "cardmarket",
-      "history": [
+        },
         {
-          "t": "2026-09-14",
-          "raw": 20.91
+          "t": "2026-09-15",
+          "raw": 88.28
         }
       ]
     }
