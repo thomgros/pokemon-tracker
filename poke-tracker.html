@@ -281,6 +281,9 @@ const fmt   = (n, d = 0) => Number(n).toFixed(d);
 const MANUAL_PRICES = {
   // Charizard 4/102 Unlimited — PSA 8 = sold réel (comps PSA ~$1200-1400), PSA 9/10 estimés
   "1": { psa8: 1250, psa9: 3500, psa10: 6500, manual: true },
+  // o26 = mon Charizard 4/102 acheté : le scraper PriceCharting tombe sur la 1st Ed
+  // (8670€/17116€ aberrants) → valeurs réelles Unlimited épinglées.
+  "o26": { raw: 450, psa8: 1250, psa9: 3000, psa10: 6000, manual: true },
 };
 function usePrices() {
   const [prices, setPrices] = useState(null);
@@ -1948,8 +1951,9 @@ function CalendrierTab() {
     <div>
       <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 14 }}>Ère Méga-Évolution · 2026 · 30e anniversaire du JCC</div>
       {sets.map((s, i) => {
-        const sc   = statusCfg[s.status];
-        const days = daysUntil(s.date);
+        const days   = daysUntil(s.date);
+        const status = days < 0 ? "past" : days <= 45 ? "soon" : "upcoming";
+        const sc     = statusCfg[status];
         return (
           <div key={i} style={{ ...css.card, background: sc.bg, border: `1px solid ${sc.border}`, marginBottom: 10 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -1961,7 +1965,7 @@ function CalendrierTab() {
                     <span style={{ fontSize: 10, color: T.textMuted, marginLeft: 8 }}>{formatDate(s.date)}</span>
                   </div>
                   <span style={{ ...css.pill(sc.color, sc.bg, sc.border), fontSize: 9 }}>
-                    {s.status === "past" ? "Sorti" : days <= 0 ? "Cette semaine" : `J-${days}`}
+                    {status === "past" ? "Sorti" : days <= 0 ? "Cette semaine" : `J-${days}`}
                   </span>
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginTop: 3 }}>{s.fr}</div>

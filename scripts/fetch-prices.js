@@ -186,7 +186,11 @@ async function main() {
         const r = await resolve(j.q);
         if (r) {
           const raw = priceUSD(r.body, "used_price"), g9 = priceUSD(r.body, "complete_price"), p10 = priceUSD(r.body, "new_price");
-          if (raw != null) entry = { raw: eur(raw), psa9: eur(g9), psa10: eur(p10), currency: "EUR", source: "pricecharting", url: r.url.split("?")[0], ts: Date.now() };
+          // Garde-fou cohérence : le RAW ne doit pas dépasser le PSA 9, ni le PSA 9 le PSA 10.
+          // Sinon = mauvaise page/variante scrapée (ex. Riolu Platine à 2668€) → on ignore PriceCharting.
+          const incoherent = (g9 != null && raw != null && raw > g9 * 1.15) || (g9 != null && p10 != null && g9 > p10 * 1.15);
+          if (raw != null && !incoherent) entry = { raw: eur(raw), psa9: eur(g9), psa10: eur(p10), currency: "EUR", source: "pricecharting", url: r.url.split("?")[0], ts: Date.now() };
+          else if (incoherent && validate) console.log(`  ⚠ ${j.id} "${j.q}" — prix incohérents ignorés (raw ${raw} / psa9 ${g9} / psa10 ${p10})`);
         }
       }
 
