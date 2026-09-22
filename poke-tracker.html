@@ -929,14 +929,14 @@ const CLASSEUR_CARDS = [
   { id:"c139", name:"Énergie Eau (30th)",        fullName:"Énergie Eau · M6a WAT",        set:"M6a · 30e Anniv.", lang:"JP", value:"~3€" },
   { id:"c140", name:"Énergie Obscurité (30th)",  fullName:"Énergie Obscurité · M6a DAR",  set:"M6a · 30e Anniv.", lang:"JP", value:"~3€" },
   { id:"c141", name:"Énergie Combat (30th)",     fullName:"Énergie Combat · M6a FIG",     set:"M6a · 30e Anniv.", lang:"JP", value:"~3€" },
-  { id:"c142", name:"Gholdengo (AR)",            fullName:"Gholdengo 118/103 AR",         set:"M6a · 30e Anniv.", lang:"JP", value:"~7€" },
-  { id:"c143", name:"Fuecoco ex",                fullName:"Fuecoco ex 009/103 RR",        set:"M6a · 30e Anniv.", lang:"JP", value:"~4€" },
-  { id:"c144", name:"Greninja ex",               fullName:"Greninja ex 015/103 RR",       set:"M6a · 30e Anniv.", lang:"JP", value:"~8€" },
-  { id:"c145", name:"Pikachu (holo)",            fullName:"Pikachu 043/103 (27/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~6€" },
-  { id:"c146", name:"Pikachu",                   fullName:"Pikachu 040/103 (24/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€" },
-  { id:"c147", name:"Pikachu",                   fullName:"Pikachu 023/103 (07/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€" },
-  { id:"c148", name:"Pikachu",                   fullName:"Pikachu 029/103 (13/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€" },
-  { id:"c149", name:"Pikachu (holo · A. Nishida)", fullName:"Pikachu 041/103 (25/30)",    set:"M6a · 30e Anniv.", lang:"JP", value:"~7€" },
+  { id:"c142", name:"Gholdengo (AR)",            fullName:"Gholdengo 118/103 AR",         set:"M6a · 30e Anniv.", lang:"JP", value:"~7€", tcgdex:"M6a-118" },
+  { id:"c143", name:"Fuecoco ex",                fullName:"Fuecoco ex 009/103 RR",        set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-009" },
+  { id:"c144", name:"Greninja ex",               fullName:"Greninja ex 015/103 RR",       set:"M6a · 30e Anniv.", lang:"JP", value:"~8€", tcgdex:"M6a-015" },
+  { id:"c145", name:"Pikachu (holo)",            fullName:"Pikachu 043/103 (27/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~6€", tcgdex:"M6a-043" },
+  { id:"c146", name:"Pikachu",                   fullName:"Pikachu 040/103 (24/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-040" },
+  { id:"c147", name:"Pikachu",                   fullName:"Pikachu 023/103 (07/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-023" },
+  { id:"c148", name:"Pikachu",                   fullName:"Pikachu 029/103 (13/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-029" },
+  { id:"c149", name:"Pikachu (holo · A. Nishida)", fullName:"Pikachu 041/103 (25/30)",    set:"M6a · 30e Anniv.", lang:"JP", value:"~7€", tcgdex:"M6a-041" },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -964,7 +964,7 @@ const LANG_TABS_CFG = [
 const LANG_API_CODE = { FR: "fr", JP: "ja", EN: "en" };
 
 // Codes pokemon-card.com (site officiel JP) confirmés disponibles pour ces sets Mega/SV récents.
-const POKEMON_CARD_JP_SETS = ["M2a", "M3", "M4", "SV11B"];
+const POKEMON_CARD_JP_SETS = ["M2a", "M3", "M4", "SV11B", "M6a"];
 const LTCG_VARIANTS = ["P", "R", "RR", "AR", "SAR", "SR", "SIR", "IR", "UR", "HR", "MA"];
 
 // Signature des champs source d'une carte : si elle change (correction de tcgdex/ptcgioQ
