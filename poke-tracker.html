@@ -1316,7 +1316,7 @@ function WatchPriceCell({ card, auto, override, onSet, color }) {
 }
 
 // ── Watch list en 3 tableaux (Vintage / Collector / Moderne), triés vieux+éco → récent+cher ──
-function WatchTables({ cards, prices, onDelete, pxStore, onSetPx }) {
+function WatchTables({ cards, prices, onDelete, pxStore, onSetPx, onZoom }) {
   const cmUrl = c => `https://www.cardmarket.com/fr/Pokemon/Products/Search?searchString=${encodeURIComponent(c.name.replace(/\s+\d+[-/].*$/, "").trim())}`;
   const autoEur = c => { const e = prices?.[String(c.id)]; if (!e) return null; if (e.cm != null) return Math.round(e.cm); const r = rawEur(e); return r != null ? r : null; };
   const sortPrice = c => { const o = pxStore?.[c.id]; if (o != null) return o; const a = autoEur(c); return a != null ? a : watchSortPrice(c); };
@@ -1332,7 +1332,7 @@ function WatchTables({ cards, prices, onDelete, pxStore, onSetPx }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {list.map(c => (
           <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 11, background: "rgba(255,255,255,0.03)", border: `1px solid ${T.border}`, borderRadius: 10, padding: "7px 10px" }}>
-            <div style={{ width: 50, flexShrink: 0, aspectRatio: "5/7", borderRadius: 5, overflow: "hidden", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.5)" }}>
+            <div onClick={() => c.img && onZoom && onZoom(c.img)} style={{ width: 50, flexShrink: 0, aspectRatio: "5/7", borderRadius: 5, overflow: "hidden", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.5)", cursor: c.img ? "zoom-in" : "default" }}>
               {c.img ? <img src={c.img} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : <span style={{ fontSize: 13, opacity: 0.3 }}>🃏</span>}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -2334,6 +2334,7 @@ function Logo({ size = 40, sub }) {
 function PokeTracker() {
   const [watchList, setWatchList, resetWatch] = useStorage("pt_watch", DEFAULT_WATCH);
   const [watchPx, setWatchPx]     = useLs("pt_watch_px", {});
+  const [zoomImg, setZoomImg]     = useState(null);
   const setWPx = (id, val) => setWatchPx(p => { const n = { ...p }; if (val == null) delete n[id]; else n[id] = val; return n; });
   const [ownedList, setOwnedList, resetOwned] = useStorage("pt_owned_v5", DEFAULT_OWNED);
   const prices                    = usePrices();
@@ -2503,7 +2504,7 @@ function PokeTracker() {
             <span style={{ fontSize: 11, color: T.textMuted }}>{filtered.length} carte{filtered.length > 1 ? "s" : ""} · triées vieux+éco → récent+cher</span>
             {!showAddWatch && <button onClick={() => setShowAddWatch(true)} style={css.btn("primary")}>+ Ajouter</button>}
           </div>
-          <WatchTables cards={filtered} prices={prices} onDelete={delWatch} pxStore={watchPx} onSetPx={setWPx} />
+          <WatchTables cards={filtered} prices={prices} onDelete={delWatch} pxStore={watchPx} onSetPx={setWPx} onZoom={setZoomImg} />
         </div>
       )}
 
@@ -2513,6 +2514,12 @@ function PokeTracker() {
           PokéTracker · TCGdex · pokemontcg.io · données sauvegardées localement
         </div>
       </div>
+      {zoomImg && (
+        <div onClick={() => setZoomImg(null)} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, cursor: "zoom-out" }}>
+          <img src={zoomImg} alt="" style={{ width: "min(88vw, 400px)", maxHeight: "90vh", objectFit: "contain", borderRadius: 12, boxShadow: "0 12px 50px rgba(0,0,0,0.85)" }} />
+          <button onClick={() => setZoomImg(null)} style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.14)", border: "none", color: "#fff", fontSize: 18, width: 38, height: 38, borderRadius: "50%", cursor: "pointer", lineHeight: 1 }}>✕</button>
+        </div>
+      )}
     </div>
   );
 }
