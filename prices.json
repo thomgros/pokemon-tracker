@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-11T11:26:13.341Z",
-  "count": 6,
+  "generatedAt": "2026-10-12T11:03:06.115Z",
+  "count": 5,
   "cards": {
     "c41": {
       "currency": "EUR",
-      "ts": 1791717467709,
+      "ts": 1791802467445,
       "cm": 88.28,
       "tcg": 376.27,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/base2-11",
@@ -14,12 +14,16 @@
         {
           "t": "2026-10-11",
           "raw": 88.28
+        },
+        {
+          "t": "2026-10-12",
+          "raw": 88.28
         }
       ]
     },
     "c132": {
       "currency": "EUR",
-      "ts": 1791717749590,
+      "ts": 1791802749032,
       "cm": 25.43,
       "tcg": 19.54,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/swsh1-211",
@@ -37,12 +41,16 @@
         {
           "t": "2026-10-11",
           "raw": 25.43
+        },
+        {
+          "t": "2026-10-12",
+          "raw": 25.43
         }
       ]
     },
     "c133": {
       "currency": "EUR",
-      "ts": 1791717752096,
+      "ts": 1791802751562,
       "cm": 20.91,
       "tcg": 12.06,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/swsh1-212",
@@ -52,14 +60,18 @@
         {
           "t": "2026-10-11",
           "raw": 20.91
+        },
+        {
+          "t": "2026-10-12",
+          "raw": 20.91
         }
       ]
     },
     "c135": {
       "currency": "EUR",
-      "ts": 1791717758904,
+      "ts": 1791802758524,
       "cm": 1.96,
-      "tcg": 6.06,
+      "tcg": 6.04,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/sv4pt5-150",
       "raw": 1.96,
       "source": "cardmarket",
@@ -67,14 +79,18 @@
         {
           "t": "2026-10-11",
           "raw": 1.96
+        },
+        {
+          "t": "2026-10-12",
+          "raw": 1.96
         }
       ]
     },
     "c158": {
       "currency": "EUR",
-      "ts": 1791717782875,
+      "ts": 1791802780170,
       "cm": 2.75,
-      "tcg": 3.28,
+      "tcg": 3.31,
       "cmUrl": "https://prices.pokemontcg.io/cardmarket/sv8-194",
       "raw": 2.75,
       "source": "cardmarket",
@@ -86,21 +102,10 @@
         {
           "t": "2026-10-11",
           "raw": 2.75
-        }
-      ]
-    },
-    "c159": {
-      "currency": "EUR",
-      "ts": 1791717786137,
-      "cm": 0.51,
-      "tcg": 0.49,
-      "cmUrl": "https://prices.pokemontcg.io/cardmarket/sv9-111",
-      "raw": 0.51,
-      "source": "cardmarket",
-      "history": [
+        },
         {
-          "t": "2026-10-11",
-          "raw": 0.51
+          "t": "2026-10-12",
+          "raw": 2.75
         }
       ]
     }
