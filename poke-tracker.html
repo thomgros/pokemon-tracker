@@ -241,6 +241,7 @@ const DEFAULT_OWNED = [
   { id: "o25", name: "Méga-Dracaufeu X ex 223/193 MA",price: 0,      status: "graded",     set: "M2α Ascended Heroes",   lang: "JP", note: "Mega Attack Rare · cadeau · PSA 10 GEM MT ✓ · cert #157270173", ebayQuery: "Mega Charizard X ex 223/193 Ascended Heroes Japanese PSA 10" },
   { id: "o26", name: "Charizard 4/102 Base Set",       price: 1000,   status: "à grader",   set: "Base Set Unlimited",    lang: "EN", note: "Acheté 1000€ CardMarket (UE, sans taxes) · Unlimited authentique (cosmos vérifié) · coins/arêtes/centrage propres MAIS fines rayures holo en lumière rasante → cible PSA 8 (~1200€), risque PSA 7, PSA 9 long-shot · batch PokéLoutre 15 août", ebayQuery: "Charizard 4/102 Base Set Unlimited Near Mint" },
   { id: "o27", name: "Machamp 8/102 Base Set 1st Ed",  price: 90,     status: "à grader",   set: "Base Set 1st Ed",       lang: "EN", note: "1st Edition Holo · scellé pack-fresh (jamais manipulé) · acheté 90€ · PSA 9-10 visé · PSA 9 ~280€ / PSA 10 ~2000€ · même un PSA 8 (~130€) couvre l'achat", ebayQuery: "Machamp 8/102 Base Set 1st Edition Holo Near Mint" },
+  { id: "o28", name: "Pikachu Yu Nagaba 208/S-P",      price: 130,    status: "à grader",   set: "S-P Promo (Yu Nagaba)",  lang: "JP", note: "Promo Yu Nagaba × Pokémon Card Game (2021) · acheté 130€ · PSA 10 visé (~300€) · ⚠️ PSA 9 ~130€ = équilibre, donc rentable surtout en PSA 10 · art ligne + fond blanc → centrage/rayures critiques", ebayQuery: "Pikachu Yu Nagaba 208/S-P Japanese Promo Near Mint" },
 ];
 
 // ── localStorage ──────────────────────────────────────────────────────────────
@@ -763,7 +764,8 @@ const GRADING_HISTORY = {
   "o24": { h:[{date:"Juil 26",nm:83,psa9:320,psa10:1800},{date:"Août 26",nm:85,psa9:330,psa10:1900}] },
   "o25": { h:[{date:"Juil 26",nm:50,psa9:87,psa10:210}] },
   "o26": { h:[{date:"Juil 26",nm:450,psa9:3000,psa10:6000}] },
-  "o27": { h:[{date:"Oct 26",nm:60,psa9:280,psa10:2000}] },};
+  "o27": { h:[{date:"Oct 26",nm:60,psa9:280,psa10:2000}] },
+  "o28": { h:[{date:"Oct 26",nm:130,psa9:135,psa10:310}] },};
 
 // img = URL directe confirmée · tcgdex = "SETCODE-num" pour API TCGdex · ptcgioQ = fallback pokemontcg.io
 const GRADING_META = {
@@ -786,7 +788,8 @@ const GRADING_META = {
   "o26": { img:"https://images.pokemontcg.io/base1/4_hires.png", grade:"PSA 8 visé", ptcgioQ:'set.id:base1 number:4' },
   "o6":  { ptcgioQ:'set.id:base2 number:11' },
   "o8":  { ptcgioQ:'set.id:base2 number:54' },
-  "o27": { img:"https://images.pokemontcg.io/base1/8_hires.png", grade:"PSA 9-10 visé", ptcgioQ:'set.id:base1 number:8' },};
+  "o27": { img:"https://images.pokemontcg.io/base1/8_hires.png", grade:"PSA 9-10 visé", ptcgioQ:'set.id:base1 number:8' },
+  "o28": { grade:"PSA 10 visé" },};
 
 // ── Classeur ──────────────────────────────────────────────────────────────────
 // img = URL directe confirmée (JP/EN vintage/SV EN) · tcgdex = "SETCODE-num" (résolu via API TCGdex dans la langue
