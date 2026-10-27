@@ -173,6 +173,57 @@ const RARITY_META = {
 };
 const rarityMeta = (r) => RARITY_META[r] || { s: r || "?", l: r || "—", c: "#94a3b8", rank: 99 };
 
+// ── Marqueurs fins (calculés à la volée depuis la carte) ──────────────────────
+// Ordre : du plus recherché au plus commun. { code, def, couleur }.
+const MARKER_DEFS = [
+  { k: "★★★",     d: "Rare Dorée / Hyper Rare — le plus haut niveau",        c: "#f6c343" },
+  { k: "★★",      d: "Rare Secrète Dorée — carte V dorée",                   c: "#eab308" },
+  { k: "SIR",     d: "Special Illustration Rare — alt art premium (perso + Pokémon)", c: "#d946ef" },
+  { k: "FA",      d: "Full Art — illustration pleine carte",                 c: "#c084fc" },
+  { k: "AR",      d: "Art Rare / Alternative Art — illu. alternative (surtout JP)", c: "#a78bfa" },
+  { k: "IR",      d: "Illustration Rare — illustration alternative",         c: "#8b7ff0" },
+  { k: "★",       d: "Rare Spéciale — holo étoile (illustration)",           c: "#7dd3fc" },
+  { k: "UR",      d: "Ultra Rare — ex à numéro secret (full art)",           c: "#38bdf8" },
+  { k: "ex",      d: "Double Rare — carte ex classique",                     c: "#fb7185" },
+  { k: "V/VMAX",  d: "Carte V / VMAX",                                       c: "#f472b6" },
+  { k: "✨",       d: "Shiny / Chromatique",                                  c: "#34d399" },
+  { k: "/30",     d: "Promo anniversaire Pikachu (×/30)",                    c: "#60a5fa" },
+  { k: "Énergie", d: "Énergie spéciale",                                     c: "#cbd5e1" },
+  { k: "Rare",    d: "Rare spéciale — dresseur full art / secret",           c: "#fbbf24" },
+  { k: "Autres",  d: "Rare / Promo / Commune — sans marqueur spécial",       c: "#94a3b8" },
+];
+const MARKER_META = Object.fromEntries(MARKER_DEFS.map(m => [m.k, m]));
+// Déduit le marqueur d'une carte (numéro vs taille de set + symboles imprimés).
+function cardMarker(card) {
+  const fn = card.fullName || card.name || "";
+  const nm = (card.name || "").toLowerCase();
+  const low = (fn + " " + nm).toLowerCase();
+  const m = fn.match(/(\d+)\s*\/\s*(\d+)/);
+  const num = m ? +m[1] : 0, den = m ? +m[2] : 0;
+  const secret = num > den && den > 0;
+  const hasEx = /\bex\b/.test(nm);
+  const char = [" de cynthia", "hop's", " de pepper", " de nabil", " de pierre", " de strykna"].some(w => low.includes(w));
+  if (fn.includes("★★★")) return "★★★";
+  if (fn.includes("★★"))  return "★★";
+  if (fn.includes("✨"))   return "✨";
+  if (char && (secret || /\bFA\b/.test(fn))) return "SIR";
+  if (/\bFA\b/.test(fn)) return "FA";
+  if (/\bAR\b/.test(fn)) return "AR";
+  if (/\bIR\b/.test(fn)) return "IR";
+  if (fn.includes("★")) return "★";
+  if (secret && !hasEx) {
+    if (["registre", "pad", "tower", "scrapper", "outil", "sacred", "fortifiant", "catcher", "prisme", "prismatique", "tour"].some(w => nm.includes(w))) return "Rare";
+    return card.lang === "JP" ? "AR" : "IR";
+  }
+  if (secret && hasEx) return "UR";
+  if (/vmax/.test(low)) return "V/VMAX";
+  if (/\bv\b/.test(nm) && !hasEx) return "V/VMAX";
+  if (hasEx) return "ex";
+  if (nm.includes("énergie")) return "Énergie";
+  if (/\(\d+\/30\)/.test(fn)) return "/30";
+  return "Autres";
+}
+
 const DEFAULT_WATCH = [
   { id: 1,  name: "Charizard 4/102 (cible PSA 8/9)", ebayQuery: "Charizard 4/102 Base Set PSA 8 PSA 9",                              set: "Base Expansion Pack",    number: "4/102",   maxPrice: 1500, priority: 1, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base1/4_hires.png" },
   { id: 2,  name: "Dark Charizard 1st Ed",    ebayQuery: "Dark Charizard 4/82 Team Rocket 1st Edition Near Mint",                 set: "Team Rocket",            number: "4/82",    maxPrice: 650,  priority: 2, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base5/4_hires.png" },
@@ -1715,41 +1766,139 @@ function BinderView({ cards, color }) {
   );
 }
 
+// ── RarityBreakdown — tableau récap par marqueur (recalculé à la volée) ────────
+
+function RarityBreakdown({ cards }) {
+  const { rows, tot } = React.useMemo(() => {
+    const agg = {};
+    const tot = { EN: 0, FR: 0, JP: 0, n: 0 };
+    cards.forEach(c => {
+      const k = cardMarker(c);
+      (agg[k] = agg[k] || { EN: 0, FR: 0, JP: 0, n: 0 });
+      agg[k][c.lang] = (agg[k][c.lang] || 0) + 1;
+      agg[k].n++; tot[c.lang]++; tot.n++;
+    });
+    const rows = MARKER_DEFS.filter(m => agg[m.k]).map(m => ({ ...m, ...agg[m.k] }));
+    return { rows, tot };
+  }, [cards]);
+
+  const cell = { padding: "7px 6px", borderTop: `1px solid ${T.border}`, fontSize: 13, verticalAlign: "middle" };
+  const numCell = (v, col) => (
+    <td style={{ ...cell, textAlign: "center", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: v ? col : T.textMuted }}>{v || "·"}</td>
+  );
+  return (
+    <div style={{ ...css.card, padding: "16px 16px 14px" }}>
+      <div style={{ fontSize: 14, fontWeight: 800, color: T.text, fontFamily: "'Sora','DM Sans',sans-serif" }}>Répartition par rareté</div>
+      <div style={{ fontSize: 11, color: T.textSub, marginTop: 3, marginBottom: 12 }}>
+        {tot.n} cartes · marqueur imprimé + définition · nombre par langue — recalculé à chaque ajout
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 420 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: T.textMuted, padding: "0 6px 9px", fontWeight: 700 }}>Marqueur — définition</th>
+              <th style={{ fontSize: 10, color: "#9ec5fe", padding: "0 6px 9px", fontWeight: 700 }}>🇬🇧 EN</th>
+              <th style={{ fontSize: 10, color: "#f8b4c0", padding: "0 6px 9px", fontWeight: 700 }}>🇫🇷 FR</th>
+              <th style={{ fontSize: 10, color: "#fcd79a", padding: "0 6px 9px", fontWeight: 700 }}>🇯🇵 JP</th>
+              <th style={{ fontSize: 10, color: T.textMuted, padding: "0 6px 9px", fontWeight: 700 }}>Tot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(r => (
+              <tr key={r.k}>
+                <td style={{ ...cell, textAlign: "left" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 30, height: 20, padding: "0 6px", borderRadius: 5, background: r.c, color: "#0b0b12", fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: 11, marginRight: 9, verticalAlign: "middle" }}>{r.k}</span>
+                  <span style={{ color: T.textSub, fontSize: 12, verticalAlign: "middle" }}>{r.d}</span>
+                </td>
+                {numCell(r.EN, "#9ec5fe")}
+                {numCell(r.FR, "#f8b4c0")}
+                {numCell(r.JP, "#fcd79a")}
+                <td style={{ ...cell, textAlign: "center", fontFamily: "'Sora',sans-serif", fontWeight: 800, color: T.text, fontVariantNumeric: "tabular-nums" }}>{r.n}</td>
+              </tr>
+            ))}
+            <tr>
+              <td style={{ ...cell, borderTop: `2px solid ${T.text}33`, textAlign: "left", fontFamily: "'Sora',sans-serif", fontWeight: 800, color: T.text, paddingTop: 11 }}>TOTAL</td>
+              {["EN", "FR", "JP"].map(l => (
+                <td key={l} style={{ ...cell, borderTop: `2px solid ${T.text}33`, textAlign: "center", fontWeight: 800, color: T.text, paddingTop: 11, fontVariantNumeric: "tabular-nums" }}>{tot[l]}</td>
+              ))}
+              <td style={{ ...cell, borderTop: `2px solid ${T.text}33`, textAlign: "center", fontFamily: "'Sora',sans-serif", fontWeight: 800, color: T.text, paddingTop: 11, fontVariantNumeric: "tabular-nums" }}>{tot.n}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginTop: 10 }}>
+        Classement déduit (numéro vs taille de set + marqueurs) — indicatif.
+      </div>
+    </div>
+  );
+}
+
 // ── ClasseurTab — 3 classeurs par langue ──────────────────────────────────────
 
 function ClasseurTab() {
   const [lang, setLang] = useState("FR");
+  const [view, setView] = useState("classeur"); // "classeur" | "rarete"
   const cards = CLASSEUR_CARDS.filter(c => c.lang === lang);
   const cur   = LANG_TABS_CFG.find(t => t.id === lang);
 
+  const subTabs = [
+    { id: "classeur", label: "Classeur", icon: "📒" },
+    { id: "rarete",   label: "Raretés",  icon: "📊" },
+  ];
+
   return (
     <div>
-      {/* Sélecteur de classeur */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-        {LANG_TABS_CFG.map(t => {
-          const count  = CLASSEUR_CARDS.filter(c => c.lang === t.id).length;
-          const active = lang === t.id;
+      {/* Sélecteur Classeur / Raretés */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+        {subTabs.map(s => {
+          const active = view === s.id;
           return (
-            <button key={t.id} onClick={() => setLang(t.id)} style={{
-              flex: 1, padding: "8px 4px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
-              background: active ? `${t.color}18` : "transparent",
-              color: active ? t.color : T.textMuted,
-              border: `1px solid ${active ? t.color + "55" : T.border}`,
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+            <button key={s.id} onClick={() => setView(s.id)} style={{
+              flex: 1, padding: "9px 4px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+              background: active ? "rgba(56,189,248,0.14)" : "transparent",
+              color: active ? "#38bdf8" : T.textMuted,
+              border: `1px solid ${active ? "#38bdf855" : T.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+              fontSize: 12, fontWeight: active ? 700 : 500,
             }}>
-              <span style={{ fontSize: 20 }}>{t.icon}</span>
-              <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, letterSpacing: "0.02em" }}>{t.label}</span>
-              <span style={{ fontSize: 9, opacity: 0.6 }}>{count} cartes</span>
+              <span style={{ fontSize: 15 }}>{s.icon}</span>{s.label}
             </button>
           );
         })}
       </div>
 
-      <BinderView key={lang} cards={cards} color={cur.color} />
+      {view === "rarete" ? (
+        <RarityBreakdown cards={CLASSEUR_CARDS} />
+      ) : (
+        <>
+          {/* Sélecteur de classeur */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+            {LANG_TABS_CFG.map(t => {
+              const count  = CLASSEUR_CARDS.filter(c => c.lang === t.id).length;
+              const active = lang === t.id;
+              return (
+                <button key={t.id} onClick={() => setLang(t.id)} style={{
+                  flex: 1, padding: "8px 4px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+                  background: active ? `${t.color}18` : "transparent",
+                  color: active ? t.color : T.textMuted,
+                  border: `1px solid ${active ? t.color + "55" : T.border}`,
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                }}>
+                  <span style={{ fontSize: 20 }}>{t.icon}</span>
+                  <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, letterSpacing: "0.02em" }}>{t.label}</span>
+                  <span style={{ fontSize: 9, opacity: 0.6 }}>{count} cartes</span>
+                </button>
+              );
+            })}
+          </div>
 
-      <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center", marginTop: 2 }}>
-        Images : TCGdex (langue native) · pokemontcg.io · cliquer pour détails
-      </div>
+          <BinderView key={lang} cards={cards} color={cur.color} />
+
+          <div style={{ fontSize: 10, color: T.textMuted, textAlign: "center", marginTop: 2 }}>
+            Images : TCGdex (langue native) · pokemontcg.io · cliquer pour détails
+          </div>
+        </>
+      )}
     </div>
   );
 }
