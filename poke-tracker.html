@@ -158,6 +158,20 @@ const STATUS_CONFIG = {
 };
 
 const LANG_FLAG = { EN: "🇬🇧", JP: "🇯🇵", FR: "🇫🇷" };
+// Raretés (ordre de valeur décroissant) : libellé court + libellé long + couleur.
+const RARITY_META = {
+  Or:       { s: "Or",   l: "Or / Hyper Rare",            c: "#f6c343", rank: 1 },
+  SIR:      { s: "SIR",  l: "Special Illustration Rare",  c: "#d946ef", rank: 2 },
+  IR:       { s: "IR",   l: "Illustration / Art Rare",    c: "#a78bfa", rank: 3 },
+  UR:       { s: "UR",   l: "Ultra Rare (FA / V / ex)",   c: "#38bdf8", rank: 4 },
+  RR:       { s: "RR",   l: "Double Rare (ex)",           c: "#fb7185", rank: 5 },
+  Shiny:    { s: "✨",   l: "Shiny",                      c: "#34d399", rank: 6 },
+  Rare:     { s: "R",    l: "Rare spéciale",              c: "#fbbf24", rank: 7 },
+  Promo:    { s: "P",    l: "Promo",                      c: "#60a5fa", rank: 8 },
+  "Énergie":{ s: "⚡",   l: "Énergie spéciale",           c: "#cbd5e1", rank: 9 },
+  Commune:  { s: "C",    l: "Commune / Peu commune",      c: "#94a3b8", rank: 10 },
+};
+const rarityMeta = (r) => RARITY_META[r] || { s: r || "?", l: r || "—", c: "#94a3b8", rank: 99 };
 
 const DEFAULT_WATCH = [
   { id: 1,  name: "Charizard 4/102 (cible PSA 8/9)", ebayQuery: "Charizard 4/102 Base Set PSA 8 PSA 9",                              set: "Base Expansion Pack",    number: "4/102",   maxPrice: 1500, priority: 1, lang: "EN", type: "vintage", img: "https://images.pokemontcg.io/base1/4_hires.png" },
@@ -797,207 +811,207 @@ const GRADING_META = {
 
 const CLASSEUR_CARDS = [
   // ── 🇫🇷 Chaos Ascendant — ME04 / CLN ──────────────────────────────────────
-  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   tcgdex:"me04-107", ptcgioQ:'set.id:cri number:107', img:"https://images.scrydex.com/pokemon/me4-107/large" },
-  { id:"c57", name:"Crocorible ex",      fullName:"Crocorible ex 055/086",      set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    tcgdex:"me04-55",  ptcgioQ:'set.id:cri number:55' },
-  { id:"c58", name:"Tauros",             fullName:"Tauros 096/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~4€",    tcgdex:"me04-96",  ptcgioQ:'set.id:cri number:96', img:"https://images.scrydex.com/pokemon/me4-96/large" },
-  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~6€",    tcgdex:"mep-80", ptcgioQ:'set.id:mef number:80', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-080-high.webp" },
-  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-68",  ptcgioQ:'set.id:cri number:68', img:"https://images.scrydex.com/pokemon/me4-68/large" },
-  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-95",  ptcgioQ:'set.id:cri number:95' },
-  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-42",  ptcgioQ:'set.id:cri number:42', img:"https://images.scrydex.com/pokemon/me4-42/large" },
-  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-29",  ptcgioQ:'set.id:cri number:29', img:"https://images.scrydex.com/pokemon/me4-29/large" },
-  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    tcgdex:"me04-32",  ptcgioQ:'set.id:cri number:32', img:"https://images.scrydex.com/pokemon/me4-32/large" },
+  { id:"c01", name:"Millie",              fullName:"Millie 107/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~20€",   tcgdex:"me04-107", ptcgioQ:'set.id:cri number:107', img:"https://images.scrydex.com/pokemon/me4-107/large", rarity:"IR" },
+  { id:"c57", name:"Crocorible ex",      fullName:"Crocorible ex 055/086",      set:"CLN · Chaos Ascendant", lang:"FR", value:"~6€",    tcgdex:"me04-55",  ptcgioQ:'set.id:cri number:55', rarity:"RR" },
+  { id:"c58", name:"Tauros",             fullName:"Tauros 096/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~4€",    tcgdex:"me04-96",  ptcgioQ:'set.id:cri number:96', img:"https://images.scrydex.com/pokemon/me4-96/large", rarity:"IR" },
+  { id:"c02", name:"Feunnec promo",       fullName:"Feunnec promo MEF 080",       set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~6€",    tcgdex:"mep-80", ptcgioQ:'set.id:mef number:80', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-080-high.webp", rarity:"Promo" },
+  { id:"c03", name:"Muplodocus",          fullName:"Muplodocus 068/086",          set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-68",  ptcgioQ:'set.id:cri number:68', img:"https://images.scrydex.com/pokemon/me4-68/large", rarity:"Commune" },
+  { id:"c04", name:"Colimucus",           fullName:"Colimucus 095/086",           set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-95",  ptcgioQ:'set.id:cri number:95', rarity:"IR" },
+  { id:"c05", name:"Xerneas",             fullName:"Xerneas 042/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-42",  ptcgioQ:'set.id:cri number:42', img:"https://images.scrydex.com/pokemon/me4-42/large", rarity:"Commune" },
+  { id:"c06", name:"Pharamp",             fullName:"Pharamp 029/086",             set:"CLN · Chaos Ascendant", lang:"FR", value:"~3€",    tcgdex:"me04-29",  ptcgioQ:'set.id:cri number:29', img:"https://images.scrydex.com/pokemon/me4-29/large", rarity:"Commune" },
+  { id:"c07", name:"Deoxys",              fullName:"Deoxys 032/086",              set:"CLN · Chaos Ascendant", lang:"FR", value:"~2€",    tcgdex:"me04-32",  ptcgioQ:'set.id:cri number:32', img:"https://images.scrydex.com/pokemon/me4-32/large", rarity:"Commune" },
   // ── 🇫🇷 Méga-Évolution — ME01 / MEG ────────────────────────────────────────
-  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   tcgdex:"me01-155", ptcgioQ:'set.id:me1 number:155', img:"https://images.scrydex.com/pokemon/me1-3/large" },
-  { id:"c09", name:"Ptyranidur promo",    fullName:"Ptyranidur promo MEP 070",    set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~4€",    tcgdex:"mep-70", ptcgioQ:'set.id:mef number:70', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-070-v2-high.webp" },
+  { id:"c08", name:"Méga-Florizarre ex",  fullName:"Méga-Florizarre ex 155/132",  set:"MEG · Méga-Évolution",     lang:"FR", value:"~10€",   tcgdex:"me01-155", ptcgioQ:'set.id:me1 number:155', img:"https://images.scrydex.com/pokemon/me1-3/large", rarity:"UR" },
+  { id:"c09", name:"Ptyranidur promo",    fullName:"Ptyranidur promo MEP 070",    set:"MEP · Méga-Évo Promos",    lang:"FR", value:"~4€",    tcgdex:"mep-70", ptcgioQ:'set.id:mef number:70', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-070-v2-high.webp", rarity:"Promo" },
   // ── 🇫🇷 Perfect Order — ME03 / POR ───────────────────────────────────────
-  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"POR · Perfect Order",      lang:"FR", value:"~10€",   tcgdex:"me03-31",  ptcgioQ:'set.id:me3 number:31', img:"https://images.scrydex.com/pokemon/me3-31/large" },
-  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    tcgdex:"me03-62",  ptcgioQ:'set.id:me3 number:62', img:"https://images.scrydex.com/pokemon/me3-62/large" },
-  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-81",  ptcgioQ:'set.id:me3 number:81', img:"https://images.scrydex.com/pokemon/me3-81/large" },
-  { id:"c60", name:"Illumis",             fullName:"Illumis 111/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-111", ptcgioQ:'set.id:me3 number:111', img:"https://static.pkmcards.fr/cards/fr/por/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-por-fr-111-mega-evolution-equilibre-parfait-illumis.webp" },
-  { id:"c61", name:"Psystigri",           fullName:"Psystigri 095/088",           set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-95",  ptcgioQ:'set.id:me3 number:95', img:"https://images.scrydex.com/pokemon/me3-95/large" },
+  { id:"c10", name:"Méga-Mélodelfe ex",   fullName:"Méga-Mélodelfe ex 031/088",   set:"POR · Perfect Order",      lang:"FR", value:"~10€",   tcgdex:"me03-31",  ptcgioQ:'set.id:me3 number:31', img:"https://images.scrydex.com/pokemon/me3-31/large", rarity:"RR" },
+  { id:"c11", name:"Miaouss ex",          fullName:"Miaouss ex 062/088",          set:"POR · Perfect Order",      lang:"FR", value:"~5€",    tcgdex:"me03-62",  ptcgioQ:'set.id:me3 number:62', img:"https://images.scrydex.com/pokemon/me3-62/large", rarity:"RR" },
+  { id:"c13", name:"Poké Registre",       fullName:"Poké Registre 081/088",       set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-81",  ptcgioQ:'set.id:me3 number:81', img:"https://images.scrydex.com/pokemon/me3-81/large", rarity:"Commune" },
+  { id:"c60", name:"Illumis",             fullName:"Illumis 111/088",             set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-111", ptcgioQ:'set.id:me3 number:111', img:"https://static.pkmcards.fr/cards/fr/por/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-por-fr-111-mega-evolution-equilibre-parfait-illumis.webp", rarity:"IR" },
+  { id:"c61", name:"Psystigri",           fullName:"Psystigri 095/088",           set:"POR · Perfect Order",      lang:"FR", value:"~3€",    tcgdex:"me03-95",  ptcgioQ:'set.id:me3 number:95', img:"https://images.scrydex.com/pokemon/me3-95/large", rarity:"IR" },
   // ── 🇫🇷 Ascended Heroes — ASC FR ──────────────────────────────────────────
-  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    tcgdex:"me02.5-96", ptcgioQ:'set.id:me2pt5 number:96', img:"https://images.scrydex.com/pokemon/me2pt5-96/large" },
-  { id:"c92", name:"Lapyro",              fullName:"Lapyro 037/217",              set:"ASC FR",                   lang:"FR", value:"~2€",    tcgdex:"me02.5-37", ptcgioQ:'set.id:me2pt5 number:37', img:"https://images.scrydex.com/pokemon/me2pt5-37/large" },
+  { id:"c14", name:"Desséliande de Nabil",fullName:"Desséliande de Nabil 096/217",set:"ASC FR",                   lang:"FR", value:"~2€",    tcgdex:"me02.5-96", ptcgioQ:'set.id:me2pt5 number:96', img:"https://images.scrydex.com/pokemon/me2pt5-96/large", rarity:"Commune" },
+  { id:"c92", name:"Lapyro",              fullName:"Lapyro 037/217",              set:"ASC FR",                   lang:"FR", value:"~2€",    tcgdex:"me02.5-37", ptcgioQ:'set.id:me2pt5 number:37', img:"https://images.scrydex.com/pokemon/me2pt5-37/large", rarity:"Commune" },
   // ── 🇫🇷 Phantasmal Flames — ME02 / PFL ───────────────────────────────────
-  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",   tcgdex:"me02-45",  ptcgioQ:'set.id:me2 number:45', img:"https://images.scrydex.com/pokemon/me2-45/large" },
+  { id:"c15", name:"Zacian",              fullName:"Zacian 045/094",              set:"PFL · Failles Prismatiques",lang:"FR", value:"~2€",   tcgdex:"me02-45",  ptcgioQ:'set.id:me2 number:45', img:"https://images.scrydex.com/pokemon/me2-45/large", rarity:"Commune" },
   // ── 🇫🇷 Temporal Forces — SV5 / TEF ──────────────────────────────────────
-  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    tcgdex:"sv05-51", ptcgioQ:'set.id:sv5 number:51', img:"https://images.scrydex.com/pokemon/sv5-51/large" },
+  { id:"c16", name:"Pikachu promo 30 ans",fullName:"Pikachu promo 051/162",       set:"TEF · Faille Temporelle",  lang:"FR", value:"~4€",    tcgdex:"sv05-51", ptcgioQ:'set.id:sv5 number:51', img:"https://images.scrydex.com/pokemon/sv5-51/large", rarity:"Promo" },
   // ── 🇯🇵 M2α — Ascended Heroes ────────────────────────────────────────────
-  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", tcgdex:"M2a-21",  ptcgioQ:'name:"Ho-Oh ex" set.id:me2pt5', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M2a/M2a_21_R_JP_LG.png" },
-  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    tcgdex:"M2a-145", ptcgioQ:'name:"Terapagos ex" set.id:me2pt5' },
-  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-194", ptcgioQ:'set.id:me2pt5 number:194' },
-  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-207", ptcgioQ:'set.id:me2pt5 number:207' },
+  { id:"c17", name:"Ho-Oh ex",            fullName:"Ho-Oh ex 021/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~18€ ⭐", tcgdex:"M2a-21",  ptcgioQ:'name:"Ho-Oh ex" set.id:me2pt5', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M2a/M2a_21_R_JP_LG.png", rarity:"RR" },
+  { id:"c18", name:"Térapagos ex",        fullName:"Térapagos ex 145/193",        set:"M2α · Ascended Heroes",    lang:"JP", value:"~8€",    tcgdex:"M2a-145", ptcgioQ:'name:"Terapagos ex" set.id:me2pt5', rarity:"RR" },
+  { id:"c19", name:"Agehanto",            fullName:"Agehanto 194/193",            set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-194", ptcgioQ:'set.id:me2pt5 number:194', rarity:"IR" },
+  { id:"c20", name:"Charem",              fullName:"Charem 207/193",              set:"M2α · Ascended Heroes",    lang:"JP", value:"~5€",    tcgdex:"M2a-207", ptcgioQ:'set.id:me2pt5 number:207', rarity:"IR" },
   // ── 🇯🇵 M3 — Nihil Zero ──────────────────────────────────────────────────
-  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   tcgdex:"M3-54",  ptcgioQ:'set.id:me3 number:55', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M3/M3_54_R_JP_LG.png" },
-  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-16",  ptcgioQ:'set.id:me3 number:16' },
-  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-61",  ptcgioQ:'set.id:me3 number:62' },
-  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-103", ptcgioQ:'set.id:me3 number:81' },
-  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-84",  ptcgioQ:'set.id:me3 number:24' },
-  { id:"c26", name:"Ratatac",             fullName:"Ratatac 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-92",  ptcgioQ:'set.id:me3 number:61' },
-  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-81",  ptcgioQ:'set.id:me3 number:89' },
-  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-21",  ptcgioQ:'set.id:me3 number:21' },
+  { id:"c21", name:"Méga-Armure ex",      fullName:"Méga-Armure ex 054/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~10€",   tcgdex:"M3-54",  ptcgioQ:'set.id:me3 number:55', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M3/M3_54_R_JP_LG.png", rarity:"RR" },
+  { id:"c22", name:"Ensorceleur ex",      fullName:"Ensorceleur ex 016/080",      set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-16",  ptcgioQ:'set.id:me3 number:16', rarity:"RR" },
+  { id:"c23", name:"Miaouss ex",          fullName:"Miaouss ex 061/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-61",  ptcgioQ:'set.id:me3 number:62', rarity:"RR" },
+  { id:"c24", name:"Poké Pad",            fullName:"Poké Pad 103/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~8€",    tcgdex:"M3-103", ptcgioQ:'set.id:me3 number:81', rarity:"Rare" },
+  { id:"c25", name:"Amarluga",            fullName:"Amarluga 084/080",            set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-84",  ptcgioQ:'set.id:me3 number:24', rarity:"IR" },
+  { id:"c26", name:"Ratatac",             fullName:"Ratatac 092/080",             set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-92",  ptcgioQ:'set.id:me3 number:61', rarity:"IR" },
+  { id:"c27", name:"Coffraille",          fullName:"Coffraille 081/080",          set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-81",  ptcgioQ:'set.id:me3 number:89', rarity:"IR" },
+  { id:"c28", name:"Méga-Starmie ex",     fullName:"Méga-Starmie ex 021/080",     set:"M3 · Nihil Zero",          lang:"JP", value:"~5€",    tcgdex:"M3-21",  ptcgioQ:'set.id:me3 number:21', rarity:"RR" },
   // ── 🇯🇵 M4 — Ninja Spinner ───────────────────────────────────────────────
-  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", tcgdex:"M4-63",  ptcgioQ:'set.id:me4 number:65', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M4/M4_63_R_JP_LG.png" },
-  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    tcgdex:"M4-113", ptcgioQ:'name:"Prism Tower" set.id:me4' },
-  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-107", ptcgioQ:'name:"Tool Scrapper" set.id:me4' },
-  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-71",  ptcgioQ:'set.id:me4 number:73' },
+  { id:"c29", name:"Méga-Dragmara ex",    fullName:"Méga-Dragmara ex 063/083",    set:"M4 · Ninja Spinner",       lang:"JP", value:"~15€ ⭐", tcgdex:"M4-63",  ptcgioQ:'set.id:me4 number:65', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/M4/M4_63_R_JP_LG.png", rarity:"RR" },
+  { id:"c30", name:"Prisme Tower",        fullName:"Prisme Tower 113/083",        set:"M4 · Ninja Spinner",       lang:"JP", value:"~8€",    tcgdex:"M4-113", ptcgioQ:'name:"Prism Tower" set.id:me4', rarity:"Rare" },
+  { id:"c31", name:"Outil Scrapper",      fullName:"Outil Scrapper 107/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-107", ptcgioQ:'name:"Tool Scrapper" set.id:me4', rarity:"Rare" },
+  { id:"c32", name:"Tirachineau ex",      fullName:"Tirachineau ex 071/083",      set:"M4 · Ninja Spinner",       lang:"JP", value:"~5€",    tcgdex:"M4-71",  ptcgioQ:'set.id:me4 number:73', rarity:"RR" },
   // ── 🇯🇵 sv11B — Black Bolt JP ─────────────────────────────────────────────
-  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   tcgdex:"SV11B-159", ptcgioQ:'set.id:sv11b number:159', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/SV11B/SV11B_159_R_JP_LG.png" },
-  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-69",  ptcgioQ:'set.id:sv11b number:69' },
-  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-151", ptcgioQ:'set.id:sv11b number:151' },
+  { id:"c33", name:"Sérperior ex",        fullName:"Sérperior ex 159/086",        set:"sv11B · Black Bolt JP",    lang:"JP", value:"~10€",   tcgdex:"SV11B-159", ptcgioQ:'set.id:sv11b number:159', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/SV11B/SV11B_159_R_JP_LG.png", rarity:"UR" },
+  { id:"c34", name:"Génosect ex",         fullName:"Génosect ex 069/086",         set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-69",  ptcgioQ:'set.id:sv11b number:69', rarity:"RR" },
+  { id:"c35", name:"Ononudo",             fullName:"Ononudo 151/086",             set:"sv11B · Black Bolt JP",    lang:"JP", value:"~5€",    tcgdex:"SV11B-151", ptcgioQ:'set.id:sv11b number:151', rarity:"IR" },
   // ── 🇯🇵 sv4K — Ancient Roar ──────────────────────────────────────────────
-  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-67", ptcgioQ:'set.id:sv4k number:67' },
-  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-69", ptcgioQ:'set.id:sv4k number:69' },
-  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-77", ptcgioQ:'set.id:sv4k number:77' },
-  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    tcgdex:"SV4K-52", ptcgioQ:'set.id:sv4k number:52' },
+  { id:"c36", name:"Iwaparesu",           fullName:"Iwaparesu 067/066",           set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-67", ptcgioQ:'set.id:sv4k number:67', rarity:"IR" },
+  { id:"c37", name:"Konokumushi",         fullName:"Konokumushi 069/066",         set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-69", ptcgioQ:'set.id:sv4k number:69', rarity:"IR" },
+  { id:"c38", name:"Arabrutake",          fullName:"Arabrutake 077/066",          set:"sv4K · Ancient Roar",      lang:"JP", value:"~5€",    tcgdex:"SV4K-77", ptcgioQ:'set.id:sv4k number:77', rarity:"IR" },
+  { id:"c39", name:"Exslegg",             fullName:"Exslegg 052/066",             set:"sv4K · Ancient Roar",      lang:"JP", value:"~2€",    tcgdex:"SV4K-52", ptcgioQ:'set.id:sv4k number:52', rarity:"Commune" },
   // ── 🇯🇵 sv2P — Clay Burst ─────────────────────────────────────────────────
-  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    tcgdex:"SV2P-65", ptcgioQ:'set.id:sv2p number:65', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/SV2P/SV2P_65_R_JP_LG.png" },
+  { id:"c40", name:"Ikirinco ex",         fullName:"Ikirinco ex 065/071",         set:"sv2P · Clay Burst",        lang:"JP", value:"~5€",    tcgdex:"SV2P-65", ptcgioQ:'set.id:sv2p number:65', img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/SV2P/SV2P_65_R_JP_LG.png", rarity:"RR" },
   // ── 🇬🇧 Jungle — 1999 ────────────────────────────────────────────────────
-  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", ptcgioQ:'set.id:base2 number:11', img:"https://images.pokemontcg.io/base2/11_hires.png" },
+  { id:"c41", name:"Snorlax",             fullName:"Snorlax 11/64",               set:"Jungle (1999)",            lang:"EN", value:"~40€ ⭐", ptcgioQ:'set.id:base2 number:11', img:"https://images.pokemontcg.io/base2/11_hires.png", rarity:"Commune" },
   // ── 🇬🇧 Ascended Heroes / Perfect Order EN ───────────────────────────────
-  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 116/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", tcgdex:"me02.5-116", ptcgioQ:'set.id:me2pt5 number:116' },
-  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"me03-62",   ptcgioQ:'set.id:me3 number:62' },
-  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 012/088",        set:"POR · Perfect Order",      lang:"EN", value:"~8€ ⭐", tcgdex:"me03-12",   ptcgioQ:'set.id:me3 number:12' },
-  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"me03-16",   ptcgioQ:'set.id:me3 number:16' },
-  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-24",   ptcgioQ:'set.id:me3 number:24' },
-  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-115",  ptcgioQ:'set.id:me3 number:115' },
-  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    tcgdex:"me03-89",   ptcgioQ:'name:"Spewpa" set.id:me3 number:89' },
-  { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-96",   ptcgioQ:'set.id:me3 number:96' },
-  { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   tcgdex:"me02.5-237", ptcgioQ:'set.id:me2pt5 number:237' },
+  { id:"c42", name:"Méga-Hawlucha ex",    fullName:"Méga-Hawlucha ex 116/217",    set:"ASC EN",                   lang:"EN", value:"~18€ ⭐", tcgdex:"me02.5-116", ptcgioQ:'set.id:me2pt5 number:116', rarity:"RR" },
+  { id:"c43", name:"Meowth ex",           fullName:"Meowth ex 062/088",           set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"me03-62",   ptcgioQ:'set.id:me3 number:62', rarity:"RR" },
+  { id:"c45", name:"Decidueye ex",        fullName:"Decidueye ex 012/088",        set:"POR · Perfect Order",      lang:"EN", value:"~8€ ⭐", tcgdex:"me03-12",   ptcgioQ:'set.id:me3 number:12', rarity:"RR" },
+  { id:"c46", name:"Salazzle ex",         fullName:"Salazzle ex 016/088",         set:"POR · Perfect Order",      lang:"EN", value:"~5€",    tcgdex:"me03-16",   ptcgioQ:'set.id:me3 number:16', rarity:"RR" },
+  { id:"c47", name:"Aurorus",             fullName:"Aurorus 024/088",             set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-24",   ptcgioQ:'set.id:me3 number:24', rarity:"Commune" },
+  { id:"c48", name:"Sacred Ash",          fullName:"Sacred Ash 115/088",          set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-115",  ptcgioQ:'set.id:me3 number:115', rarity:"Rare" },
+  { id:"c49", name:"Spewpa",              fullName:"Spewpa 089/088",              set:"POR · Perfect Order",      lang:"EN", value:"~2€",    tcgdex:"me03-89",   ptcgioQ:'name:"Spewpa" set.id:me3 number:89', rarity:"IR" },
+  { id:"c59", name:"Probopass",           fullName:"Probopass 096/088",           set:"POR · Perfect Order",      lang:"EN", value:"~3€",    tcgdex:"me03-96",   ptcgioQ:'set.id:me3 number:96', rarity:"IR" },
+  { id:"c50", name:"Hop's Trevenant",     fullName:"Hop's Trevenant 237/217",     set:"ASC EN",                   lang:"EN", value:"~15€",   tcgdex:"me02.5-237", ptcgioQ:'set.id:me2pt5 number:237', rarity:"SIR" },
   // ── 🇬🇧 Prismatic Evolutions — PRE EN ────────────────────────────────────
-  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:5', img:"https://images.pokemontcg.io/sv8pt5/5_hires.png" },
-  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:81', img:"https://images.pokemontcg.io/sv8pt5/81_hires.png" },
-  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:20', img:"https://images.pokemontcg.io/sv8pt5/20_hires.png" },
-  { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:119', img:"https://images.pokemontcg.io/sv8pt5/119_hires.png" },
+  { id:"c51", name:"Leafeon",             fullName:"Leafeon 005/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:5', img:"https://images.pokemontcg.io/sv8pt5/5_hires.png", rarity:"Commune" },
+  { id:"c52", name:"Miltank",             fullName:"Miltank 081/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:81', img:"https://images.pokemontcg.io/sv8pt5/81_hires.png", rarity:"Commune" },
+  { id:"c53", name:"Goldeen",             fullName:"Goldeen 020/131",             set:"PRE · Prismatic Evolutions",lang:"EN", value:"~2€",    ptcgioQ:'set.id:sv8pt5 number:20', img:"https://images.pokemontcg.io/sv8pt5/20_hires.png", rarity:"Commune" },
+  { id:"c62", name:"Prime Catcher",      fullName:"Prime Catcher 119/131",       set:"PRE · Prismatic Evolutions",lang:"EN", value:"~5€",    ptcgioQ:'set.id:sv8pt5 number:119', img:"https://images.pokemontcg.io/sv8pt5/119_hires.png", rarity:"Commune" },
   // ── 🇬🇧 Divers promos EN ─────────────────────────────────────────────────
-  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-70", ptcgioQ:'set.id:mef number:70', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_070_std.png" },
-  { id:"c98", name:"Fennekin promo",     fullName:"Fennekin promo MEP 080",      set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-80", ptcgioQ:'set.id:mef number:80', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_080_std.png" },
+  { id:"c54", name:"Tyrunt promo",        fullName:"Tyrunt promo MEP 070",        set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-70", ptcgioQ:'set.id:mef number:70', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_070_std.png", rarity:"Promo" },
+  { id:"c98", name:"Fennekin promo",     fullName:"Fennekin promo MEP 080",      set:"MEP · Méga-Évo Promos",    lang:"EN", value:"~2€",    tcgdex:"mep-80", ptcgioQ:'set.id:mef number:80', img:"https://pkmncards.com/wp-content/uploads/mebsp_en_080_std.png", rarity:"Promo" },
   // ── 🇬🇧 Vivid Voltage — SWSH4 ──────────────────────────────────────────
-  { id:"c97", name:"Raikou",              fullName:"Raikou 050/185",              set:"VIV · Vivid Voltage",       lang:"EN", value:"~8€",    price:15, ptcgioQ:'set.id:swsh4 number:50', img:"https://images.pokemontcg.io/swsh4/50_hires.png" },
+  { id:"c97", name:"Raikou",              fullName:"Raikou 050/185",              set:"VIV · Vivid Voltage",       lang:"EN", value:"~8€",    price:15, ptcgioQ:'set.id:swsh4 number:50', img:"https://images.pokemontcg.io/swsh4/50_hires.png", rarity:"Commune" },
 
   // ── 🇫🇷 Nouvelles cartes FR ──────────────────────────────────────────────
-  { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/088",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    tcgdex:"me03-105", ptcgioQ:'set.id:me3 number:105', img:"https://images.scrydex.com/pokemon/me3-105/large" },
-  { id:"c86", name:"Violine",               fullName:"Violine 110/088",             set:"POR · Perfect Order",       lang:"FR", value:"~5€",    tcgdex:"me03-110", ptcgioQ:'set.id:me3 number:110' },
-  { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-35",  ptcgioQ:'set.id:cri number:35', img:"https://images.scrydex.com/pokemon/me4-35/large" },
-  { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   tcgdex:"me04-22",  ptcgioQ:'set.id:cri number:22', img:"https://images.scrydex.com/pokemon/me4-22/large" },
-  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 117/088",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    tcgdex:"me03-117", ptcgioQ:'set.id:me3 number:117', img:"https://images.scrydex.com/pokemon/me3-117/large" },
-  { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    tcgdex:"me04-91",  ptcgioQ:'set.id:cri number:91', img:"https://images.scrydex.com/pokemon/me4-91/large" },
-  { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 057/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    tcgdex:"me04-57",  ptcgioQ:'set.id:cri number:57', img:"https://images.scrydex.com/pokemon/me4-65/large" },
-  { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  tcgdex:"sv02-130",ptcgioQ:'set.id:sv2 number:130' },
-  { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    tcgdex:"sv03-22", ptcgioQ:'set.id:sv3 number:22' },
-  { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/197",         set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    tcgdex:"sv03-23", ptcgioQ:'set.id:sv3 number:23', img:"https://images.scrydex.com/pokemon/sv10-23/large" },
-  { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   tcgdex:"sv03-210",ptcgioQ:'set.id:sv3 number:210', img:"https://static.pkmcards.fr/cards/fr/obf/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-obf-fr-210-ecarlate-et-violet-flammes-obsidiennes-bekaglacon-teracristal-ex.webp" },
-  { id:"c77", name:"Dogrino ex de Pepper",   fullName:"Dogrino ex de Pepper 139/182",set:"DRI · Rivaux Émergents",    lang:"FR", value:"~5€",    tcgdex:"sv10-139",ptcgioQ:'set.id:sv9 number:139', img:"https://images.scrydex.com/pokemon/sv10-139/large" },
+  { id:"c63", name:"Yveltal ex",             fullName:"Yveltal ex 105/088",          set:"POR · Perfect Order",       lang:"FR", value:"~8€",    tcgdex:"me03-105", ptcgioQ:'set.id:me3 number:105', img:"https://images.scrydex.com/pokemon/me3-105/large", rarity:"UR" },
+  { id:"c86", name:"Violine",               fullName:"Violine 110/088",             set:"POR · Perfect Order",       lang:"FR", value:"~5€",    tcgdex:"me03-110", ptcgioQ:'set.id:me3 number:110', rarity:"IR" },
+  { id:"c64", name:"Méga-Florette ex",       fullName:"Méga-Florette ex 035/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-35",  ptcgioQ:'set.id:cri number:35', img:"https://images.scrydex.com/pokemon/me4-35/large", rarity:"RR" },
+  { id:"c66", name:"Méga-Amphinobi ex",      fullName:"Méga-Amphinobi ex 022/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~15€",   tcgdex:"me04-22",  ptcgioQ:'set.id:cri number:22', img:"https://images.scrydex.com/pokemon/me4-22/large", rarity:"RR" },
+  { id:"c67", name:"Fortifiant Merveilleux", fullName:"Fortifiant Merveilleux 117/088",set:"POR · Perfect Order",     lang:"FR", value:"~5€",    tcgdex:"me03-117", ptcgioQ:'set.id:me3 number:117', img:"https://images.scrydex.com/pokemon/me3-117/large", rarity:"Rare" },
+  { id:"c68", name:"Xerneas",               fullName:"Xerneas 091/086",             set:"CLN · Chaos Ascendant",     lang:"FR", value:"~3€",    tcgdex:"me04-91",  ptcgioQ:'set.id:cri number:91', img:"https://images.scrydex.com/pokemon/me4-91/large", rarity:"IR" },
+  { id:"c70", name:"Méga-Kravarech ex",      fullName:"Méga-Kravarech ex 057/086",   set:"CLN · Chaos Ascendant",     lang:"FR", value:"~8€",    tcgdex:"me04-57",  ptcgioQ:'set.id:cri number:57', img:"https://images.scrydex.com/pokemon/me4-65/large", rarity:"RR" },
+  { id:"c71", name:"Terraiste de Paldea ex", fullName:"Terraiste de Paldea ex 130/193",set:"PAL · Évolutions à Paldea",lang:"FR", value:"~5€",  tcgdex:"sv02-130",ptcgioQ:'set.id:sv2 number:130', rarity:"RR" },
+  { id:"c72", name:"Terracruel ex",          fullName:"Terracruel ex 022/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    tcgdex:"sv03-22", ptcgioQ:'set.id:sv3 number:22', rarity:"RR" },
+  { id:"c75", name:"Arboliva ex",            fullName:"Arboliva ex 023/197",         set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~3€",    tcgdex:"sv03-23", ptcgioQ:'set.id:sv3 number:23', img:"https://images.scrydex.com/pokemon/sv10-23/large", rarity:"RR" },
+  { id:"c76", name:"Bekaglaçon ex",          fullName:"Bekaglaçon ex 210/197",       set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~10€",   tcgdex:"sv03-210",ptcgioQ:'set.id:sv3 number:210', img:"https://static.pkmcards.fr/cards/fr/obf/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-obf-fr-210-ecarlate-et-violet-flammes-obsidiennes-bekaglacon-teracristal-ex.webp", rarity:"UR" },
+  { id:"c77", name:"Dogrino ex de Pepper",   fullName:"Dogrino ex de Pepper 139/182",set:"DRI · Rivaux Émergents",    lang:"FR", value:"~5€",    tcgdex:"sv10-139",ptcgioQ:'set.id:sv9 number:139', img:"https://images.scrydex.com/pokemon/sv10-139/large", rarity:"RR" },
 
   // ── 🇬🇧 Nouvelles cartes EN ───────────────────────────────────────────────
-  { id:"c79", name:"Tauros",                 fullName:"Tauros 096/086",              set:"CRI · Chaos Rising",        lang:"EN", value:"~3€",    tcgdex:"me04-96", ptcgioQ:'set.id:cri number:96' },
-  { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex 003/086",         set:"CRI · Chaos Rising",        lang:"EN", value:"~8€",    tcgdex:"me04-3",  ptcgioQ:'set.id:cri number:3' },
-  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CRI · Chaos Rising",        lang:"EN", value:"~5€",    tcgdex:"me04-15", ptcgioQ:'set.id:cri number:15' },
-  { id:"c85", name:"Xerneas",                fullName:"Xerneas 091/086",             set:"CRI · Chaos Rising",        lang:"EN", value:"~3€",    tcgdex:"me04-91", ptcgioQ:'set.id:cri number:91' },
+  { id:"c79", name:"Tauros",                 fullName:"Tauros 096/086",              set:"CRI · Chaos Rising",        lang:"EN", value:"~3€",    tcgdex:"me04-96", ptcgioQ:'set.id:cri number:96', rarity:"IR" },
+  { id:"c80", name:"Beedrill ex",            fullName:"Beedrill ex 003/086",         set:"CRI · Chaos Rising",        lang:"EN", value:"~8€",    tcgdex:"me04-3",  ptcgioQ:'set.id:cri number:3', rarity:"RR" },
+  { id:"c81", name:"Mega Pyroar-EX",         fullName:"Mega Pyroar-EX 015/086",      set:"CRI · Chaos Rising",        lang:"EN", value:"~5€",    tcgdex:"me04-15", ptcgioQ:'set.id:cri number:15', rarity:"RR" },
+  { id:"c85", name:"Xerneas",                fullName:"Xerneas 091/086",             set:"CRI · Chaos Rising",        lang:"EN", value:"~3€",    tcgdex:"me04-91", ptcgioQ:'set.id:cri number:91', rarity:"IR" },
 
   // ── 🇯🇵 Nouvelles cartes JP ───────────────────────────────────────────────
-  { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   tcgdex:"M2a-36",  ptcgioQ:'set.id:me2pt5 number:36' },
-  { id:"c84", name:"Chenipan",               fullName:"Chenipan 172/165 AR",         set:"SV2a · Pokémon Card 151",   lang:"JP", value:"~5€",    tcgdex:"SV2a-172", ptcgioQ:'set.id:sv2a number:172' },
-  { id:"c87", name:"Arbok ex",              fullName:"Arbok ex 187/165 AR",         set:"SV2a · Pokémon Card 151",   lang:"JP", value:"~8€",    tcgdex:"SV2a-187", ptcgioQ:'set.id:sv2a number:187' },
+  { id:"c83", name:"Méga-Yukimenoko ex",     fullName:"Méga-Yukimenoko ex 036/193",  set:"M2α · Ascended Heroes",     lang:"JP", value:"~10€",   tcgdex:"M2a-36",  ptcgioQ:'set.id:me2pt5 number:36', rarity:"RR" },
+  { id:"c84", name:"Chenipan",               fullName:"Chenipan 172/165 AR",         set:"SV2a · Pokémon Card 151",   lang:"JP", value:"~5€",    tcgdex:"SV2a-172", ptcgioQ:'set.id:sv2a number:172', rarity:"IR" },
+  { id:"c87", name:"Arbok ex",              fullName:"Arbok ex 187/165 AR",         set:"SV2a · Pokémon Card 151",   lang:"JP", value:"~8€",    tcgdex:"SV2a-187", ptcgioQ:'set.id:sv2a number:187', rarity:"IR" },
   // ── 🇯🇵 S4a — Shiny Star V ──────────────────────────────────────────────
-  { id:"c88", name:"Eternatus VMAX",        fullName:"ムゲンダイナVMAX 125/190",    set:"S4a · Shiny Star V",        lang:"JP", value:"~15€",   tcgdex:"S4a-125", img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/S4a/S4a_125_R_JP_LG.png" },
-  { id:"c93", name:"Barraskewda",          fullName:"カマスジョー 046/190",        set:"S4a · Shiny Star V",        lang:"JP", value:"~3€",    tcgdex:"S4a-46",  img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/S4a/S4a_46_R_JP_LG.png" },
+  { id:"c88", name:"Eternatus VMAX",        fullName:"ムゲンダイナVMAX 125/190",    set:"S4a · Shiny Star V",        lang:"JP", value:"~15€",   tcgdex:"S4a-125", img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/S4a/S4a_125_R_JP_LG.png", rarity:"UR" },
+  { id:"c93", name:"Barraskewda",          fullName:"カマスジョー 046/190",        set:"S4a · Shiny Star V",        lang:"JP", value:"~3€",    tcgdex:"S4a-46",  img:"https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/tpc/S4a/S4a_46_R_JP_LG.png", rarity:"Commune" },
   // ── 🇫🇷 MEP Starters Johto ─────────────────────────────────────────────
-  { id:"c89", name:"Germignon",             fullName:"Germignon 046",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-46",  ptcgioQ:'set.id:mef number:46', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-046-v2-high.webp" },
-  { id:"c90", name:"Héricendre",            fullName:"Héricendre 047",              set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-47",  ptcgioQ:'set.id:mef number:47', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-047-v2-high.webp" },
-  { id:"c91", name:"Kaiminus",              fullName:"Kaiminus 048",                set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-48",  ptcgioQ:'set.id:mef number:48', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-048-v2-high.webp" },
-  { id:"c94", name:"Ouistempo",            fullName:"Ouistempo 052",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-52",  ptcgioQ:'set.id:mef number:52', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-052-v2-high.webp" },
-  { id:"c95", name:"Flambino",             fullName:"Flambino 053",                set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-53",  ptcgioQ:'set.id:mef number:53', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-053-v2-high.webp" },
-  { id:"c96", name:"Larméléon",            fullName:"Larméléon 054",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-54",  ptcgioQ:'set.id:mef number:54', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-054-v2-high.webp" },
-  { id:"c100",name:"Tour Prismatique",      fullName:"Tour Prismatique 111/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-111",ptcgioQ:'set.id:cri number:111', img:"https://images.scrydex.com/pokemon/me4-111/large" },
+  { id:"c89", name:"Germignon",             fullName:"Germignon 046",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-46",  ptcgioQ:'set.id:mef number:46', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-046-v2-high.webp", rarity:"Promo" },
+  { id:"c90", name:"Héricendre",            fullName:"Héricendre 047",              set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-47",  ptcgioQ:'set.id:mef number:47', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-047-v2-high.webp", rarity:"Promo" },
+  { id:"c91", name:"Kaiminus",              fullName:"Kaiminus 048",                set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-48",  ptcgioQ:'set.id:mef number:48', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-048-v2-high.webp", rarity:"Promo" },
+  { id:"c94", name:"Ouistempo",            fullName:"Ouistempo 052",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-52",  ptcgioQ:'set.id:mef number:52', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-052-v2-high.webp", rarity:"Promo" },
+  { id:"c95", name:"Flambino",             fullName:"Flambino 053",                set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-53",  ptcgioQ:'set.id:mef number:53', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-053-v2-high.webp", rarity:"Promo" },
+  { id:"c96", name:"Larméléon",            fullName:"Larméléon 054",               set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~3€",    tcgdex:"mep-54",  ptcgioQ:'set.id:mef number:54', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-054-v2-high.webp", rarity:"Promo" },
+  { id:"c100",name:"Tour Prismatique",      fullName:"Tour Prismatique 111/086",    set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-111",ptcgioQ:'set.id:cri number:111', img:"https://images.scrydex.com/pokemon/me4-111/large", rarity:"Rare" },
   // ── 🇫🇷 Ajouts classeur (lot photos) ────────────────────────────────────
-  { id:"c101", name:"Fragroin",               fullName:"Fragroin 183/197",               set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~5€",    tcgdex:"sv03-183", ptcgioQ:'set.id:sv3 number:183' },
-  { id:"c102", name:"Pashmilla ex",            fullName:"Pashmilla ex 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-73",  ptcgioQ:'set.id:cri number:73', img:"https://images.scrydex.com/pokemon/me4-73/large" },
-  { id:"c103", name:"Regirock ex",             fullName:"Regirock ex 214/197",            set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~8€",    tcgdex:"sv03-214", ptcgioQ:'set.id:sv3 number:214', img:"https://images.scrydex.com/pokemon/sv10-214/large" },
-  { id:"c104", name:"Nostenfer",               fullName:"Nostenfer 093/086",              set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-93",  ptcgioQ:'set.id:cri number:93', img:"https://images.scrydex.com/pokemon/me4-93/large" },
-  { id:"c105", name:"Performance de Strykna",  fullName:"Performance de Strykna 081/086", set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-81",  ptcgioQ:'set.id:cri number:81', img:"https://images.scrydex.com/pokemon/me4-81/large" },
-  { id:"c106", name:"Méga-Néméliős ex",        fullName:"Méga-Néméliős ex 015/086",       set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-15",  ptcgioQ:'set.id:cri number:15', img:"https://images.scrydex.com/pokemon/me4-15/large" },
-  { id:"c107", name:"Dragmara",                fullName:"Dragmara 092/088",               set:"POR · Perfect Order",       lang:"FR", value:"~3€",    tcgdex:"me03-92",  ptcgioQ:'set.id:me3 number:92', img:"https://static.pkmcards.fr/cards/fr/por/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-por-fr-092-mega-evolution-equilibre-parfait-dragmara.webp" },
-  { id:"c108", name:"Méga-Zygarde ex",         fullName:"Méga-Zygarde ex 071",            set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~8€",    tcgdex:"mep-71",   ptcgioQ:'set.id:mef number:71', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-071-v2-high.webp" },
+  { id:"c101", name:"Fragroin",               fullName:"Fragroin 183/197",               set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~5€",    tcgdex:"sv03-183", ptcgioQ:'set.id:sv3 number:183', rarity:"Commune" },
+  { id:"c102", name:"Pashmilla ex",            fullName:"Pashmilla ex 073/086",           set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-73",  ptcgioQ:'set.id:cri number:73', img:"https://images.scrydex.com/pokemon/me4-73/large", rarity:"RR" },
+  { id:"c103", name:"Regirock ex",             fullName:"Regirock ex 214/197",            set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~8€",    tcgdex:"sv03-214", ptcgioQ:'set.id:sv3 number:214', img:"https://images.scrydex.com/pokemon/sv10-214/large", rarity:"UR" },
+  { id:"c104", name:"Nostenfer",               fullName:"Nostenfer 093/086",              set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-93",  ptcgioQ:'set.id:cri number:93', img:"https://images.scrydex.com/pokemon/me4-93/large", rarity:"IR" },
+  { id:"c105", name:"Performance de Strykna",  fullName:"Performance de Strykna 081/086", set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-81",  ptcgioQ:'set.id:cri number:81', img:"https://images.scrydex.com/pokemon/me4-81/large", rarity:"Commune" },
+  { id:"c106", name:"Méga-Néméliős ex",        fullName:"Méga-Néméliős ex 015/086",       set:"CLN · Chaos Ascendant",     lang:"FR", value:"~5€",    tcgdex:"me04-15",  ptcgioQ:'set.id:cri number:15', img:"https://images.scrydex.com/pokemon/me4-15/large", rarity:"RR" },
+  { id:"c107", name:"Dragmara",                fullName:"Dragmara 092/088",               set:"POR · Perfect Order",       lang:"FR", value:"~3€",    tcgdex:"me03-92",  ptcgioQ:'set.id:me3 number:92', img:"https://static.pkmcards.fr/cards/fr/por/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-por-fr-092-mega-evolution-equilibre-parfait-dragmara.webp", rarity:"IR" },
+  { id:"c108", name:"Méga-Zygarde ex",         fullName:"Méga-Zygarde ex 071",            set:"MEP · Méga-Évo Promos",     lang:"FR", value:"~8€",    tcgdex:"mep-71",   ptcgioQ:'set.id:mef number:71', img:"https://cdn.pokedexia.com/cards/me/promos-mega-evolution/cards/MEP-071-v2-high.webp", rarity:"Promo" },
   // ── 🇫🇷 Écarlate et Violet — EV01 / SV1 ─────────────────────────────────────
-  { id:"c109", name:"Roue-de-Fer ex",          fullName:"Roue-de-Fer ex 248/198",          set:"EV · Écarlate et Violet",   lang:"FR", value:"~10€",   tcgdex:"sv01-248", ptcgioQ:'set.id:sv1 number:248' },
+  { id:"c109", name:"Roue-de-Fer ex",          fullName:"Roue-de-Fer ex 248/198",          set:"EV · Écarlate et Violet",   lang:"FR", value:"~10€",   tcgdex:"sv01-248", ptcgioQ:'set.id:sv1 number:248', rarity:"UR" },
   // ── 🇫🇷 Platine — PLT / PL1 ──────────────────────────────────────────────────
-  { id:"c110", name:"Riolu",                   fullName:"Riolu 091/127",                   set:"PLT · Platine",             lang:"FR", value:"~1€",    tcgdex:"plt-91",   ptcgioQ:'set.id:pl1 number:91', img:"https://static.pkmcards.fr/cards/fr/pl/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-pl-fr-091-platine-riolu.webp" },
+  { id:"c110", name:"Riolu",                   fullName:"Riolu 091/127",                   set:"PLT · Platine",             lang:"FR", value:"~1€",    tcgdex:"plt-91",   ptcgioQ:'set.id:pl1 number:91', img:"https://static.pkmcards.fr/cards/fr/pl/image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-pl-fr-091-platine-riolu.webp", rarity:"Commune" },
   // ── 🇬🇧 Méga-Évolution — MEG EN ──────────────────────────────────────────
-  { id:"c111", name:"Shedinja",                fullName:"Shedinja 144/132 ★",              set:"MEG · Méga-Évolution",      lang:"EN", value:"~8€",    tcgdex:"me01-144", ptcgioQ:'set.id:me1 number:144' },
+  { id:"c111", name:"Shedinja",                fullName:"Shedinja 144/132 ★",              set:"MEG · Méga-Évolution",      lang:"EN", value:"~8€",    tcgdex:"me01-144", ptcgioQ:'set.id:me1 number:144', rarity:"IR" },
   // ── 🇬🇧 Méga-Évo Promos — MEP EN (Unova) ────────────────────────────────
-  { id:"c112", name:"Snivy",                   fullName:"Snivy 049",                       set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-49",   ptcgioQ:'set.id:mef number:49',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_049_std.png" },
-  { id:"c113", name:"Tepig",                   fullName:"Tepig 050",                       set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-50",   ptcgioQ:'set.id:mef number:50',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_050_std.png" },
-  { id:"c114", name:"Oshawott",                fullName:"Oshawott 051",                    set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-51",   ptcgioQ:'set.id:mef number:51',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_051_std.png" },
+  { id:"c112", name:"Snivy",                   fullName:"Snivy 049",                       set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-49",   ptcgioQ:'set.id:mef number:49',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_049_std.png", rarity:"Promo" },
+  { id:"c113", name:"Tepig",                   fullName:"Tepig 050",                       set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-50",   ptcgioQ:'set.id:mef number:50',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_050_std.png", rarity:"Promo" },
+  { id:"c114", name:"Oshawott",                fullName:"Oshawott 051",                    set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-51",   ptcgioQ:'set.id:mef number:51',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_051_std.png", rarity:"Promo" },
   // ── 🇬🇧 Chaos Rising — CRI EN ────────────────────────────────────────────
-  { id:"c115", name:"Mega Gallade-EX",         fullName:"Mega Gallade-EX 048/086",         set:"CRI · Chaos Rising",        lang:"EN", value:"~8€",    tcgdex:"me04-48",  ptcgioQ:'set.id:cri number:48' },
+  { id:"c115", name:"Mega Gallade-EX",         fullName:"Mega Gallade-EX 048/086",         set:"CRI · Chaos Rising",        lang:"EN", value:"~8€",    tcgdex:"me04-48",  ptcgioQ:'set.id:cri number:48', rarity:"RR" },
   // ── 🇫🇷 Rivaux Émergents — DRI / sv10 ───────────────────────────────────
-  { id:"c119", name:"Dynavolt",              fullName:"Dynavolt 196/182 ★",            set:"DRI · Rivaux Émergents",    lang:"FR", value:"~4€",    tcgdex:"sv10-196", ptcgioQ:'set.id:sv9 number:196' },
-  { id:"c120", name:"Métaloss ex de Pierre", fullName:"Métaloss ex de Pierre 145/182",  set:"DRI · Rivaux Émergents",    lang:"FR", value:"~8€",    tcgdex:"sv10-145", ptcgioQ:'set.id:sv9 number:145' },
+  { id:"c119", name:"Dynavolt",              fullName:"Dynavolt 196/182 ★",            set:"DRI · Rivaux Émergents",    lang:"FR", value:"~4€",    tcgdex:"sv10-196", ptcgioQ:'set.id:sv9 number:196', rarity:"IR" },
+  { id:"c120", name:"Métaloss ex de Pierre", fullName:"Métaloss ex de Pierre 145/182",  set:"DRI · Rivaux Émergents",    lang:"FR", value:"~8€",    tcgdex:"sv10-145", ptcgioQ:'set.id:sv9 number:145', rarity:"RR" },
   // ── 🇬🇧 Sword & Shield — SWSH1 ──────────────────────────────────────────
-  { id:"c121", name:"Zacian V",              fullName:"Zacian V 138/202",               set:"SWSH · Sword & Shield",     lang:"EN", value:"~6€",    tcgdex:"swsh1-138", ptcgioQ:'set.id:swsh1 number:138', img:"https://images.pokemontcg.io/swsh1/138_hires.png" },
+  { id:"c121", name:"Zacian V",              fullName:"Zacian V 138/202",               set:"SWSH · Sword & Shield",     lang:"EN", value:"~6€",    tcgdex:"swsh1-138", ptcgioQ:'set.id:swsh1 number:138', img:"https://images.pokemontcg.io/swsh1/138_hires.png", rarity:"UR" },
   // ── 🇬🇧 Méga-Évo Promos — MEP EN (Alola) ────────────────────────────────
-  { id:"c116", name:"Rowlet",                  fullName:"Rowlet 043",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-43",   ptcgioQ:'set.id:mef number:43',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_043_std.png" },
-  { id:"c117", name:"Litten",                  fullName:"Litten 044",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-44",   ptcgioQ:'set.id:mef number:44',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_044_std.png" },
-  { id:"c118", name:"Popplio",                 fullName:"Popplio 045",                     set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-45",   ptcgioQ:'set.id:mef number:45',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_045_std.png" },
+  { id:"c116", name:"Rowlet",                  fullName:"Rowlet 043",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-43",   ptcgioQ:'set.id:mef number:43',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_043_std.png", rarity:"Promo" },
+  { id:"c117", name:"Litten",                  fullName:"Litten 044",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-44",   ptcgioQ:'set.id:mef number:44',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_044_std.png", rarity:"Promo" },
+  { id:"c118", name:"Popplio",                 fullName:"Popplio 045",                     set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~2€",    tcgdex:"mep-45",   ptcgioQ:'set.id:mef number:45',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_045_std.png", rarity:"Promo" },
   // ── 🇫🇷 Nuit Noire — ME05 / PBL FR (pulls boosters) ─────────────────────
-  { id:"c122", name:"Méga-Darkrai ex Gold",    fullName:"Méga-Darkrai ex 120/084 ★★★",     set:"PBL · Nuit Noire",          lang:"FR", value:"~140€ ⭐", tcgdex:"me05-120", ptcgioQ:'set.id:pbl number:120' },
-  { id:"c123", name:"Méga-Goupelin ex",        fullName:"Méga-Goupelin ex 008/084",        set:"PBL · Nuit Noire",          lang:"FR", value:"~1€",    tcgdex:"me05-8",   ptcgioQ:'set.id:pbl number:8' },
-  { id:"c124", name:"Flagadoss",               fullName:"Flagadoss 090/084 ★",             set:"PBL · Nuit Noire",          lang:"FR", value:"~7€",    tcgdex:"me05-90",  ptcgioQ:'set.id:pbl number:90' },
+  { id:"c122", name:"Méga-Darkrai ex Gold",    fullName:"Méga-Darkrai ex 120/084 ★★★",     set:"PBL · Nuit Noire",          lang:"FR", value:"~140€ ⭐", tcgdex:"me05-120", ptcgioQ:'set.id:pbl number:120', rarity:"Or" },
+  { id:"c123", name:"Méga-Goupelin ex",        fullName:"Méga-Goupelin ex 008/084",        set:"PBL · Nuit Noire",          lang:"FR", value:"~1€",    tcgdex:"me05-8",   ptcgioQ:'set.id:pbl number:8', rarity:"RR" },
+  { id:"c124", name:"Flagadoss",               fullName:"Flagadoss 090/084 ★",             set:"PBL · Nuit Noire",          lang:"FR", value:"~7€",    tcgdex:"me05-90",  ptcgioQ:'set.id:pbl number:90', rarity:"IR" },
   // ── 🇬🇧 Pitch Black — ME05 / PBL EN (pulls boosters) ────────────────────
-  { id:"c125", name:"Mega Slowbro ex",         fullName:"Mega Slowbro ex 031/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~1€",    tcgdex:"me05-31",  ptcgioQ:'set.id:pbl number:31' },
-  { id:"c126", name:"Primarina",               fullName:"Primarina 088/084 ★",             set:"PBL · Pitch Black",         lang:"EN", value:"~3€",    tcgdex:"me05-88",  ptcgioQ:'set.id:pbl number:88', qty:2 },
+  { id:"c125", name:"Mega Slowbro ex",         fullName:"Mega Slowbro ex 031/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~1€",    tcgdex:"me05-31",  ptcgioQ:'set.id:pbl number:31', rarity:"RR" },
+  { id:"c126", name:"Primarina",               fullName:"Primarina 088/084 ★",             set:"PBL · Pitch Black",         lang:"EN", value:"~3€",    tcgdex:"me05-88",  ptcgioQ:'set.id:pbl number:88', qty:2, rarity:"IR" },
   // ── 🇬🇧 Chilling Reign — SWSH6 (pull booster) ───────────────────────────
-  { id:"c127", name:"Galarian Moltres V",      fullName:"Galarian Moltres V 097/198",      set:"CRE · Chilling Reign",      lang:"EN", value:"~4€",    ptcgioQ:'set.id:swsh6 number:97', img:"https://images.pokemontcg.io/swsh6/97_hires.png" },
+  { id:"c127", name:"Galarian Moltres V",      fullName:"Galarian Moltres V 097/198",      set:"CRE · Chilling Reign",      lang:"EN", value:"~4€",    ptcgioQ:'set.id:swsh6 number:97', img:"https://images.pokemontcg.io/swsh6/97_hires.png", rarity:"UR" },
   // ── 🇬🇧 MEP promo (pull booster) ────────────────────────────────────────
-  { id:"c128", name:"Zarude",                  fullName:"Zarude 088",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~3€",    tcgdex:"mep-88",   ptcgioQ:'set.id:mef number:88',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_088_std.png" },
+  { id:"c128", name:"Zarude",                  fullName:"Zarude 088",                      set:"MEP · Méga-Évo Promos",     lang:"EN", value:"~3€",    tcgdex:"mep-88",   ptcgioQ:'set.id:mef number:88',  img:"https://pkmncards.com/wp-content/uploads/mebsp_en_088_std.png", rarity:"Promo" },
   // ── 🇫🇷 Nuit Noire — ME05 / PBL FR (pulls boosters, suite) ──────────────
-  { id:"c129", name:"Bazoucan",                fullName:"Bazoucan 094/084 ★",              set:"PBL · Nuit Noire",          lang:"FR", value:"~2€",    tcgdex:"me05-94",  ptcgioQ:'set.id:pbl number:94' },
-  { id:"c130", name:"Charkos ex",              fullName:"Charkos ex 045/084",              set:"PBL · Nuit Noire",          lang:"FR", value:"~1€",    tcgdex:"me05-45",  ptcgioQ:'set.id:pbl number:45' },
-  { id:"c131", name:"Mega Delphox ex",         fullName:"Mega Delphox ex 008/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~1€",    tcgdex:"me05-8",   ptcgioQ:'set.id:pbl number:8' },
+  { id:"c129", name:"Bazoucan",                fullName:"Bazoucan 094/084 ★",              set:"PBL · Nuit Noire",          lang:"FR", value:"~2€",    tcgdex:"me05-94",  ptcgioQ:'set.id:pbl number:94', rarity:"IR" },
+  { id:"c130", name:"Charkos ex",              fullName:"Charkos ex 045/084",              set:"PBL · Nuit Noire",          lang:"FR", value:"~1€",    tcgdex:"me05-45",  ptcgioQ:'set.id:pbl number:45', rarity:"RR" },
+  { id:"c131", name:"Mega Delphox ex",         fullName:"Mega Delphox ex 008/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~1€",    tcgdex:"me05-8",   ptcgioQ:'set.id:pbl number:8', rarity:"RR" },
   // ── 🇬🇧 Duo doré Zacian/Zamazenta — SWSH Secret Rare (paire panoramique) ──
-  { id:"c132", name:"Zacian V (Gold)",         fullName:"Zacian V 211/202 ★★",             set:"SWSH · Sword & Shield",     lang:"EN", value:"~35€", price:25, ptcgioQ:'set.id:swsh1 number:211', img:"https://images.pokemontcg.io/swsh1/211_hires.png" },
-  { id:"c133", name:"Zamazenta V (Gold)",      fullName:"Zamazenta V 212/202 ★★",          set:"SWSH · Sword & Shield",     lang:"EN", value:"~25€", price:20, ptcgioQ:'set.id:swsh1 number:212', img:"https://images.pokemontcg.io/swsh1/212_hires.png" },
+  { id:"c132", name:"Zacian V (Gold)",         fullName:"Zacian V 211/202 ★★",             set:"SWSH · Sword & Shield",     lang:"EN", value:"~35€", price:25, ptcgioQ:'set.id:swsh1 number:211', img:"https://images.pokemontcg.io/swsh1/211_hires.png", rarity:"Or" },
+  { id:"c133", name:"Zamazenta V (Gold)",      fullName:"Zamazenta V 212/202 ★★",          set:"SWSH · Sword & Shield",     lang:"EN", value:"~25€", price:20, ptcgioQ:'set.id:swsh1 number:212', img:"https://images.pokemontcg.io/swsh1/212_hires.png", rarity:"Or" },
   // ── 🇬🇧 Pulls boosters (Mega Evolution + Paldean Fates) ──────────────────
-  { id:"c134", name:"Mega Mawile ex",          fullName:"Mega Mawile ex 094/132",          set:"MEG · Mega Evolution",      lang:"EN", value:"~1€",    tcgdex:"me01-94",  ptcgioQ:'set.id:me1 number:94',  img:"https://images.pokemontcg.io/me1/94_hires.png" },
-  { id:"c135", name:"Cleffa (shiny)",          fullName:"Cleffa 150/091 ✨",               set:"PAF · Paldean Fates",       lang:"EN", value:"~5€",    tcgdex:"sv4pt5-150", ptcgioQ:'set.id:sv4pt5 number:150', img:"https://images.pokemontcg.io/sv4pt5/150_hires.png" },
-  { id:"c136", name:"Delibird",                fullName:"Delibird 152/132",                set:"MEG · Mega Evolution",      lang:"EN", value:"~3€",    tcgdex:"me01-152", ptcgioQ:'set.id:me1 number:152', img:"https://images.pokemontcg.io/me1/152_hires.png" },
+  { id:"c134", name:"Mega Mawile ex",          fullName:"Mega Mawile ex 094/132",          set:"MEG · Mega Evolution",      lang:"EN", value:"~1€",    tcgdex:"me01-94",  ptcgioQ:'set.id:me1 number:94',  img:"https://images.pokemontcg.io/me1/94_hires.png", rarity:"RR" },
+  { id:"c135", name:"Cleffa (shiny)",          fullName:"Cleffa 150/091 ✨",               set:"PAF · Paldean Fates",       lang:"EN", value:"~5€",    tcgdex:"sv4pt5-150", ptcgioQ:'set.id:sv4pt5 number:150', img:"https://images.pokemontcg.io/sv4pt5/150_hires.png", rarity:"IR" },
+  { id:"c136", name:"Delibird",                fullName:"Delibird 152/132",                set:"MEG · Mega Evolution",      lang:"EN", value:"~3€",    tcgdex:"me01-152", ptcgioQ:'set.id:me1 number:152', img:"https://images.pokemontcg.io/me1/152_hires.png", rarity:"IR" },
   // ── 🇯🇵 M6a — 30e Anniversaire (pulls boosters JP · illus. à compléter) ──
-  { id:"c137", name:"Énergie Électrique (30th)", fullName:"Énergie Électrique · M6a LIG", set:"M6a · 30e Anniv.", lang:"JP", value:"~2€" },
-  { id:"c138", name:"Énergie Métal (30th)",      fullName:"Énergie Métal · M6a MET",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€" },
-  { id:"c139", name:"Énergie Eau (30th)",        fullName:"Énergie Eau · M6a WAT",        set:"M6a · 30e Anniv.", lang:"JP", value:"~2€" },
-  { id:"c140", name:"Énergie Obscurité (30th)",  fullName:"Énergie Obscurité · M6a DAR",  set:"M6a · 30e Anniv.", lang:"JP", value:"~2€" },
-  { id:"c141", name:"Énergie Combat (30th)",     fullName:"Énergie Combat · M6a FIG",     set:"M6a · 30e Anniv.", lang:"JP", value:"~2€" },
-  { id:"c142", name:"Gholdengo (AR)",            fullName:"Gholdengo 118/103 AR",         set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-118" },
-  { id:"c143", name:"Fuecoco ex",                fullName:"Fuecoco ex 009/103 RR",        set:"M6a · 30e Anniv.", lang:"JP", value:"~1€", tcgdex:"M6a-009" },
-  { id:"c144", name:"Greninja ex",               fullName:"Greninja ex 015/103 RR",       set:"M6a · 30e Anniv.", lang:"JP", value:"~3€", tcgdex:"M6a-015" },
-  { id:"c145", name:"Pikachu (holo)",            fullName:"Pikachu 043/103 (27/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-043" },
-  { id:"c146", name:"Pikachu",                   fullName:"Pikachu 040/103 (24/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-040" },
-  { id:"c147", name:"Pikachu",                   fullName:"Pikachu 023/103 (07/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-023" },
-  { id:"c148", name:"Pikachu",                   fullName:"Pikachu 029/103 (13/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-029" },
-  { id:"c149", name:"Pikachu (holo · A. Nishida)", fullName:"Pikachu 041/103 (25/30)",    set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-041" },
-  { id:"c150", name:"Lippoutou ex",              fullName:"Lippoutou ex 191/165 FA",       set:"MEW · 151",              lang:"FR", value:"~8€", ptcgioQ:'set.id:sv3pt5 number:191', img:"https://images.pokemontcg.io/sv3pt5/191_hires.png" },
-  { id:"c151", name:"Koraidon ex",               fullName:"Koraidon ex 124/197",           set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~1€", ptcgioQ:'set.id:sv3 number:124', img:"https://images.pokemontcg.io/sv3/124_hires.png" },
-  { id:"c152", name:"Spiritomb de Cynthia",      fullName:"Spiritomb de Cynthia 244/217 FA", set:"ASC · Ascended Heroes",  lang:"FR", value:"~8€", ptcgioQ:'set.id:me2pt5 number:244', img:"https://images.pokemontcg.io/me2pt5/244_hires.png" },
-  { id:"c153", name:"Mega Darkrai ex",           fullName:"Mega Darkrai ex 048/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~6€", tcgdex:"me05-48",  ptcgioQ:'set.id:pbl number:48' },
+  { id:"c137", name:"Énergie Électrique (30th)", fullName:"Énergie Électrique · M6a LIG", set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", rarity:"Énergie" },
+  { id:"c138", name:"Énergie Métal (30th)",      fullName:"Énergie Métal · M6a MET",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", rarity:"Énergie" },
+  { id:"c139", name:"Énergie Eau (30th)",        fullName:"Énergie Eau · M6a WAT",        set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", rarity:"Énergie" },
+  { id:"c140", name:"Énergie Obscurité (30th)",  fullName:"Énergie Obscurité · M6a DAR",  set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", rarity:"Énergie" },
+  { id:"c141", name:"Énergie Combat (30th)",     fullName:"Énergie Combat · M6a FIG",     set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", rarity:"Énergie" },
+  { id:"c142", name:"Gholdengo (AR)",            fullName:"Gholdengo 118/103 AR",         set:"M6a · 30e Anniv.", lang:"JP", value:"~4€", tcgdex:"M6a-118", rarity:"IR" },
+  { id:"c143", name:"Fuecoco ex",                fullName:"Fuecoco ex 009/103 RR",        set:"M6a · 30e Anniv.", lang:"JP", value:"~1€", tcgdex:"M6a-009", rarity:"RR" },
+  { id:"c144", name:"Greninja ex",               fullName:"Greninja ex 015/103 RR",       set:"M6a · 30e Anniv.", lang:"JP", value:"~3€", tcgdex:"M6a-015", rarity:"RR" },
+  { id:"c145", name:"Pikachu (holo)",            fullName:"Pikachu 043/103 (27/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-043", rarity:"Promo" },
+  { id:"c146", name:"Pikachu",                   fullName:"Pikachu 040/103 (24/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-040", rarity:"Promo" },
+  { id:"c147", name:"Pikachu",                   fullName:"Pikachu 023/103 (07/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-023", rarity:"Promo" },
+  { id:"c148", name:"Pikachu",                   fullName:"Pikachu 029/103 (13/30)",      set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-029", rarity:"Promo" },
+  { id:"c149", name:"Pikachu (holo · A. Nishida)", fullName:"Pikachu 041/103 (25/30)",    set:"M6a · 30e Anniv.", lang:"JP", value:"~2€", tcgdex:"M6a-041", rarity:"Promo" },
+  { id:"c150", name:"Lippoutou ex",              fullName:"Lippoutou ex 191/165 FA",       set:"MEW · 151",              lang:"FR", value:"~8€", ptcgioQ:'set.id:sv3pt5 number:191', img:"https://images.pokemontcg.io/sv3pt5/191_hires.png", rarity:"UR" },
+  { id:"c151", name:"Koraidon ex",               fullName:"Koraidon ex 124/197",           set:"OBF · Flammes Obsidiennes", lang:"FR", value:"~1€", ptcgioQ:'set.id:sv3 number:124', img:"https://images.pokemontcg.io/sv3/124_hires.png", rarity:"RR" },
+  { id:"c152", name:"Spiritomb de Cynthia",      fullName:"Spiritomb de Cynthia 244/217 FA", set:"ASC · Ascended Heroes",  lang:"FR", value:"~8€", ptcgioQ:'set.id:me2pt5 number:244', img:"https://images.pokemontcg.io/me2pt5/244_hires.png", rarity:"SIR" },
+  { id:"c153", name:"Mega Darkrai ex",           fullName:"Mega Darkrai ex 048/084",         set:"PBL · Pitch Black",         lang:"EN", value:"~6€", tcgdex:"me05-48",  ptcgioQ:'set.id:pbl number:48', rarity:"RR" },
   // ── 🎉 30th Celebration (30C) FR — pulls boosters (set récent, illus. à compléter) ──
-  { id:"c154", name:"Pikachu (holo)",            fullName:"Pikachu 050/128 (28/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c155", name:"Pikachu",                   fullName:"Pikachu 043/128 (21/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c156", name:"Baggiguane (Scraggy)",      fullName:"Baggiguane 140/128 ★ IR",         set:"30C · 30th Celebration",    lang:"FR", value:"~3€" },
+  { id:"c154", name:"Pikachu (holo)",            fullName:"Pikachu 050/128 (28/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c155", name:"Pikachu",                   fullName:"Pikachu 043/128 (21/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c156", name:"Baggiguane (Scraggy)",      fullName:"Baggiguane 140/128 ★ IR",         set:"30C · 30th Celebration",    lang:"FR", value:"~3€", rarity:"IR" },
   // ── 🇬🇧 Pulls boosters EN (Destined Rivals / Surging Sparks / Journey Together) ──
-  { id:"c157", name:"Cynthia's Garchomp ex",     fullName:"Cynthia's Garchomp ex 104/182",   set:"DRI · Destined Rivals",     lang:"EN", value:"~1€", tcgdex:"sv10-104", ptcgioQ:'set.id:sv10 number:104', img:"https://images.pokemontcg.io/sv10/104_hires.png" },
-  { id:"c158", name:"Shiinotic",                 fullName:"Shiinotic 194/191 ★ IR",          set:"SSP · Surging Sparks",      lang:"EN", value:"~5€",  tcgdex:"sv08-194", ptcgioQ:'set.id:sv8 number:194',  img:"https://images.pokemontcg.io/sv8/194_hires.png" },
-  { id:"c159", name:"Hop's Zacian ex",           fullName:"Hop's Zacian ex 111/159",         set:"JTG · Journey Together",    lang:"EN", value:"~1€",  tcgdex:"sv09-111", ptcgioQ:'set.id:sv9 number:111',  img:"https://images.pokemontcg.io/sv9/111_hires.png" },
+  { id:"c157", name:"Cynthia's Garchomp ex",     fullName:"Cynthia's Garchomp ex 104/182",   set:"DRI · Destined Rivals",     lang:"EN", value:"~1€", tcgdex:"sv10-104", ptcgioQ:'set.id:sv10 number:104', img:"https://images.pokemontcg.io/sv10/104_hires.png", rarity:"RR" },
+  { id:"c158", name:"Shiinotic",                 fullName:"Shiinotic 194/191 ★ IR",          set:"SSP · Surging Sparks",      lang:"EN", value:"~5€",  tcgdex:"sv08-194", ptcgioQ:'set.id:sv8 number:194',  img:"https://images.pokemontcg.io/sv8/194_hires.png", rarity:"IR" },
+  { id:"c159", name:"Hop's Zacian ex",           fullName:"Hop's Zacian ex 111/159",         set:"JTG · Journey Together",    lang:"EN", value:"~1€",  tcgdex:"sv09-111", ptcgioQ:'set.id:sv9 number:111',  img:"https://images.pokemontcg.io/sv9/111_hires.png", rarity:"RR" },
   // ── 🎉 30th Celebration (30C) FR — Pikachu ×/30 (suite) ──────────────────
-  { id:"c160", name:"Pikachu",                   fullName:"Pikachu 041/128 (19/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c161", name:"Pikachu (A. Nishida)",      fullName:"Pikachu 047/128 (25/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~3€" },
-  { id:"c162", name:"Pikachu",                   fullName:"Pikachu 025/128 (03/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c163", name:"Pikachu",                   fullName:"Pikachu 044/128 (22/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c164", name:"Pikachu",                   fullName:"Pikachu 052/128 (30/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c165", name:"Pikachu",                   fullName:"Pikachu 046/128 (24/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€" },
-  { id:"c166", name:"Lokhlass (Lapras)",         fullName:"Lokhlass 131/128 ★ IR",           set:"30C · 30th Celebration",    lang:"FR", value:"~8€" },
-  { id:"c167", name:"Ectoplasma ex (Gengar)",    fullName:"Ectoplasma ex 090/128",           set:"30C · 30th Celebration",    lang:"FR", value:"~4€" },
-  { id:"c168", name:"Genesect EX",               fullName:"Genesect EX 11/101 (Classic Coll.)", set:"30C · Classic Collection",lang:"FR", value:"~7€" },
+  { id:"c160", name:"Pikachu",                   fullName:"Pikachu 041/128 (19/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c161", name:"Pikachu (A. Nishida)",      fullName:"Pikachu 047/128 (25/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~3€", rarity:"Promo" },
+  { id:"c162", name:"Pikachu",                   fullName:"Pikachu 025/128 (03/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c163", name:"Pikachu",                   fullName:"Pikachu 044/128 (22/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c164", name:"Pikachu",                   fullName:"Pikachu 052/128 (30/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c165", name:"Pikachu",                   fullName:"Pikachu 046/128 (24/30)",         set:"30C · 30th Celebration",    lang:"FR", value:"~2€", rarity:"Promo" },
+  { id:"c166", name:"Lokhlass (Lapras)",         fullName:"Lokhlass 131/128 ★ IR",           set:"30C · 30th Celebration",    lang:"FR", value:"~8€", rarity:"IR" },
+  { id:"c167", name:"Ectoplasma ex (Gengar)",    fullName:"Ectoplasma ex 090/128",           set:"30C · 30th Celebration",    lang:"FR", value:"~4€", rarity:"RR" },
+  { id:"c168", name:"Genesect EX",               fullName:"Genesect EX 11/101 (Classic Coll.)", set:"30C · Classic Collection",lang:"FR", value:"~7€", rarity:"RR" },
 ];
 
 const BINDER_PAGE_SIZE = 9;
@@ -1412,6 +1426,9 @@ function CardSlot({ card, imgData, selected, color, onClick }) {
       {card && card.qty > 1 && (
         <div style={{ position: "absolute", top: 3, left: 3, background: "rgba(168,85,247,0.95)", color: "#fff", fontSize: 8, fontWeight: 800, borderRadius: 4, padding: "1px 5px", zIndex: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>×{card.qty}</div>
       )}
+      {card && card.rarity && (() => { const rm = rarityMeta(card.rarity); return (
+        <div title={rm.l} style={{ position: "absolute", bottom: 3, right: 3, background: rm.c, color: "#0b0b12", fontSize: 8, fontWeight: 800, borderRadius: 4, padding: "1px 4px", zIndex: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.65)", lineHeight: 1.3 }}>{rm.s}</div>
+      ); })()}
       {card && !showImg && (
         <div style={{ padding: 4, textAlign: "center", zIndex: 1 }}>
           {loading
@@ -1582,8 +1599,15 @@ function BinderView({ cards, color }) {
               </div>
               <div style={{ fontSize: 11, color: T.textSub, marginTop: 3 }}>{selected.fullName}</div>
               <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{selected.set}</div>
-              <div style={{ display: "inline-flex", marginTop: 7, background: `${color}18`, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 8px", fontSize: 10, fontWeight: 600, color }}>
-                {LANG_TABS_CFG.find(t => t.id === selected.lang)?.label || selected.lang}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 7 }}>
+                <span style={{ display: "inline-flex", background: `${color}18`, border: `1px solid ${color}44`, borderRadius: 6, padding: "2px 8px", fontSize: 10, fontWeight: 600, color }}>
+                  {LANG_TABS_CFG.find(t => t.id === selected.lang)?.label || selected.lang}
+                </span>
+                {selected.rarity && (() => { const rm = rarityMeta(selected.rarity); return (
+                  <span title={rm.l} style={{ display: "inline-flex", alignItems: "center", gap: 4, background: `${rm.c}1e`, border: `1px solid ${rm.c}66`, borderRadius: 6, padding: "2px 8px", fontSize: 10, fontWeight: 700, color: rm.c }}>
+                    <span>{rm.s}</span><span style={{ color: T.textSub, fontWeight: 500 }}>{rm.l}</span>
+                  </span>
+                ); })()}
               </div>
             </div>
           </div>
