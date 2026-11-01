@@ -1541,20 +1541,20 @@ function BinderView({ cards, color }) {
   }, [selected && selected.id]);
 
   const parseVal = s => parseFloat((s || "0").replace(/[^0-9.]/g, "")) || 0;
-  const grouped = {};
-  cards.forEach(c => { (grouped[c.set] = grouped[c.set] || []).push(c); });
-  const setPages = Object.entries(grouped)
-    .map(([setName, setCards]) => ({
-      setName,
-      cards: setCards.sort((a, b) => parseVal(b.value) - parseVal(a.value)),
-    }))
-    .sort((a, b) => parseVal(b.cards[0]?.value) - parseVal(a.cards[0]?.value))
-    .flatMap(({ setName, cards }) => {
-      const pages = [];
-      for (let i = 0; i < cards.length; i += BINDER_PAGE_SIZE)
-        pages.push({ setName, cards: cards.slice(i, i + BINDER_PAGE_SIZE), totalInSet: cards.length });
-      return pages;
+  // Tri global par cote : toute la langue triée best-first, puis paginée (pas de
+  // regroupement par set — on veut voir les meilleures cartes d'affilée).
+  const sorted = [...cards].sort((a, b) => parseVal(b.value) - parseVal(a.value));
+  const setPages = [];
+  for (let i = 0; i < sorted.length; i += BINDER_PAGE_SIZE) {
+    const slice = sorted.slice(i, i + BINDER_PAGE_SIZE);
+    const hi = slice[0]?.value || "", lo = slice[slice.length - 1]?.value || "";
+    setPages.push({
+      setName: "Triées par cote",
+      range: hi && lo ? (hi === lo ? hi : `${hi} → ${lo}`) : (hi || lo || ""),
+      cards: slice,
+      totalInSet: sorted.length,
     });
+  }
 
   const totalPages = Math.max(1, setPages.length);
   const curPage    = setPages[Math.min(page, totalPages - 1)] || { setName: "", cards: [] };
@@ -1770,7 +1770,7 @@ function BinderView({ cards, color }) {
           disabled={page === 0}
           style={{ ...css.btn(), opacity: page === 0 ? 0.3 : 1, padding: "5px 12px" }}>←</button>
         <span style={{ fontSize: 11, color: T.textMuted, textAlign: "center" }}>
-          {setPages.length > 0 ? <><div style={{ fontWeight: 600, color: color }}>{curPage.setName}</div><div>{curPage.totalInSet || curPage.cards.length} carte{(curPage.totalInSet || curPage.cards.length) > 1 ? "s" : ""} · {page + 1}/{totalPages}</div></> : "Vide"}
+          {setPages.length > 0 ? <><div style={{ fontWeight: 600, color: color }}>{curPage.setName}{curPage.range ? ` · ${curPage.range}` : ""}</div><div>{curPage.totalInSet || curPage.cards.length} carte{(curPage.totalInSet || curPage.cards.length) > 1 ? "s" : ""} · {page + 1}/{totalPages}</div></> : "Vide"}
         </span>
         <button onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); setSelected(null); }}
           disabled={page === totalPages - 1}
